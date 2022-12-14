@@ -60,6 +60,7 @@ public class UsuarioService {
         entity.setEmail(usuario.getEmail());
         entity.setSenha(usuario.getSenha());
         entity.setStatus(usuario.getStatus());
+        // entity.setUsuarioStatus(usuario.getUsuarioStatus());
         entity.setTipo(usuario.getTipo());
     }
 }

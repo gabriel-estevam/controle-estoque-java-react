@@ -2,6 +2,9 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
+import com.api.estoque.backend.model.enums.UsuarioStatus;
+import com.api.estoque.backend.model.enums.UsuarioTipo;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,13 +28,13 @@ public class Usuario implements Serializable {
 
     }
 
-    public Usuario(Long id, String nome, String email, String senha, Integer tipo, Integer status) {
+    public Usuario(Long id, String nome, String email, String senha, UsuarioTipo tipo, UsuarioStatus status) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.tipo = tipo;
-        this.status = status;
+        setTipo(tipo);
+        setStatus(status);
     }
 
     public Long getId() {
@@ -66,20 +69,24 @@ public class Usuario implements Serializable {
         this.senha = senha;
     }
 
-    public Integer getTipo() {
-        return tipo;
+    public UsuarioTipo getTipo() {
+        return UsuarioTipo.valueOf(tipo);
     }
 
-    public void setTipo(Integer tipo) {
-        this.tipo = tipo;
+    public void setTipo(UsuarioTipo usuarioTipo) {
+        if (usuarioTipo != null) {
+            this.tipo = usuarioTipo.getCode();
+        }
     }
 
-    public Integer getStatus() {
-        return status;
+    public UsuarioStatus getStatus() {
+        return UsuarioStatus.valueOf(status);
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setStatus(UsuarioStatus usuarioStatus) {
+        if (usuarioStatus != null) {
+            this.status = usuarioStatus.getCode();
+        }
     }
 
     @Override
