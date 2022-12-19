@@ -8,10 +8,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.api.estoque.backend.dto.UsuarioDTO;
 import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.repository.UsuarioRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
+import com.api.estoque.backend.service.exceptions.UsuarioException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -60,7 +62,24 @@ public class UsuarioService {
         entity.setEmail(usuario.getEmail());
         entity.setSenha(usuario.getSenha());
         entity.setStatus(usuario.getStatus());
-        // entity.setUsuarioStatus(usuario.getUsuarioStatus());
         entity.setTipo(usuario.getTipo());
+    }
+
+    public Usuario fromDto(UsuarioDTO objDto) {
+        try {
+            return usuarioCadastrado(objDto);
+        } catch (UsuarioException e) {
+            throw new UsuarioException(e.getMessage());
+        }
+    }
+
+    private Usuario usuarioCadastrado(UsuarioDTO objDto) {
+        Usuario usuarioDto = repository.findByEmail(objDto.getEmail());
+        if (usuarioDto == null) {
+            return new Usuario(objDto.getId(), objDto.getNome(), objDto.getEmail(), objDto.getSenha(), objDto.getTipo(),
+                    objDto.getStatus());
+        } else {
+            throw new UsuarioException("Usuário Já cadastrado!");
+        }
     }
 }
