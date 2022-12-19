@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> findAll() {
         List<Usuario> list = service.findAll();
@@ -42,6 +46,7 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<UsuarioDTO> insert(@RequestBody UsuarioDTO usuarioDto) {
+        usuarioDto.setSenha(encoder.encode(usuarioDto.getSenha()));
         Usuario usuario = service.fromDto(usuarioDto);
         usuario = service.insert(usuario);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(usuario.getId())
@@ -61,6 +66,7 @@ public class UsuarioController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDto) {
+        usuarioDto.setSenha(encoder.encode(usuarioDto.getSenha()));
         Usuario usuario = service.fromDto(usuarioDto);
         usuario = service.update(id, usuario);
         return ResponseEntity.ok().body(new UsuarioDTO(usuario));
