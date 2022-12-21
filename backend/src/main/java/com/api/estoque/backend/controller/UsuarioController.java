@@ -66,6 +66,7 @@ public class UsuarioController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDto) {
+        usuarioDto.setId(id);
         usuarioDto.setSenha(encoder.encode(usuarioDto.getSenha()));
         Usuario usuario = service.fromDto(usuarioDto);
         usuario = service.update(id, usuario);

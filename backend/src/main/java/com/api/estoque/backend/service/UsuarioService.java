@@ -74,7 +74,14 @@ public class UsuarioService {
     }
 
     private Usuario usuarioCadastrado(UsuarioDTO objDto) {
-        Usuario usuarioDto = repository.findByEmail(objDto.getEmail());
+        Usuario usuarioDto;
+        if (objDto.getId() == null) {
+            // Usuario
+            usuarioDto = repository.findByEmail(objDto.getEmail());
+        } else {
+            usuarioDto = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
+        }
+        // Usuario
         if (usuarioDto == null) {
             return new Usuario(objDto.getId(), objDto.getNome(), objDto.getEmail(), objDto.getSenha(), objDto.getTipo(),
                     objDto.getStatus());
