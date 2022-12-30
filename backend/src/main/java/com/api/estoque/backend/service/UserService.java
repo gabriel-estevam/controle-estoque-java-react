@@ -11,7 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.UserDTO;
-import com.api.estoque.backend.model.User;
+import com.api.estoque.backend.model.UserModel;
 import com.api.estoque.backend.repository.UserRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
@@ -23,16 +23,16 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public List<User> findAll() {
+    public List<UserModel> findAll() {
         return repository.findAll();
     }
 
-    public User findById(Long id) {
-        Optional<User> User = repository.findById(id);
+    public UserModel findById(Long id) {
+        Optional<UserModel> User = repository.findById(id);
         return User.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public User insert(User User) {
+    public UserModel insert(UserModel User) {
         return repository.save(User);
     }
 
@@ -46,10 +46,11 @@ public class UserService {
         }
     }
 
-    public User update(Long id, User User) {
+    public UserModel update(Long id, UserModel User) {
         try {
-            User entity = repository.getReferenceById(id); // prepara o objeto monitorando sem consultar no banco de
-                                                           // dados
+            UserModel entity = repository.getReferenceById(id); // prepara o objeto monitorando sem consultar no banco
+                                                                // de
+            // dados
             updateData(entity, User);
             return repository.save(entity);
         } catch (EntityNotFoundException e) {
@@ -57,7 +58,7 @@ public class UserService {
         }
     }
 
-    private void updateData(User entity, User User) {
+    private void updateData(UserModel entity, UserModel User) {
         entity.setName(User.getName());
         entity.setEmail(User.getEmail());
         entity.setPassword(User.getPassword());
@@ -65,7 +66,7 @@ public class UserService {
         entity.setRole(User.getRole());
     }
 
-    public User fromDto(UserDTO objDto) {
+    public UserModel fromDto(UserDTO objDto) {
         try {
             return userExists(objDto);
         } catch (UserException e) {
@@ -73,8 +74,8 @@ public class UserService {
         }
     }
 
-    private User userExists(UserDTO objDto) {
-        Optional<User> UserDTO;
+    private UserModel userExists(UserDTO objDto) {
+        Optional<UserModel> UserDTO;
         if (objDto.getId() == null) {
             // User
             UserDTO = repository.findByEmail(objDto.getEmail());
@@ -83,7 +84,8 @@ public class UserService {
         }
         // User
         if (UserDTO.isEmpty()) {
-            return new User(objDto.getId(), objDto.getName(), objDto.getEmail(), objDto.getPassword(), objDto.getRole(),
+            return new UserModel(objDto.getId(), objDto.getName(), objDto.getEmail(), objDto.getPassword(),
+                    objDto.getRole(),
                     objDto.getStatus());
         } else {
             throw new UserException("Usuário Já cadastrado!");

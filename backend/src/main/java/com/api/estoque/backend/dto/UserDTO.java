@@ -2,7 +2,7 @@ package com.api.estoque.backend.dto;
 
 import java.io.Serializable;
 
-import com.api.estoque.backend.model.User;
+import com.api.estoque.backend.model.UserModel;
 import com.api.estoque.backend.model.enums.UserRole;
 import com.api.estoque.backend.model.enums.UserStatus;
 
@@ -19,7 +19,7 @@ public class UserDTO implements Serializable {
     public UserDTO() {
     }
 
-    public UserDTO(User objUsuario) {
+    public UserDTO(UserModel objUsuario) {
         id = objUsuario.getId();
         name = objUsuario.getName();
         email = objUsuario.getEmail();

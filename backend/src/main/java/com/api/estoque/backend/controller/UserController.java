@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.api.estoque.backend.dto.UserDTO;
-import com.api.estoque.backend.model.User;
+import com.api.estoque.backend.model.UserModel;
 import com.api.estoque.backend.service.UserService;
 
 @RestController
@@ -33,21 +34,22 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll() {
-        List<User> list = service.findAll();
+        List<UserModel> list = service.findAll();
         List<UserDTO> listDto = list.stream().map(parseDto -> new UserDTO(parseDto)).collect(Collectors.toList());
         return ResponseEntity.ok().body(listDto);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-        User User = service.findById(id);
+        UserModel User = service.findById(id);
         return ResponseEntity.ok().body(new UserDTO(User));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<UserDTO> insert(@RequestBody UserDTO UserDTO) {
         UserDTO.setPassword(encoder.encode(UserDTO.getPassword()));
-        User User = service.fromDto(UserDTO);
+        UserModel User = service.fromDto(UserDTO);
         User = service.insert(User);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(User.getId())
                 .toUri(); // ele insere um novo User e na sequencia reterna no header da resposta o
@@ -68,7 +70,7 @@ public class UserController {
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO UserDTO) {
         UserDTO.setId(id);
         UserDTO.setPassword(encoder.encode(UserDTO.getPassword()));
-        User User = service.fromDto(UserDTO);
+        UserModel User = service.fromDto(UserDTO);
         User = service.update(id, User);
         return ResponseEntity.ok().body(new UserDTO(User));
     }

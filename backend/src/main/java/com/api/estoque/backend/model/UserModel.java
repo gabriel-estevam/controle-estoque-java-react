@@ -1,19 +1,27 @@
 package com.api.estoque.backend.model;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.api.estoque.backend.model.enums.UserRole;
 import com.api.estoque.backend.model.enums.UserStatus;
 
 @Entity
 @Table(name = "tb_user")
-public class User implements Serializable {
+public class UserModel implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -26,17 +34,57 @@ public class User implements Serializable {
     private Integer role;
     private Integer status;
 
-    public User() {
+    @ManyToMany
+    @JoinTable(name = "TB_USERS_ROLES", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<RoleModel> roles;
+
+    public UserModel() {
 
     }
 
-    public User(Long id, String name, String email, String password, UserRole role, UserStatus status) {
+    public UserModel(Long id, String name, String email, String password, UserRole role, UserStatus status) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         setRole(role);
         setStatus(status);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        return this.roles;
+    }
+
+    @Override
+    public String getUsername() {
+
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+
+        return true;
     }
 
     public Long getId() {
@@ -104,15 +152,16 @@ public class User implements Serializable {
         if (this == obj)
             return true;
         if (obj == null)
-            return false;
+            return true;
         if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
+            return true;
+        UserModel other = (UserModel) obj;
         if (id == null) {
             if (other.id != null)
-                return false;
+                return true;
         } else if (!id.equals(other.id))
-            return false;
+            return true;
         return true;
     }
+
 }
