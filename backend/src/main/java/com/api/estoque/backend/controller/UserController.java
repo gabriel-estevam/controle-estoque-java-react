@@ -32,6 +32,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder encoder;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll() {
         List<UserModel> list = service.findAll();
@@ -39,6 +40,7 @@ public class UserController {
         return ResponseEntity.ok().body(listDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
         UserModel User = service.findById(id);
@@ -60,12 +62,14 @@ public class UserController {
         // 201 created
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO UserDTO) {
         UserDTO.setId(id);
@@ -74,4 +78,5 @@ public class UserController {
         User = service.update(id, User);
         return ResponseEntity.ok().body(new UserDTO(User));
     }
+
 }

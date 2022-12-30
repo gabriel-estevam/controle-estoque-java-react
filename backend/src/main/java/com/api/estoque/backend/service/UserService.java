@@ -67,11 +67,7 @@ public class UserService {
     }
 
     public UserModel fromDto(UserDTO objDto) {
-        try {
-            return userExists(objDto);
-        } catch (UserException e) {
-            throw new UserException(e.getMessage());
-        }
+        return userExists(objDto);
     }
 
     private UserModel userExists(UserDTO objDto) {

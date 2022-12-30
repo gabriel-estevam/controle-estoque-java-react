@@ -2,6 +2,7 @@ package com.api.estoque.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 // import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ public class WebSecurityConfig {
                 // .antMatchers(HttpMethod.GET, "/parking-spot/**").permitAll()
                 // .antMatchers(HttpMethod.POST, "/parking-spot").hasRole("USER")
                 // .antMatchers(HttpMethod.DELETE, "/parking-spot/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/signin").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
