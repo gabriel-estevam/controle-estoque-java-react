@@ -7,22 +7,35 @@
   font-family: 'poppins', sans-serif;
 }
 
-body {
+/*body {
   width: 100vw;
   height: 100vh;
-  display: flex;
+   display: flex;
   align-items: center;
   justify-content: center;
- /* background-image: url('../../assets/login-background.jpg');
+ background-image: url('../../assets/login-background.jpg');
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center;*/
+  background-position: center;
 }
+*/
 
 .container {
+  display: flex;
+  justify-content: space-around;
+  border-radius: 10px;
+  box-shadow: 0 0 20px 0 darkgrey;
+  margin-top: 20vh;
+  margin-right: 20vh;
+  margin-left: 20vh;
+  height: 60vh;
+  overflow: hidden;
+  /* height: 90vh;
+ margin-left: 200px;
+  margin-right: 200px;
   background-color: whitesmoke;
   padding: 6px;
-  width: 350px;
+  width: 100%;
   height: 380px;
   display: flex;
   flex-direction: column;
@@ -30,77 +43,67 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0 0 20px 0 darkgrey;
+  box-shadow: 0 0 20px 0 darkgrey;*/
+}
+.box-left {
+ /* border-style: dashed;*/
+  width: 100%;
+  border-radius: 10px 10px 10px 0px;
+  background-image: url('../../assets/login-background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  overflow: hidden;
+}
+
+img {
+  vertical-align: middle;
+  border-style: none; 
+}
+.box-right {
+  display: flex;
+  justify-content: center;
+  width: 70%;
+  overflow: hidden;
 }
 
 form {
   position: absolute;
   margin-top: 80px;
   transition: .5s;
-  width: 300px;
+  width: 25%;
   height: 400px;
 }
-
-.buttonsForm {
-  margin-top: 40px;
-  position: relative;
-  border-radius: 30px;
-  box-shadow: 0 0 7px 0 blueviolet;
-}
-
-.buttonsForm button {
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  position: relative;
-  padding: 10px 29px;
-}
-
-.btnColor {
-  position: absolute;
-  width: 108px;
-  height: 100%;
-  background: linear-gradient(to right, #5956e9, #a963f8);
-  border-radius: 30px;
-  transition: .3s;
-}
-
-input[type="text"], input[type="password"] {
-  border: none;
-  margin-top: 40px;
-  border-radius: 60px;
+input[type="text"] {
+  border: solid;
+  border-color: #e8eaeb;
+  margin-top: 5vh;
+  border-radius: 10px;
   padding: 8px 0 8px 35px;
   outline: none;
   width: 100%;
 }
-
+input[type="password"] {
+  border: solid;
+  margin-top: 8vh;
+  border-color: #e8eaeb;
+  border-radius: 10px;
+  padding: 8px 0 8px 35px;
+  outline: none;
+  width: 100%;
+}
 button[type="submit"] {
   background: #660fc8;
   color: white;
-  border-radius: 30px;
+  border-radius: 5px;
   width: 100%;
-  border: none;
+  border: solid;
   outline: none;
   padding: 8px 0 8px 15px;
   font-size: 15px;
-  margin-top: 40px;
+  margin-top: 9vh;
   cursor: pointer;
 }
-
-.divCheck {
-  margin: 10px 0 0 5px;
-  width: 80%;
-  font-size: 13px;
-}
-
-#signin {
-  left: 25px;
-}
-
-#signup {
-  left: 450px;
-}
-
 i {
   position: absolute;
   left: 0;
@@ -108,13 +111,25 @@ i {
 }
 
 #iEmail {
-  top: 40px;
+  top: 5vh;
 }
 
 #iPassword {
-  top: 114px;
+  top: 166px;
 }
 
 #iPassword2 {
   top: 190px;
 }
+#signin {
+  left: 120vh;
+}
+/*
+
+
+
+#signup {
+  left: 450px;
+}
+
+}*/

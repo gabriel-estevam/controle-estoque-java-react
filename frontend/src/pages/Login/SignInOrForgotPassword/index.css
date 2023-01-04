@@ -1,8 +1,9 @@
 .buttonsForm {
-    margin-top: 40px;
+    margin-top: 10px;
     position: relative;
     border-radius: 30px;
     box-shadow: 0 0 7px 0 blueviolet;
+    margin-bottom: 55vh;
   }
 
 .buttonsForm button {
@@ -10,7 +11,11 @@
     background: transparent;
     border: none;
     position: relative;
-    padding: 10px 29px;
+   /* padding: 10px 29px;*/
+   padding-top: 5px;
+   padding-bottom: 10px;
+   padding-left: 29px;
+   padding-right: 29px;
 }
 
 .btnColor {

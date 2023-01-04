@@ -29,7 +29,7 @@ function swipe(element : any) {
 }
 function onClick(event : any) {
     console.log(event.target.id);
-    swipe(event);
+   // swipe(event);
 }
 const SignInOrForgotPassword = () => {
     return (
