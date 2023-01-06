@@ -10,7 +10,7 @@
 /*body {
   width: 100vw;
   height: 100vh;
-   display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
  background-image: url('../../assets/login-background.jpg');
@@ -70,10 +70,13 @@ img {
 form {
   position: absolute;
   margin-top: 80px;
-  transition: .5s;
+ /* transition: .5s;
+  transition-timing-function: ease-out;
+  transition-property: opacity, transform;*/
   width: 25%;
   height: 400px;
 }
+
 input[type="text"] {
   border: solid;
   border-color: #e8eaeb;
@@ -83,6 +86,21 @@ input[type="text"] {
   outline: none;
   width: 100%;
 }
+
+#signup {
+  opacity: 0;
+}
+
+input[type="text"] {
+  border: solid;
+  border-color: #e8eaeb;
+  margin-top: 5vh;
+  border-radius: 10px;
+  padding: 8px 0 8px 35px;
+  outline: none;
+  width: 100%;
+}
+
 input[type="password"] {
   border: solid;
   margin-top: 8vh;
@@ -119,17 +137,5 @@ i {
 }
 
 #iPassword2 {
-  top: 190px;
+  top: 285px;
 }
-#signin {
-  left: 120vh;
-}
-/*
-
-
-
-#signup {
-  left: 450px;
-}
-
-}*/

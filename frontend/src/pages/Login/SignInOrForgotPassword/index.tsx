@@ -1,37 +1,37 @@
 import React from 'react';
 import './index.css';
 
-function swipe(element : any) {
-    let formSignin : any;
-    let formSignup : any;
-    let btnColor : any;
-    let container : any;
+function SignInOrForgotPassword () {
+    const swipe = (element : any)  => {
+        let formSignin : any;
+        let formSignup : any;
+        let btnColor : any;
+    
+        formSignin = document.querySelector('#signin');
+        formSignup = document.querySelector('#signup');
+        btnColor = document.querySelector('.btnColor');
+        
+        if(element.target.id === "ForgotPassword") {
+            formSignup.style.opacity = "1";
+            formSignin.style.opacity = "0";
+            
+            btnColor.style.left = "110px";
+            btnColor.style.width = " 160px";
+        }
 
-    formSignin = document.querySelector('#signin');
-    formSignup = document.querySelector('#signup');
-    btnColor = document.querySelector('.btnColor');
-    container = document.querySelector('.container');
-    if(element.target.id === 'ForgotPassword') {
-        console.log(element);
-        formSignin.style.left = "-450px";
-        formSignup.style.left = "25px";
-        btnColor.style.left = "110px";
-        btnColor.style.width = " 160px";
-        container.style.height = "450px";
+        else {
+            formSignup.style.opacity = "0";
+            formSignin.style.opacity = "1";
+            btnColor.style.left = "0px";
+            btnColor.style.width = "108px";
+        }
+
     }
-    else {
-        formSignin.style.left = "25px";
-        formSignup.style.left = "450px";
-        btnColor.style.left = "0px";
-        btnColor.style.width = "108px";
-        container.style.height = "380px";
+
+    const onClick = (event : any) => {
+        swipe(event);
     }
-}
-function onClick(event : any) {
-    console.log(event.target.id);
-   // swipe(event);
-}
-const SignInOrForgotPassword = () => {
+
     return (
             <div className="buttonsForm">
                 <div className="btnColor"></div>
