@@ -71,15 +71,15 @@ public class UserService {
     }
 
     private UserModel userExists(UserDTO objDto) {
-        Optional<UserModel> UserDTO;
+        Optional<UserModel> userModel;
         if (objDto.getId() == null) {
             // User
-            UserDTO = repository.findByEmail(objDto.getEmail());
+            userModel = repository.findByEmail(objDto.getEmail());
         } else {
-            UserDTO = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
+            userModel = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
         }
         // User
-        if (UserDTO.isEmpty()) {
+        if (userModel.isEmpty()) {
             return new UserModel(objDto.getId(), objDto.getName(), objDto.getEmail(), objDto.getPassword(),
                     objDto.getRole(),
                     objDto.getStatus());

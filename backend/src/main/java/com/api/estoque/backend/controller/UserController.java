@@ -43,21 +43,21 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-        UserModel User = service.findById(id);
-        return ResponseEntity.ok().body(new UserDTO(User));
+        UserModel user = service.findById(id);
+        return ResponseEntity.ok().body(new UserDTO(user));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping
     public ResponseEntity<UserDTO> insert(@RequestBody UserDTO UserDTO) {
         UserDTO.setPassword(encoder.encode(UserDTO.getPassword()));
-        UserModel User = service.fromDto(UserDTO);
-        User = service.insert(User);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(User.getId())
-                .toUri(); // ele insere um novo User e na sequencia reterna no header da resposta o
+        UserModel user = service.fromDto(UserDTO);
+        user = service.insert(user);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId())
+                .toUri(); // ele insere um novo user e na sequencia reterna no header da resposta o
                           // caminho para
                           // recuperar (select by id) dado inserido
-        return ResponseEntity.created(uri).body(new UserDTO(User)); // ao inserir um dado no banco de dados,
+        return ResponseEntity.created(uri).body(new UserDTO(user)); // ao inserir um dado no banco de dados,
                                                                     // devemos usar o status
         // 201 created
     }
@@ -74,9 +74,9 @@ public class UserController {
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO UserDTO) {
         UserDTO.setId(id);
         UserDTO.setPassword(encoder.encode(UserDTO.getPassword()));
-        UserModel User = service.fromDto(UserDTO);
-        User = service.update(id, User);
-        return ResponseEntity.ok().body(new UserDTO(User));
+        UserModel user = service.fromDto(UserDTO);
+        user = service.update(id, user);
+        return ResponseEntity.ok().body(new UserDTO(user));
     }
 
 }
