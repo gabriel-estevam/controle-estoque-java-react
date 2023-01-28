@@ -6,10 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.api.estoque.backend.service.exceptions.DataBaseException;
+import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 import com.api.estoque.backend.service.exceptions.UserException;
 
@@ -42,6 +44,29 @@ public class ResourceExceptionHandler {
     public ResponseEntity<StandardError> usuarioCadastrado(UserException e, HttpServletRequest req) {
         String error = "Usuário Cadastrado";
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
+                req.getRequestURI());
+
+        return ResponseEntity.status(status).body(sError);
+   
+    }
+    
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<StandardError> UserNotFound(UsernameNotFoundException e, HttpServletRequest req) {
+        String error = "Usuário não encontrado";
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
+                req.getRequestURI());
+
+        return ResponseEntity.status(status).body(sError);
+    }
+    
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<StandardError> invalidPassword(InvalidPasswordException e, HttpServletRequest req) {
+        String error = "Usuário não encontrado";
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
                 req.getRequestURI());
