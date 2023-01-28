@@ -48,7 +48,7 @@ public class UserService {
 
     public UserModel update(Long id, UserModel User) {
         try {
-            UserModel entity = repository.getReferenceById(id); // prepara o objeto monitorando sem consultar no banco
+            UserModel entity = repository.getOne(id);//repository.getReferenceById(id); // prepara o objeto monitorando sem consultar no banco
                                                                 // de
             // dados
             updateData(entity, User);
