@@ -22,9 +22,9 @@ public class TestConfig implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         UserModel u1 = new UserModel(null, "Maria", "maria@gmail.com", "123", UserRole.ADMIN,
-                UserStatus.STATUS_ACTIVE);
+                UserStatus.ACTIVE);
         UserModel u2 = new UserModel(null, "alex", "alex@gmail.com", "123", UserRole.USER,
-                UserStatus.STATUS_ACTIVE);
+                UserStatus.ACTIVE);
 
         userRepository.saveAll(Arrays.asList(u1, u2));
     }

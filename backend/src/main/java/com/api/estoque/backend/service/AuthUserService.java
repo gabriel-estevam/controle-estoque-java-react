@@ -9,6 +9,7 @@ import com.api.estoque.backend.dto.CredencialsDTO;
 import com.api.estoque.backend.dto.TokenDTO;
 import com.api.estoque.backend.model.UserModel;
 import com.api.estoque.backend.security.jwt.JwtService;
+import com.api.estoque.backend.service.exceptions.AccoutIsLockedException;
 import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
 import com.api.estoque.backend.service.impl.UsuarioServiceImpl;
 
@@ -37,6 +38,12 @@ public class AuthUserService {
                         null);
             UserDetails usuarioAutenticado = usuarioServiceImpl.autenticar(usuario);
             String token = jwtService.gerarToken(usuario);
+            boolean statusUser = usuarioAutenticado.isAccountNonLocked();
+            
+            if(!statusUser) {
+                throw new AccoutIsLockedException("Usuario bloqueado! Entre em contato com o Administrador do Sistema");
+            }
+
             return new TokenDTO(usuario.getEmail(), token);
         } 
         catch (UsernameNotFoundException e){

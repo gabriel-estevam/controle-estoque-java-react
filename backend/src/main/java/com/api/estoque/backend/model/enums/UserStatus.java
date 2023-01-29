@@ -1,8 +1,8 @@
 package com.api.estoque.backend.model.enums;
 
 public enum UserStatus {
-    STATUS_INACTIVE(0),
-    STATUS_ACTIVE(1);
+    BLOCKED(0),
+    ACTIVE(1);
 
     private int code;
 

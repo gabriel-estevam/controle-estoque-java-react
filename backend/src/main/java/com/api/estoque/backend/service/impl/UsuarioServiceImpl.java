@@ -38,11 +38,12 @@ public class UsuarioServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario [ " + username + "]Não encontrado"));
 
         String[] roles = usuario.getRole().getCode() == 1 ? new String[] { "ADMIN", "USER" } : new String[] { "USER" };
-
+        boolean isLocked = usuario.getStatus().getCode() == 0 ? true : false;
         return User.builder()
                 .username(usuario.getEmail())
                 .password(usuario.getPassword())
                 .roles(roles)
+                .accountLocked(isLocked)
                 .build();
     }
 

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.api.estoque.backend.service.exceptions.AccoutIsLockedException;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
@@ -66,6 +67,17 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<StandardError> invalidPassword(InvalidPasswordException e, HttpServletRequest req) {
         String error = "Usuário não encontrado";
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
+                req.getRequestURI());
+
+        return ResponseEntity.status(status).body(sError);
+    }
+   
+    @ExceptionHandler(AccoutIsLockedException.class)
+    public ResponseEntity<StandardError> accoutIsLocked(AccoutIsLockedException e, HttpServletRequest req) {
+        String error = "Usuário Bloqueado";
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
