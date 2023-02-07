@@ -11,8 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.UserDTO;
-import com.api.estoque.backend.model.UserModel;
-import com.api.estoque.backend.repository.UserRepository;
+import com.api.estoque.backend.model.Usuario;
+import com.api.estoque.backend.repository.UsuarioRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 import com.api.estoque.backend.service.exceptions.UserException;
@@ -21,18 +21,18 @@ import com.api.estoque.backend.service.exceptions.UserException;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private UsuarioRepository repository;
 
-    public List<UserModel> findAll() {
+    public List<Usuario> findAll() {
         return repository.findAll();
     }
 
-    public UserModel findById(Long id) {
-        Optional<UserModel> User = repository.findById(id);
-        return User.orElseThrow(() -> new ResourceNotFoundException(id));
+    public Usuario findById(Long id) {
+        Optional<Usuario> user = repository.findById(id);
+        return user.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public UserModel insert(UserModel User) {
+    public Usuario insert(Usuario User) {
         return repository.save(User);
     }
 
@@ -46,43 +46,44 @@ public class UserService {
         }
     }
 
-    public UserModel update(Long id, UserModel User) {
+    public Usuario update(Long id, Usuario user) {
         try {
-            UserModel entity = repository.getOne(id);//repository.getReferenceById(id); // prepara o objeto monitorando sem consultar no banco
-                                                                // de
-            // dados
-            updateData(entity, User);
+            Usuario entity = repository.getReferenceById(id);// prepara o objeto monitorando sem consultar no banco de dados
+            updateData(entity, user);
             return repository.save(entity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
     }
 
-    private void updateData(UserModel entity, UserModel User) {
-        entity.setName(User.getName());
-        entity.setEmail(User.getEmail());
-        entity.setPassword(User.getPassword());
-        entity.setStatus(User.getStatus());
-        entity.setRole(User.getRole());
+    private void updateData(Usuario entity, Usuario user) {
+        entity.setName(user.getName());
+        entity.setEmail(user.getEmail());
+        entity.setPassword(user.getPassword());
+        entity.setStatus(user.getStatus());
+        entity.setRole(user.getRole());
     }
 
-    public UserModel fromDto(UserDTO objDto) {
+    public Usuario fromDto(UserDTO objDto) {
         return userExists(objDto);
     }
 
-    private UserModel userExists(UserDTO objDto) {
-        Optional<UserModel> UserDTO;
+    private Usuario userExists(UserDTO objDto) {
+        Optional<Usuario> userDTO;
         if (objDto.getId() == null) {
             // User
-            UserDTO = repository.findByEmail(objDto.getEmail());
+            userDTO = repository.findByEmail(objDto.getEmail());
         } else {
-            UserDTO = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
+            userDTO = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
         }
         // User
-        if (UserDTO.isEmpty()) {
-            return new UserModel(objDto.getId(), objDto.getName(), objDto.getEmail(), objDto.getPassword(),
-                    objDto.getRole(),
-                    objDto.getStatus());
+        if (userDTO.isEmpty()) {
+            return new Usuario(objDto.getId(), 
+                               objDto.getName(), 
+                               objDto.getEmail(), 
+                               objDto.getPassword(),
+                               objDto.getRole(),
+                               objDto.getStatus());
         } else {
             throw new UserException("Usuário Já cadastrado!");
         }

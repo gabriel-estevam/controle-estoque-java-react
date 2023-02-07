@@ -2,7 +2,8 @@ package com.api.estoque.backend.model.enums;
 
 public enum UserRole {
     USER(0),
-    ADMIN(1);
+    ADMIN(1),
+    MANAGERS(2);
 
     private int code;
 

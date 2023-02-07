@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.api.estoque.backend.model.UserModel;
-import com.api.estoque.backend.repository.UserRepository;
+import com.api.estoque.backend.model.Usuario;
+import com.api.estoque.backend.repository.UsuarioRepository;
 import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
 
 @Service
@@ -19,9 +19,9 @@ public class UsuarioServiceImpl implements UserDetailsService {
     private PasswordEncoder encoder;
 
     @Autowired
-    private UserRepository repository;
+    private UsuarioRepository repository;
 
-    public UserDetails autenticar(UserModel usuario) {
+    public UserDetails autenticar(Usuario usuario) {
         UserDetails userCreated = loadUserByUsername(usuario.getEmail());
         boolean senhasMatch = encoder.matches(usuario.getPassword(), userCreated.getPassword());
         if(senhasMatch) {
@@ -34,7 +34,7 @@ public class UsuarioServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Esse metodo carrega o usuario da base de dados
 
-        UserModel usuario = repository.findByEmail(username)
+        Usuario usuario = repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario [ " + username + "]Não encontrado"));
 
         String[] roles = usuario.getRole().getCode() == 1 ? new String[] { "ADMIN", "USER" } : new String[] { "USER" };

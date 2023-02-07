@@ -2,36 +2,55 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.UserRole;
-import com.api.estoque.backend.model.enums.UserStatus;
+import com.api.estoque.backend.model.enums.StatusOption;
 
 @Entity
-@Table(name = "users")
-public class UserModel implements Serializable {
+@Table(name = "usuario")
+public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "id_usuario")
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT no banco de dados
     private Long id;
-
     private String name;
     private String email;
+
+    
     private String password;
+    
     private Integer role;
     private Integer status;
 
+   @OneToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "idFilial")
+   private Filial filial; //filial do usuario
 
-    public UserModel() {
+
+    public Filial getFilial() {
+    return filial;
+}
+
+public void setFilial(Filial filial) {
+    this.filial = filial;
+}
+
+    public Usuario() {
 
     }
 
-    public UserModel(Long id, String name, String email, String password, UserRole role, UserStatus status) {
+    public Usuario(Long id, String name, String email, String password, UserRole role, StatusOption status) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -48,7 +67,7 @@ public class UserModel implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
+     public String getName() {
         return name;
     }
 
@@ -82,16 +101,16 @@ public class UserModel implements Serializable {
         }
     }
 
-    public UserStatus getStatus() {
-        return UserStatus.valueOf(status);
+    public StatusOption getStatus() {
+        return StatusOption.valueOf(status);
     }
 
-    public void setStatus(UserStatus userStatus) {
+    public void setStatus(StatusOption userStatus) {
         if (userStatus != null) {
             this.status = userStatus.getCode();
         }
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -108,7 +127,7 @@ public class UserModel implements Serializable {
             return true;
         if (getClass() != obj.getClass())
             return true;
-        UserModel other = (UserModel) obj;
+        Usuario other = (Usuario) obj;
         if (id == null) {
             if (other.id != null)
                 return true;

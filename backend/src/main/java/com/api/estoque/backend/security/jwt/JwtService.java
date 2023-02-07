@@ -8,7 +8,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.api.estoque.backend.model.UserModel;
+import com.api.estoque.backend.model.Usuario;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,7 +24,7 @@ public class JwtService {
     @Value("${security.jwt.chave-assinatura}")
     private String chaveAssinatura;
 
-    public String gerarToken(UserModel usuario) {
+    public String gerarToken(Usuario usuario) {
     //metodo par gerar um token JWT
 
         /*HashMap<String, Object> claims = new HashMap<>();

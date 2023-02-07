@@ -56,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // usuario esta autenticado, isto é, se ele passou pelo
                 // metodo acima
                   .antMatchers(HttpMethod.POST,  "/api/auth/**").permitAll()
-                  .antMatchers("/api/users/**").hasRole("ADMIN")
+                  .antMatchers("/api/users/**").permitAll()//.hasRole("ADMIN")
+                  .antMatchers(HttpMethod.GET, "/api/filiais/**").permitAll()
                   //.antMatchers("/api/users/**").hasRole("ADMIN")
                   .anyRequest().authenticated()
                   .and() //volta para a raiz do http

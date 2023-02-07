@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.CredencialsDTO;
 import com.api.estoque.backend.dto.TokenDTO;
-import com.api.estoque.backend.model.UserModel;
+import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.security.jwt.JwtService;
 import com.api.estoque.backend.service.exceptions.AccoutIsLockedException;
 import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
@@ -29,8 +29,8 @@ public class AuthUserService {
                                      .login(credenciais.getLogin())
                                      .senha(credenciais.getSenha())
                                      .build();*/
-            UserModel usuario = 
-            new UserModel(null, 
+            Usuario usuario = 
+            new Usuario(null, 
                         null, 
                         credenciais.getEmail(), 
                         credenciais.getPassword(), 

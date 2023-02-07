@@ -2,9 +2,11 @@ package com.api.estoque.backend.dto;
 
 import java.io.Serializable;
 
-import com.api.estoque.backend.model.UserModel;
+import com.api.estoque.backend.model.Filial;
+import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.model.enums.UserRole;
-import com.api.estoque.backend.model.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.api.estoque.backend.model.enums.StatusOption;
 
 public class UserDTO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -12,22 +14,32 @@ public class UserDTO implements Serializable {
     private Long id;
     private String name;
     private String email;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    
     private Integer role;
     private Integer status;
-
+    
+    @JsonProperty("filialFK")
+    private String filialFK;
+    
+    private Filial filial;
+  
     public UserDTO() {
+
     }
 
-    public UserDTO(UserModel objUsuario) {
+    public UserDTO(Usuario objUsuario) {
         id = objUsuario.getId();
         name = objUsuario.getName();
         email = objUsuario.getEmail();
         password = objUsuario.getPassword();
+        filial = objUsuario.getFilial();
         setRole(objUsuario.getRole());
         setStatus(objUsuario.getStatus());
     }
-
+    
     public Long getId() {
         return id;
     }
@@ -70,13 +82,30 @@ public class UserDTO implements Serializable {
         }
     }
 
-    public UserStatus getStatus() {
-        return UserStatus.valueOf(status);
+    public StatusOption getStatus() {
+        return StatusOption.valueOf(status);
     }
 
-    public void setStatus(UserStatus UserStatus) {
+    public void setStatus(StatusOption UserStatus) {
         if (UserStatus != null) {
             this.status = UserStatus.getCode();
         }
     }
+    
+    public String getFilialFK() {
+        return filialFK;
+    }
+
+    public void setFilialFK(String filialFK) {
+        this.filialFK = filialFK;
+    }
+
+    public Filial getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Filial filial) {
+        this.filial = filial;
+    }
+
 }
