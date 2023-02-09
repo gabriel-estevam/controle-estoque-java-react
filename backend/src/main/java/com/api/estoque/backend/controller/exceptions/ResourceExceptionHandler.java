@@ -14,7 +14,7 @@ import com.api.estoque.backend.service.exceptions.AccoutIsLockedException;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.InvalidPasswordException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
-import com.api.estoque.backend.service.exceptions.UserException;
+import com.api.estoque.backend.service.exceptions.ModelException;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -41,9 +41,9 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(status).body(sError);
     }
 
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<StandardError> usuarioCadastrado(UserException e, HttpServletRequest req) {
-        String error = "Usuário Cadastrado";
+    @ExceptionHandler(ModelException.class)
+    public ResponseEntity<StandardError> usuarioCadastrado(ModelException e, HttpServletRequest req) {
+        String error = "Erro ao cadastrar!";
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),

@@ -35,7 +35,6 @@ public class UserController {
     @Autowired
     private FilialService filialService;
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<Usuario>> findAll() {
         List<Usuario> list = service.findAll();
@@ -43,7 +42,6 @@ public class UserController {
         return ResponseEntity.ok().body(list);
     }
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Usuario> findById(@PathVariable Long id) {
         Usuario usuario = service.findById(id);
@@ -51,7 +49,6 @@ public class UserController {
         return ResponseEntity.ok().body(usuario);
     }
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Usuario> insert(@RequestBody UserDTO userDTO) {
 
@@ -60,23 +57,20 @@ public class UserController {
         Usuario usuario = service.fromDto(userDTO);
         usuario.setFilial(filialCarregada);
         usuario = service.insert(usuario);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(usuario.getId())
-                .toUri(); // ele insere um novo User e na sequencia reterna no header da resposta o
-                          // caminho para
-                          // recuperar (select by id) dado inserido
-        return ResponseEntity.created(uri).body(usuario); // ao inserir um dado no banco de dados,
-                                                                    // devemos usar o status
-        // 201 created
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                                             .path("/{id}")
+                                             .buildAndExpand(usuario.getId())
+                                             .toUri(); /* ele insere um novo User e na sequencia reterna no header da resposta o caminho para 
+                                             recuperar (select by id) dado inserido*/
+        return ResponseEntity.created(uri).body(usuario); // ao inserir um dado no banco de dados, devemos usar o status 201 created
     }
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         userDTO.setId(id);

@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.api.estoque.backend.model.enums.StatusOption;
 
 @Entity
@@ -34,17 +35,8 @@ public class Usuario implements Serializable {
     private Integer status;
 
    @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "idFilial")
+   @JoinColumn(name = "id_filial")
    private Filial filial; //filial do usuario
-
-
-    public Filial getFilial() {
-    return filial;
-}
-
-public void setFilial(Filial filial) {
-    this.filial = filial;
-}
 
     public Usuario() {
 
@@ -111,6 +103,19 @@ public void setFilial(Filial filial) {
         }
     }
     
+    @JsonIgnore
+    public Filial getFilial() {
+        return filial;
+    }
+    
+    public Long getFilialId() {
+        return filial.getId();
+    }
+    
+    public void setFilial(Filial filial) {
+        this.filial = filial;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

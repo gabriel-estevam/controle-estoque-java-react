@@ -2,6 +2,7 @@ package com.api.estoque.backend.dto;
 
 import com.api.estoque.backend.model.Filial;
 import com.api.estoque.backend.model.enums.StatusOption;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FilialDTO {
     
@@ -9,18 +10,21 @@ public class FilialDTO {
     private String name;
     private String phoneNumber;
     private String cnpj;
-    private Integer statusFilial;
+    private Integer status;
+
+    @JsonProperty("usuarioFK")
+    private String usuarioFK;
 
     public FilialDTO() {
 
     }
 
     public FilialDTO(Filial objFilial) {
-        id = objFilial.getIdFilial();
+        id = objFilial.getId();
         name = objFilial.getName();
         cnpj = objFilial.getCnpj();
         phoneNumber = objFilial.getPhoneNumber();
-        setStatusFilial(objFilial.getStatusFilial());
+        setStatus(objFilial.getStatus());
     }
 
     public Long getId() {
@@ -55,14 +59,21 @@ public class FilialDTO {
         this.cnpj = cnpj;
     }
 
-    public StatusOption getStatusFilial() {
-        return StatusOption.valueOf(statusFilial);
+    public StatusOption getStatus() {
+        return StatusOption.valueOf(status);
     }
 
-    public void setStatusFilial(StatusOption statusFilial) {
-        if(statusFilial != null) {
-            this.statusFilial = statusFilial.getCode();
+    public void setStatus(StatusOption status) {
+        if(status != null) {
+            this.status = status.getCode();
         }
     }
     
+    public String getUsuarioFK() {
+        return usuarioFK;
+    }
+
+    public void setUsuarioFK(String usuarioFK) {
+        this.usuarioFK = usuarioFK;
+    }
 }

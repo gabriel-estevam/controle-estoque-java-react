@@ -15,7 +15,7 @@ import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.repository.UsuarioRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
-import com.api.estoque.backend.service.exceptions.UserException;
+import com.api.estoque.backend.service.exceptions.ModelException;
 
 @Service
 public class UserService {
@@ -62,6 +62,7 @@ public class UserService {
         entity.setPassword(user.getPassword());
         entity.setStatus(user.getStatus());
         entity.setRole(user.getRole());
+        entity.setFilial(user.getFilial());
     }
 
     public Usuario fromDto(UserDTO objDto) {
@@ -85,7 +86,7 @@ public class UserService {
                                objDto.getRole(),
                                objDto.getStatus());
         } else {
-            throw new UserException("Usuário Já cadastrado!");
+            throw new ModelException("Usuário Já cadastrado!");
         }
     }
 }

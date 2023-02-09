@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.StatusOption;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "filial")
@@ -29,7 +30,7 @@ public class Filial implements Serializable {
     private String phoneNumber;
     private String cnpj;
     @Column(name = "status")
-    private Integer statusFilial;
+    private Integer status;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_usuario")
@@ -39,20 +40,20 @@ public class Filial implements Serializable {
 
     }
 
-    public Filial(Long id, String name, String phoneNumber, String cnpj, StatusOption statusFilial) {
+    public Filial(Long id, String name, String phoneNumber, String cnpj, StatusOption status) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.cnpj = cnpj;
      //   this.usuario = usuario;
-        setStatusFilial(statusFilial);
+        setStatus(status);
     }
 
-    public Long getIdFilial() {
+    public Long getId() {
         return id;
     }
 
-    public void setIdFilial(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -80,16 +81,28 @@ public class Filial implements Serializable {
         this.cnpj = cnpj;
     }
 
-    public StatusOption getStatusFilial() {
-        return StatusOption.valueOf(statusFilial);
+    public StatusOption getStatus() {
+        return StatusOption.valueOf(status);
     }
 
-    public void setStatusFilial(StatusOption statusFilial) {
-        if(statusFilial != null) {
-            this.statusFilial = statusFilial.getCode();
+    public void setStatus(StatusOption status) {
+        if(status != null) {
+            this.status = status.getCode();
         }
     }
     
+    @JsonIgnore
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public Long getUsuarioId() {
+        return usuario.getId();
+    }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -114,6 +127,5 @@ public class Filial implements Serializable {
             return false;
         return true;
     }
-    
-    
+        
 }

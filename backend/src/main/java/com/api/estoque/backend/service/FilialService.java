@@ -10,9 +10,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.api.estoque.backend.dto.FilialDTO;
 import com.api.estoque.backend.model.Filial;
 import com.api.estoque.backend.repository.FilialRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
+import com.api.estoque.backend.service.exceptions.ModelException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 
 @Service
@@ -59,6 +61,23 @@ public class FilialService {
         entity.setName(filial.getName());
         entity.setCnpj(filial.getCnpj());
         entity.setPhoneNumber(filial.getPhoneNumber());
-        entity.setStatusFilial(filial.getStatusFilial());
+        entity.setStatus(filial.getStatus());
+        entity.setUsuario(filial.getUsuario());
+    }
+
+    public Filial fromDto(FilialDTO objDto) {
+        return filialExists(objDto);
+    }
+
+    public Filial filialExists(FilialDTO objDto) {
+        Optional<Filial> filial = repository.findByCnpj(objDto.getCnpj());
+        if(filial.isEmpty() || objDto.getId() == null) {
+            return new Filial(objDto.getId(), 
+                              objDto.getName(), 
+                              objDto.getPhoneNumber(), 
+                              objDto.getCnpj(), 
+                              objDto.getStatus());
+        }
+        throw new ModelException("Filial com CNPJ ["+objDto.getCnpj()+"] já cadastrado!");
     }
 }
