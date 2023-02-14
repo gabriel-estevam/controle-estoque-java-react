@@ -11,6 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.api.estoque.backend.security.jwt.JwtAuthFilter;
@@ -35,6 +38,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public OncePerRequestFilter jwFilter() {
         return new JwtAuthFilter(jwtService, usuarioService);
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
+    }
+
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // esse metodo faz a autenticação dos usuários, de onde vamos buscar os usuarios
@@ -46,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // Esse metodo para a autorização, isto é, ele pega o usuario autentica e
         // verifica qual a role daquele usuario
-        http.csrf().disable() // desativamos essa configuração no ambiente de dev
+        http.cors().and().csrf().disable() // desativamos essa configuração no ambiente de dev
                    .authorizeRequests()
                 // .antMatchers("/api/clientes/**").hasRole("USER")//aqui nesse metodo definimos
                 // qual url vai poder acesssar e quais a roles do usuario
