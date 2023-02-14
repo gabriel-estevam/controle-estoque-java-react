@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { server, showError, showSucces } from '../common';
+import { server, showError } from '../common';
 
 export async function SignIn(email : string, password : string) {
     await axios.post(`${server}/api/auth`, {
@@ -10,7 +10,8 @@ export async function SignIn(email : string, password : string) {
         password: password,
     })
     .then(response => {
-        showSucces(response.data.token);
+        //showSucces(response.data.token);
+        localStorage.setItem("token", response.data.token);
     })
     .catch(error => {
         showError(error);
