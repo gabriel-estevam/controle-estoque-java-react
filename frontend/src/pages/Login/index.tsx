@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SignIn }  from '../../api/Auth'
 import { FaEnvelope, FaLock } from 'react-icons/fa'
-import SignInOrForgotPassword from './SignInOrForgotPassword';
+import SignInOrForgotPassword from '../../components/SignInOrForgotPassword';
 import './index.css';
+
 
 function Login() {
     
@@ -17,9 +18,7 @@ function Login() {
             ...preState,
             [name]: value,
         }));
-    }
-    
-    
+    }    
     const autenticar = () => {
         let email: any;
         let password: any;
@@ -32,8 +31,8 @@ function Login() {
     const onSubmitForm = (event: any) => {
         event.preventDefault();
         autenticar();
+        
     }
-
     return (
         <div className="container">
             <div className="box-left"><img src="" alt="" /></div>
