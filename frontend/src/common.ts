@@ -11,7 +11,7 @@ function showError(error : any) {
         alert(`${titleMsg}\n${msg}`);
     }
     else {
-        titleMsg = "NetWork Error!"
+        titleMsg = "Network Error!"
         msg = "Erro ao tentar conectar no Servidor! Entre em contato com o Administrador."
         //alert("Network Error!\nErro ao tentar conectar no Servidor! Entre em contato com o Administrador!");
         alert(`${titleMsg}\n${msg}`);

@@ -9,12 +9,14 @@ import {
     Icon, 
     ListItemIcon, 
     Typography, 
-    Collapse 
+    Collapse, 
+    useMediaQuery
 } from '@mui/material';
 import { Box } from '@mui/system';
 import './index.css';
 import { FaBoxes, FaListAlt, FaUsers } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { useDrawerContext } from '../../contexts/DrawerContext';
 //tipagem da propriedade children, com isso conseguimos pegar os children dentro desse componente
 //sem essa tipagem o TypeScript não reconhece que o menuLateral pode pegar childrens
 type Props = {
@@ -24,22 +26,35 @@ type Props = {
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
     const [open, setOpen] = useState(true);
-
+    
     const handleClick = () => {
         setOpen(!open);
     };
     
     const theme = useTheme();
+    const smDown = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const { isDrawerOpen, toggleDrawerOpen } = useDrawerContext();
+
     return (
         <>
-            <Drawer open={true} variant='permanent'>
-                <Box width={theme.spacing(28)} display="flex" flexDirection="column" bgcolor="#343a40" height="100%">
+            <Drawer open={isDrawerOpen} 
+                    variant={ smDown ? 'temporary' : 'permanent' } 
+                    onClose={toggleDrawerOpen} >
+                <Box width={theme.spacing(28)} 
+                     display="flex" 
+                     flexDirection="column" 
+                     bgcolor="#343a40" 
+                     height="100%" >
                     <Box display="flex" 
                          alignItems="center" 
                          justifyContent="flex-start" 
                          height={theme.spacing(8)} 
-                         width="100%">
-                        <Typography variant="h6" marginLeft="10px" color="#b7b9bb" width="100%">Controle de Estoque</Typography>
+                         width="100%" >
+                        <Typography variant="h6" 
+                                    marginLeft="10px" 
+                                    color="#b7b9bb" 
+                                    width="100%" >Controle de Estoque</Typography>
                     </Box>
 
                     <Divider/>
@@ -124,7 +139,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
 
             </Drawer>
             
-            <Box height="100vh" marginLeft={theme.spacing(28)}>
+            <Box height="100vh" marginLeft={ smDown ? 0 : theme.spacing(28) }>
                 { children }
             </Box>
         </>

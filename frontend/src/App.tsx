@@ -4,6 +4,7 @@ import React from 'react';
 
 import { BrowserRouter } from 'react-router-dom'
 import { AppRoutes } from './routes';
+import { DrawerProvider } from './contexts';
 
 function App() {
   /*
@@ -11,9 +12,11 @@ function App() {
   <Home/>
   */
   return (
-    <BrowserRouter>
-      <AppRoutes/>
-    </BrowserRouter>
+    <DrawerProvider>
+      <BrowserRouter>
+        <AppRoutes/>
+      </BrowserRouter>
+    </DrawerProvider>
   );
 }
 
