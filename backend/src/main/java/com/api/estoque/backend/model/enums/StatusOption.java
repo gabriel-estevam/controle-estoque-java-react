@@ -1,12 +1,12 @@
 package com.api.estoque.backend.model.enums;
 
-public enum UserStatus {
-    STATUS_INACTIVE(0),
-    STATUS_ACTIVE(1);
+public enum StatusOption {
+    BLOCKED(0),
+    ACTIVE(1);
 
     private int code;
 
-    private UserStatus(int code) {
+    private StatusOption(int code) {
         this.code = code;
     }
 
@@ -14,8 +14,8 @@ public enum UserStatus {
         return code;
     }
 
-    public static UserStatus valueOf(int code) {
-        for (UserStatus value : UserStatus.values()) {
+    public static StatusOption valueOf(int code) {
+        for (StatusOption value : StatusOption.values()) {
             if (value.getCode() == code) {
                 return value;
             }

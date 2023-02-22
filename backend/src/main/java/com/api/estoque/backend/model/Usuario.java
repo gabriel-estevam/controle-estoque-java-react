@@ -1,90 +1,54 @@
 package com.api.estoque.backend.model;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.api.estoque.backend.model.enums.UserRole;
-import com.api.estoque.backend.model.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.api.estoque.backend.model.enums.StatusOption;
 
 @Entity
-@Table(name = "tb_user")
-public class UserModel implements UserDetails, Serializable {
+@Table(name = "usuario")
+public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "id_usuario")
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT no banco de dados
     private Long id;
-
     private String name;
     private String email;
+
+    
     private String password;
+    
     private Integer role;
     private Integer status;
 
-    @ManyToMany
-    @JoinTable(name = "TB_USERS_ROLES", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<RoleModel> roles;
+   @OneToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "id_filial")
+   private Filial filial; //filial do usuario
 
-    public UserModel() {
+    public Usuario() {
 
     }
 
-    public UserModel(Long id, String name, String email, String password, UserRole role, UserStatus status) {
+    public Usuario(Long id, String name, String email, String password, UserRole role, StatusOption status) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         setRole(role);
         setStatus(status);
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        return this.roles;
-    }
-
-    @Override
-    public String getUsername() {
-
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-
-        return true;
     }
 
     public Long getId() {
@@ -95,7 +59,7 @@ public class UserModel implements UserDetails, Serializable {
         this.id = id;
     }
 
-    public String getName() {
+     public String getName() {
         return name;
     }
 
@@ -129,14 +93,27 @@ public class UserModel implements UserDetails, Serializable {
         }
     }
 
-    public UserStatus getStatus() {
-        return UserStatus.valueOf(status);
+    public StatusOption getStatus() {
+        return StatusOption.valueOf(status);
     }
 
-    public void setStatus(UserStatus userStatus) {
+    public void setStatus(StatusOption userStatus) {
         if (userStatus != null) {
             this.status = userStatus.getCode();
         }
+    }
+    
+    @JsonIgnore
+    public Filial getFilial() {
+        return filial;
+    }
+    
+    public Long getFilialId() {
+        return filial.getId();
+    }
+    
+    public void setFilial(Filial filial) {
+        this.filial = filial;
     }
 
     @Override
@@ -155,7 +132,7 @@ public class UserModel implements UserDetails, Serializable {
             return true;
         if (getClass() != obj.getClass())
             return true;
-        UserModel other = (UserModel) obj;
+        Usuario other = (Usuario) obj;
         if (id == null) {
             if (other.id != null)
                 return true;

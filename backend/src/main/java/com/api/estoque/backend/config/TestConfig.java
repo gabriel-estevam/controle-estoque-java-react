@@ -7,24 +7,24 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.api.estoque.backend.model.UserModel;
+import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.model.enums.UserRole;
-import com.api.estoque.backend.model.enums.UserStatus;
-import com.api.estoque.backend.repository.UserRepository;
+import com.api.estoque.backend.model.enums.StatusOption;
+import com.api.estoque.backend.repository.UsuarioRepository;
 
 @Configuration
 @Profile("test")
 public class TestConfig implements CommandLineRunner {
 
     @Autowired
-    private UserRepository userRepository;
+    private UsuarioRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
-        UserModel u1 = new UserModel(null, "Maria", "maria@gmail.com", "123", UserRole.ROLE_ADMIN,
-                UserStatus.STATUS_ACTIVE);
-        UserModel u2 = new UserModel(null, "alex", "alex@gmail.com", "123", UserRole.ROLE_ADMIN,
-                UserStatus.STATUS_ACTIVE);
+        Usuario u1 = new Usuario(null, "Maria", "maria@gmail.com", "123", UserRole.ADMIN,
+                StatusOption.ACTIVE);
+        Usuario u2 = new Usuario(null, "alex", "alex@gmail.com", "123", UserRole.USER,
+                StatusOption.ACTIVE);
 
         userRepository.saveAll(Arrays.asList(u1, u2));
     }

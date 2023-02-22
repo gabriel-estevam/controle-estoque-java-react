@@ -1,9 +1,9 @@
 package com.api.estoque.backend.service.exceptions;
 
-public class AuthException extends RuntimeException {
+public class ModelException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    public AuthException(String msg) {
+    public ModelException(String msg) {
         super(msg);
     }
 }
