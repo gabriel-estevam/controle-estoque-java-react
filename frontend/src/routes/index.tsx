@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
-import Home from '../pages/Home';
-import Estoque from '../pages/Estoque';
+import { Home } from '../pages/Home';
+import { Estoque } from '../pages/Estoque';
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -16,8 +16,13 @@ export const AppRoutes = () => {
         <Routes>
             <Route path="/home" 
                   element={<PrivateRoute redirectTo="/">
-                                <Home/>
-                                
+                               <Home/>
+                           </PrivateRoute>
+                  } />
+
+            <Route path="/estoque" 
+                  element={<PrivateRoute redirectTo="/">
+                               <Estoque/>
                            </PrivateRoute>
                   } />
             <Route path="/login" element={<Login/>} />

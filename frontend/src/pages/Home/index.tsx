@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { MenuLateral } from '../../components/MenuLateral';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDrawerContext } from '../../contexts';
 
-function Home() {
+export const Home: React.FC = () => {
     console.log("token veio" + localStorage.getItem("token"))
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
@@ -14,7 +14,7 @@ function Home() {
   useEffect(() => {
     setDrawerOptions([
       {
-        path: '/home',
+        path: '/estoque',
         label: 'Estoque',
       },
     ]);
@@ -30,4 +30,4 @@ function Home() {
     )
 }
 
-export default Home;
+//export default Home;

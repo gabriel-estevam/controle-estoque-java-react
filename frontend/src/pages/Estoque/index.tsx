@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDrawerContext } from '../../contexts';
 
-function Estoque() {
+export const Estoque = () =>{
     console.log("token veio" + localStorage.getItem("token"))
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
@@ -30,4 +30,4 @@ function Estoque() {
     )
 }
 
-export default Estoque;
+//export default Estoque;
