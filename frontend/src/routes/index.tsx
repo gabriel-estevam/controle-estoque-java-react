@@ -2,7 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
 import { Home } from '../pages/Home';
+<<<<<<< HEAD
 import { Estoque } from '../pages/Estoque';
+=======
+import { Dashboard } from '../pages/Dashboard/Dashboard';
+>>>>>>> 5e6e3789ae444ee72256c89ff2eecbcc8aa8e4f4
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -16,6 +20,7 @@ export const AppRoutes = () => {
         <Routes>
             <Route path="/home" 
                   element={<PrivateRoute redirectTo="/">
+<<<<<<< HEAD
                                <Home/>
                            </PrivateRoute>
                   } />
@@ -23,6 +28,11 @@ export const AppRoutes = () => {
             <Route path="/estoque" 
                   element={<PrivateRoute redirectTo="/">
                                <Estoque/>
+=======
+                                <Home>
+                                    <Dashboard/>
+                                </Home>
+>>>>>>> 5e6e3789ae444ee72256c89ff2eecbcc8aa8e4f4
                            </PrivateRoute>
                   } />
             <Route path="/login" element={<Login/>} />
