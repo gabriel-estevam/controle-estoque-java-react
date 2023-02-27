@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
 import { Home } from '../pages/Home';
 import { Dashboard } from '../pages/Dashboard/Dashboard';
+import { useDrawerContext } from '../contexts/DrawerContext';
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -12,6 +13,18 @@ const PrivateRoute = ({ children, redirectTo }) => {
   };
 
 export const AppRoutes = () => {
+    
+    const { setDrawerOptions } = useDrawerContext();
+    useEffect(() => {
+      setDrawerOptions([
+        {
+          path: '/home',
+          label: 'Controle de Estoque',
+        },
+      ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <Routes>
             <Route path="/home" 

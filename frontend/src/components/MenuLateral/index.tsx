@@ -17,10 +17,41 @@ import './index.css';
 import { FaBoxes, FaListAlt, FaUsers } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';
+import { useNavigate, useResolvedPath, useMatch } from 'react-router-dom';
 //tipagem da propriedade children, com isso conseguimos pegar os children dentro desse componente
 //sem essa tipagem o TypeScript não reconhece que o menuLateral pode pegar childrens
 type Props = {
     children: ReactNode
+};
+
+interface IListItemLinkProps {
+    to: string;
+    icon: ReactNode;
+    label: string;
+    onClick: (() => void) | undefined;
+};
+
+const ListItemLink: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }) => {
+    const navigate = useNavigate();
+
+    const resolvedPath = useResolvedPath(to);
+    const match = useMatch({ path: resolvedPath.pathname, end: false });
+    
+    const handleClick = () => {
+        navigate(to);
+        onClick?.();
+      };
+
+    return (
+        <ListItemButton selected={!!match} onClick={handleClick}>
+            <ListItemIcon>
+                <Icon>
+                    {icon}
+                </Icon>
+            </ListItemIcon>
+            <ListItemText primary={label}/>
+        </ListItemButton>
+    );
 }
 
 export const MenuLateral: React.FC<Props> = ({ children }) => {
@@ -34,7 +65,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const { isDrawerOpen, toggleDrawerOpen } = useDrawerContext();
+    const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
 
     return (
         <>
@@ -103,14 +134,15 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                          component="nav"
                          aria-labelledby="nested-list-subheader"
                         >
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <Icon>
-                                        <FaBoxes color="#b7b9bb"/>
-                                    </Icon>
-                                </ListItemIcon>
-                                <ListItemText primary="Estoque"/>
-                            </ListItemButton>
+                           {drawerOptions.map(drawerOption => (
+                                <ListItemLink
+                                     to={drawerOption.path}
+                                     key={drawerOption.path}
+                                     icon={<FaBoxes color="#b7b9bb"/>}
+                                     label={drawerOption.label}
+                                     onClick={smDown ? toggleDrawerOpen : undefined}
+                                ></ListItemLink>
+              ))}
 
                             <ListItemButton onClick={handleClick}>
                                 <ListItemIcon>
