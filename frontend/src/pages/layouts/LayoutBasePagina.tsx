@@ -4,6 +4,7 @@ import { Icon, IconButton, Typography, useMediaQuery, useTheme } from '@mui/mate
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDrawerContext } from '../../contexts';
+import { useNavigate } from 'react-router-dom';
 
 interface ILayoutBasePaginaProps {
     children: ReactNode;
@@ -11,6 +12,9 @@ interface ILayoutBasePaginaProps {
 };
 
 export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo }) => {
+    const navigate = useNavigate();
+    const logout = () => { localStorage.removeItem("token"); navigate("/"); };
+
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
     const mdDown = useMediaQuery(theme.breakpoints.down('md'));
@@ -28,7 +32,8 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                  justifyContent="flex-start"
                  height={theme.spacing(8)}
                  paddingLeft={!smDown ? 1 : 0}
-                 width="100%">
+                 width="100%"
+            >
                 { smDown && 
                     (
                         <IconButton onClick={ toggleDrawerOpen }>
@@ -37,11 +42,12 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                     )
                 }
                 <Typography
-          //overflow="hidden"
-          whiteSpace="nowrap"
-          textOverflow="ellipses"
-          variant={smDown ? 'h6' : mdDown ? 'h4' : 'h3'}
-        >
+                    //overflow="hidden"
+                    whiteSpace="nowrap"
+                    textOverflow="ellipses"
+                    variant={smDown ? 'h6' : mdDown ? 'h4' : 'h3'}
+                    marginLeft="2px"
+                >
                     {titulo}
                 </Typography>
                 <Box sx={{
@@ -52,7 +58,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                     <IconButton sx={{
                         color: 'black',
                     }
-                    }>
+                    } onClick={ logout }>
                         <Icon>
                             <LogoutIcon/>
                         </Icon>
@@ -63,7 +69,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                 </Box>
             </Box>
 
-            <Box>
+            <Box flex={1} overflow="auto">
                 {children}
             </Box>
         </Box>
