@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import './index.css';
-import { FaBoxes, FaListAlt, FaUsers } from 'react-icons/fa';
+import { FaHome, FaListAlt, FaUsers } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';
 import { useNavigate, useResolvedPath, useMatch } from 'react-router-dom';
@@ -138,7 +138,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                 <ListItemLink
                                      to={drawerOption.path}
                                      key={drawerOption.path}
-                                     icon={<FaBoxes color="#b7b9bb"/>}
+                                     icon={<FaHome color="#b7b9bb"/>}
                                      label={drawerOption.label}
                                      onClick={smDown ? toggleDrawerOpen : undefined}
                                 ></ListItemLink>

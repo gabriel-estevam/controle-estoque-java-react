@@ -19,7 +19,7 @@ export const AppRoutes = () => {
       setDrawerOptions([
         {
           path: '/home',
-          label: 'Controle de Estoque',
+          label: 'Home',
         },
       ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
