@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
 import { Home } from '../pages/Home';
-import { Dashboard } from '../pages/Dashboard/Dashboard';
+import { Dashboard } from '../pages/Dashboard';
 import { useDrawerContext } from '../contexts/DrawerContext';
 
 // @ts-ignore

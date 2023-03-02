@@ -7,11 +7,12 @@ import { useDrawerContext } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
 
 interface ILayoutBasePaginaProps {
+    barraFerramentas: ReactNode;
     children: ReactNode;
     titulo: string;
 };
 
-export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo }) => {
+export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, barraFerramentas }) => {
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
 
@@ -50,25 +51,27 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                 >
                     {titulo}
                 </Typography>
-                <Box sx={{
-                        marginLeft: smDown ? "50%" : mdDown ? "50%" : "80%",
-                        height: theme.spacing(6)
-                    }
-                    }>
-                    <IconButton sx={{
-                        color: 'black',
-                    }
-                    } onClick={ logout }>
+                <Box flex={1} display="flex" justifyContent="end">
+                    <IconButton  
+                        sx={{
+                            color: 'black',
+                        }} 
+                        onClick={ logout }
+                    >
                         <Icon>
                             <LogoutIcon/>
                         </Icon>
-                        <Typography marginTop="5px" marginLeft="3px">
-                                Sair
-                            </Typography>
+                        <Typography marginTop="5px" marginLeft="3px">Sair</Typography>
                     </IconButton>
                 </Box>
             </Box>
 
+            {barraFerramentas && (
+                <Box>
+                    {barraFerramentas}
+                </Box>
+            )}
+            
             <Box flex={1} overflow="auto">
                 {children}
             </Box>
