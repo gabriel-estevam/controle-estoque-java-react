@@ -11,13 +11,16 @@ type Props = {
 interface IDrawerOption {
     path: string;
     label: string;
+    icon: ReactNode;
   }
 
 interface IDrawerContextData {
     isDrawerOpen: boolean;
     toggleDrawerOpen: () => void;
     drawerOptions: IDrawerOption[];
+    drawerOptionsNestedList: IDrawerOption[];
     setDrawerOptions: (newDrawerOptions: IDrawerOption[]) => void;
+    setDrawerOptionsNestedList: (newDrawerOptionsNestedList: IDrawerOption[]) => void;
 };
 
 const DrawerContext = createContext({} as IDrawerContextData);
@@ -29,6 +32,7 @@ export const useDrawerContext = () => {
 export const DrawerProvider: React.FC<Props> = ({ children }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [drawerOptions, setDrawerOptions] = useState<IDrawerOption[]>([]);
+    const [drawerOptionsNestedList, setDrawerOptionsNestedList] = useState<IDrawerOption[]>([]);
 
     const toggleDrawerOpen = useCallback(() => {
         setIsDrawerOpen(oldDrawerOpen => !oldDrawerOpen);
@@ -37,10 +41,22 @@ export const DrawerProvider: React.FC<Props> = ({ children }) => {
     const handleSetDrawerOptions = useCallback((newDrawerOptions: IDrawerOption[]) => {
         setDrawerOptions(newDrawerOptions);
       }, []);
+
+    const handleSetDrawerOptionsNestedList = useCallback((newDrawerOptionsNestedList: IDrawerOption[]) => {
+        setDrawerOptionsNestedList(newDrawerOptionsNestedList);
+      }, []);
     
 
     return (
-        <DrawerContext.Provider value={{ isDrawerOpen, toggleDrawerOpen, setDrawerOptions : handleSetDrawerOptions, drawerOptions }}>
+        <DrawerContext.Provider 
+            value={{ isDrawerOpen, 
+                     toggleDrawerOpen, 
+                     setDrawerOptions : handleSetDrawerOptions, 
+                     setDrawerOptionsNestedList : handleSetDrawerOptionsNestedList, 
+                     drawerOptions, 
+                     drawerOptionsNestedList 
+            }}
+        >
             {children}
         </DrawerContext.Provider>
     )

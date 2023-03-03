@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import './index.css';
-import { FaHome, FaListAlt, FaUsers } from 'react-icons/fa';
+import { FaListAlt } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';
 import { useNavigate, useResolvedPath, useMatch } from 'react-router-dom';
@@ -53,19 +53,56 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }
         </ListItemButton>
     );
 }
+const NestedListSubheader: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }) => {
+    const [open, setOpen] = useState(true);
+    
+    const handleClickOpenList = () => {
+        setOpen(!open);
+    };
+    const navigate = useNavigate();
+
+    const resolvedPath = useResolvedPath(to);
+    const match = useMatch({ path: resolvedPath.pathname, end: false });
+    
+    const handleClick = () => {
+        navigate(to);
+        onClick?.();
+      };
+
+    return (
+        <>
+            <ListItemButton onClick={handleClickOpenList}>
+                <ListItemIcon>
+                    <Icon>
+                        <FaListAlt color="#b7b9bb" />
+                    </Icon>
+                </ListItemIcon>
+                <ListItemText primary="Cadastros" />
+                {open ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    <ListItemButton sx={{pl: 2,  }} selected={!!match}  onClick={handleClick}>
+                        <ListItemIcon>
+                            <Icon>
+                                {icon}
+                            </Icon>
+                        </ListItemIcon>
+                        <ListItemText primary={label}/>
+                    </ListItemButton>
+                </List>
+            </Collapse>
+        </>
+    );
+}
 
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
-    const [open, setOpen] = useState(true);
-    
-    const handleClick = () => {
-        setOpen(!open);
-    };
-    
+
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
+    const { isDrawerOpen, toggleDrawerOpen, drawerOptions, drawerOptionsNestedList } = useDrawerContext();
 
     return (
         <>
@@ -138,33 +175,23 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                 <ListItemLink
                                      to={drawerOption.path}
                                      key={drawerOption.path}
-                                     icon={<FaHome color="#b7b9bb"/>}
+                                     icon={drawerOption.icon}
                                      label={drawerOption.label}
                                      onClick={smDown ? toggleDrawerOpen : undefined}
                                 ></ListItemLink>
-              ))}
+                            ))}
 
-                            <ListItemButton onClick={handleClick}>
-                                <ListItemIcon>
-                                    <Icon>
-                                        <FaListAlt color="#b7b9bb"/>
-                                    </Icon>
-                                </ListItemIcon>
-                                <ListItemText primary="Cadastros"/>
-                                {open ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                            <Collapse in={open} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItemButton sx={{pl: 2,  }}>
-                                        <ListItemIcon>
-                                            <FaUsers color="#b7b9bb"/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="Usuários"/>
-                                    </ListItemButton>
-                                </List>
-                            </Collapse>
+                            {drawerOptionsNestedList.map(drawerOptionsNestedList => (
+                                <NestedListSubheader 
+                                    to={drawerOptionsNestedList.path}
+                                    key={drawerOptionsNestedList.path}
+                                    icon={drawerOptionsNestedList.icon}
+                                    label={drawerOptionsNestedList.label}
+                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                />
+                            ))}
+                          
                         </List>
-
 
                     </Box>
                 </Box>
