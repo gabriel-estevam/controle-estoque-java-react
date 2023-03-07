@@ -7,7 +7,7 @@ import { useDrawerContext } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
 
 interface ILayoutBasePaginaProps {
-    barraFerramentas: ReactNode;
+    barraFerramentas?: ReactNode;
     children: ReactNode;
     titulo: string;
 };

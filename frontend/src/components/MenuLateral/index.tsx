@@ -54,7 +54,7 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }
     );
 }
 const NestedListSubheader: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }) => {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     
     const handleClickOpenList = () => {
         setOpen(!open);

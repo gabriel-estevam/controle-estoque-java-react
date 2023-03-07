@@ -58,32 +58,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Esse metodo para a autorização, isto é, ele pega o usuario autentica e
-        // verifica qual a role daquele usuario
-        http.cors().and().csrf().disable() // desativamos essa configuração no ambiente de dev
-                   .authorizeRequests()
-                // .antMatchers("/api/clientes/**").hasRole("USER")//aqui nesse metodo definimos
-                // qual url vai poder acesssar e quais a roles do usuario
-                // .permitAll() //esse metodo permite acesso a url mesmo não estando autenticado
-                // .antMatchers("/api/clientes/**").authenticated() // segunda forma de liberar
-                // acesso é verificar se o
-                // usuario esta autenticado, isto é, se ele passou pelo
-                // metodo acima
-                  .antMatchers(HttpMethod.POST,  "/api/auth/**").permitAll()
-                  .antMatchers("/api/users/**").permitAll()//.hasRole("ADMIN")
+        // Esse metodo para a autorização, isto é, ele pega o usuario autentica e verifica qual a role daquele usuario
+        http.cors()
+            .and()
+            .csrf().disable() // desativamos essa configuração no ambiente de dev
+            .authorizeRequests()
+            .antMatchers(HttpMethod.POST,  "/api/auth/**").permitAll()
+                  /* .antMatchers("/api/users/**").permitAll()//.hasRole("ADMIN")
                   .antMatchers("/api/filiais/**").permitAll()
-                  //.antMatchers("/api/users/**").hasRole("ADMIN")
-                  .anyRequest().authenticated()
-                  .and() //volta para a raiz do http
-               // .httpBasic(); // autenticação via header
-                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) /*a seção do usuario virou stateless, isto é
-                cada requisição passada tem que ter um token JWT                                                                           
-               */
-        // .formLogin(); // cria o formulario de login do spring security ou é possivel
-        // passar um caminho
-        // de um formulario de login customizado
-               .and()
-               .addFilterBefore(jwFilter(), UsernamePasswordAuthenticationFilter.class); //add o filter jwt criado na seção ANTES do filter padraão do spring security;
+                  */
+            .antMatchers("/api/users/**").hasRole("ADMIN")
+            .antMatchers("/api/filiais/**").hasRole("ADMIN")
+            .anyRequest().authenticated()
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(jwFilter(), UsernamePasswordAuthenticationFilter.class); //add o filter jwt criado na seção ANTES do filter padraão do spring security;
     }
     
 }

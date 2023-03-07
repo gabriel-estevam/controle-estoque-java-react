@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.api.estoque.backend.model.enums.StatusOption;
 
 @Entity
@@ -28,7 +29,7 @@ public class Usuario implements Serializable {
     private String name;
     private String email;
 
-    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     
     private Integer role;

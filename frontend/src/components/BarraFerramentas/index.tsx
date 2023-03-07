@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Button, InputAdornment, Paper, TextField, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import { Environment } from '../../environment/index';
 
 interface IBarraDeFerramentasProps {
     textoDaBusca?: string;
@@ -36,7 +37,7 @@ export const BarraFerramentas: React.FC<IBarraDeFerramentasProps> = ({
                  <TextField 
                  size="small" 
                  type="search" 
-                 placeholder="Pesquisar"
+                 placeholder={Environment.INPUT_DE_BUSCA}
                  value={textoDaBusca}
                  onChange={(e) => aoMudarTextoDeBusca?.(e.target.value)}
                  InputProps={{startAdornment: (
