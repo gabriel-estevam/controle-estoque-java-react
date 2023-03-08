@@ -13,7 +13,6 @@ import {
     useMediaQuery
 } from '@mui/material';
 import { Box } from '@mui/system';
-import './index.css';
 import { FaListAlt } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';

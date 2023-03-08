@@ -11,5 +11,10 @@ export const CommonTheme = createTheme({
         warning: {
             main: yellow[700],
         }
-    }
+    },
+    typography: {
+        button: {
+          textTransform: "none",
+        },
+      },
 });

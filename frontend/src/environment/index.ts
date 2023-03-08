@@ -17,5 +17,10 @@ export const Environment = {
     /**
      * url base de consulta ao backend
     */
-    URL_BASE: 'http://localhost:8080',
+    URL_BASE: 'http://localhost:8080/api',
+
+    /**
+     * Token de sessão do usuário
+     */
+    TOKEN: localStorage.getItem("token"),
 };
