@@ -1,6 +1,5 @@
 package com.api.estoque.backend.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -8,6 +7,8 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.UserDTO;
@@ -23,8 +24,8 @@ public class UserService {
     @Autowired
     private UsuarioRepository repository;
 
-    public List<Usuario> findAll() {
-        return repository.findAll();
+    public Page<Usuario> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Usuario findById(Long id) {

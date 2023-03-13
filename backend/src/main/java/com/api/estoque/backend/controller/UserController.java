@@ -1,9 +1,10 @@
 package com.api.estoque.backend.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +37,8 @@ public class UserController {
     private FilialService filialService;
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> findAll() {
-        List<Usuario> list = service.findAll();
+    public ResponseEntity<Page<Usuario>> findAll(Pageable pageable) {
+        Page<Usuario> list = service.findAll(pageable);
        // List<UserDTO> listDto = list.stream().map(parseDto -> new UserDTO(parseDto)).collect(Collectors.toList());
         return ResponseEntity.ok().body(list);
     }

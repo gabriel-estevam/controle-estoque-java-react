@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Box } from '@mui/system';
-import { Icon, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Divider, Icon, IconButton,Paper,Typography, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDrawerContext } from '../../contexts';
@@ -10,9 +10,10 @@ interface ILayoutBasePaginaProps {
     barraFerramentas?: ReactNode;
     children: ReactNode;
     titulo: string;
+    subTitulo?: string;
 };
 
-export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, barraFerramentas }) => {
+export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, subTitulo, barraFerramentas }) => {
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
 
@@ -23,10 +24,11 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
     const { toggleDrawerOpen } = useDrawerContext();
     
     return (
-        <Box height="100%"
-             display="flex"
-             flexDirection="column"
-             gap={1}
+        <Box 
+            height="100%"
+            display="flex"
+            flexDirection="column"
+            gap={1}
         >
             <Box display="flex" 
                  alignItems="center" 
@@ -66,15 +68,46 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                 </Box>
             </Box>
 
-            {barraFerramentas && (
-                <Box>
-                    {barraFerramentas}
+           
+           <Box flex={1} 
+                //overflow="auto"
+            >
+                <Box 
+                    //gap={1} 
+                    marginX={1}
+                    overflow="auto"
+                    //padding={4}
+                    paddingX={2}
+                   // display="flex"
+                    alignItems="center"
+                    height="100%"
+                    //height={theme.spacing(5)}
+                    component={Paper}
+                >
+                    {barraFerramentas && (
+                        barraFerramentas
+                    )}
+                    <Box
+                        //marginX={1}
+                        marginY={2}
+                        component={Paper}
+                        padding={2}
+                        flex={1}
+                        height="89%"
+                        width="100%"
+                        //overflow="auto"
+                    >
+                        <Typography >
+                            {subTitulo}
+                        </Typography>
+                        <Divider/>
+
+                    {children}
+                    </Box>
+
                 </Box>
-            )}
-            
-            <Box flex={1} overflow="auto">
-                {children}
             </Box>
+                
         </Box>
     );
 };

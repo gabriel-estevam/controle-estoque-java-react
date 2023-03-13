@@ -20,16 +20,20 @@ interface IDetalheUsuario {
 }
 
 type TUsuarioLista = {
-    data: IListagemUsuario[];
+    content: IListagemUsuario[];
+    totalElements: number;
 }
 
-const getAll = async (page = 1, filter = ''): Promise<TUsuarioLista | Error> => {
+const getAll = async (page = 0, filter = ''): Promise<TUsuarioLista | Error> => {
     try {
-        const urlRelativa = '/users';
+        const urlRelativa = `/users?page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
         const response = await Api.get(urlRelativa);
-        //console.log("TESTE " + response);
+
         if(response) {
-            return response;
+            return {
+                content: response.data.content,
+                totalElements: Number(response.data.totalElements || Environment.LIMITE_DE_LINHAS),
+            };
         }
 
         return new Error('Erro ao listar os registros.');
