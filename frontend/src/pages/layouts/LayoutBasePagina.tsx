@@ -30,13 +30,13 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
             flexDirection="column"
             gap={1}
         >
-            <Box display="flex" 
-                 alignItems="center" 
-                 justifyContent="flex-start"
-                 height={theme.spacing(8)}
-                 paddingLeft={!smDown ? 1 : 0}
-                 width="100%"
-            >
+            <Box 
+                display="flex" 
+                alignItems="center" 
+                justifyContent="flex-start"
+                height={theme.spacing(8)}
+                paddingLeft={!smDown ? 1 : 0}
+                width="100%">
                 { smDown && 
                     (
                         <IconButton onClick={ toggleDrawerOpen }>
@@ -69,32 +69,35 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
             </Box>
 
            
-           <Box flex={1} 
-                //overflow="auto"
+          <Box flex={1} 
+                overflow="auto"
+               height="100%"
+               marginX={1}
+               component={Paper}
             >
                 <Box 
                     //gap={1} 
                     marginX={1}
-                    overflow="auto"
+                   // overflow="auto"
                     //padding={4}
                     paddingX={2}
                    // display="flex"
-                    alignItems="center"
-                    height="100%"
+                   // alignItems="center"
+                   // height="100%"
                     //height={theme.spacing(5)}
-                    component={Paper}
+                   // component={Paper}
+                   flex={1}
                 >
                     {barraFerramentas && (
                         barraFerramentas
                     )}
-                    <Box
+                    {/*<Box
                         //marginX={1}
-                        marginY={2}
+                        //marginY={2}
                         component={Paper}
                         padding={2}
                         flex={1}
-                        height="89%"
-                        width="100%"
+                       height="100%"
                         //overflow="auto"
                     >
                         <Typography >
@@ -103,9 +106,28 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                         <Divider/>
 
                     {children}
-                    </Box>
+                    </Box>*/}
 
                 </Box>
+                <Box
+                    component={Paper}
+                    marginX={3}
+                    marginTop={2}
+                    padding={2}
+                    flex={1}
+                    height="50%"
+                    //overflow="auto"
+                    >
+                        <Typography >
+                            {subTitulo}
+                        </Typography>
+                        <Divider/>
+                        <Box 
+                            height="89%"
+                            marginTop={3}>
+                            {children}
+                        </Box>
+                    </Box>
             </Box>
                 
         </Box>

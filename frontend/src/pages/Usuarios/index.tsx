@@ -69,7 +69,7 @@ export const Usuarios: React.FC = () => {
             width: 150,
             editable: false,
         },
-       /* { 
+        { 
             field: 'acoes', 
             headerName: 'Ações', 
             width: 200,
@@ -95,7 +95,7 @@ export const Usuarios: React.FC = () => {
                     </>
                 );
             },
-        },*/
+        },
      ]; 
     return (
         <LayoutBasePagina 
@@ -111,7 +111,7 @@ export const Usuarios: React.FC = () => {
                 />
             }
             >
-           <Box height="40%">
+           {/*<Box height="40%">*/}
                 <DataGrid
                     rows={rows}
                     columns={columns}
@@ -127,7 +127,7 @@ export const Usuarios: React.FC = () => {
                       }}
                       pageSizeOptions={[5]}
                 />
-           </Box>
+           {/*</Box>*/}
         </LayoutBasePagina>
     );
 };
