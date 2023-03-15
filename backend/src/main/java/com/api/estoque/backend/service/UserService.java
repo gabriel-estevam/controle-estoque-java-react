@@ -24,8 +24,8 @@ public class UserService {
     @Autowired
     private UsuarioRepository repository;
 
-    public Page<Usuario> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Usuario> findByNameContaining(String name, Pageable pageable) {
+        return repository.findByNameContaining(name, pageable);
     }
 
     public Usuario findById(Long id) {

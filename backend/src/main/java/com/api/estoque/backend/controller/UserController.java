@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,8 +38,9 @@ public class UserController {
     private FilialService filialService;
 
     @GetMapping
-    public ResponseEntity<Page<Usuario>> findAll(Pageable pageable) {
-        Page<Usuario> list = service.findAll(pageable);
+    public ResponseEntity /*<List<Usuario>>*/ <Page<Usuario>> findByNameContaining(@RequestParam(name = "name", required = false) String name, Pageable pageable) {
+        Page<Usuario> list = service.findByNameContaining(name, pageable);
+        //List<Usuario> list = service.findByNameContaining(name);
        // List<UserDTO> listDto = list.stream().map(parseDto -> new UserDTO(parseDto)).collect(Collectors.toList());
         return ResponseEntity.ok().body(list);
     }
