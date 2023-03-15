@@ -4,14 +4,15 @@ import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-
-import { Box, Button, useTheme } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableHead, TableRow, useTheme } from '@mui/material';
+import TableContainer from '@mui/material/TableContainer';
+import { useDebounce } from '../../hooks';
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
-    const [searchParams, setSearchParams] = useSearchParams();
 
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { debounce } = useDebounce(3000, true);
     const [rows, setRows] = useState<IListagemUsuario[]>([]);
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
@@ -20,85 +21,28 @@ export const Usuarios: React.FC = () => {
     },[searchParams]);
 
     useEffect(() => {
-        setIsLoading(true);
+        debounce(()=> {
+            setIsLoading(true);
 
-        UsuarioService.getAll(0, busca)
-        .then((result) => {
-            setIsLoading(false);
-
-            if(result instanceof Error) {
-                alert(result.message);
-            }
-            else {
-              console.log(result.content);
-              console.log(result.totalElements);
-              setRows(result.content);
-            }
+            UsuarioService.getAll(0, busca)
+            .then((result) => {
+                setIsLoading(false);
+    
+                if(result instanceof Error) {
+                    alert(result.message);
+                }
+                else {
+                  console.log(result.content);
+                  console.log(result.totalElements);
+                  setRows(result.content);
+                }
+            });
         });
     }, [busca]);
 
-    const columns: GridColDef[] = [
-        {
-            field: 'name',
-            headerName: 'Usuário',
-            width: 300,
-            editable: false,
-             
-        },
-        {
-            field: 'email',
-            headerName: 'Login',
-            width: 300,
-            editable: false,
-        },
-        {
-            field: 'role',
-            headerName: 'Tipo Usuário',
-            width: 300,
-            editable: false,
-        },
-        {
-            field: 'status',
-            headerName: 'Status Usuário',
-            width: 300,
-            editable: false,
-        },
-        {
-            field: 'filialId',
-            headerName: 'Filial',
-            width: 150,
-            editable: false,
-        },
-        { 
-            field: 'acoes', 
-            headerName: 'Ações', 
-            width: 200,
-            renderCell(params) {
-                return (
-                    <>
-                        <Button
-                            variant="contained"
-                            color="warning"
-                            disableElevation
-                            //startIcon={<ModeIcon/>}
-                            sx={{
-                                marginRight: theme.spacing(1),
-                            }}
-                        >Editar</Button>
- 
-                        <Button
-                          variant="contained"
-                          color="error"
-                          disableElevation
-                         // startIcon={<DeleteIcon/>}
-                        >Deletar</Button>
-                    </>
-                );
-            },
-        },
-     ]; 
     return (
-        <LayoutBasePagina 
+        <LayoutBasePagina
+            renderTabela
             titulo="Cadastro de Usuários"
             subTitulo="Gerenciamento de Usuários"
             barraFerramentas={
@@ -110,24 +54,70 @@ export const Usuarios: React.FC = () => {
                     aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto }, { replace: true })}
                 />
             }
-            >
-           {/*<Box height="40%">*/}
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    //pageSize={5}
-                    //rowsPerPageOptions={[5]}
-                    checkboxSelection
-                    initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5,
-                          },
+        >
+           
+            {/*<DataGrid
+                rows={rows}
+                columns={columns}
+                //pageSize={5}
+                //rowsPerPageOptions={[5]}
+                //checkboxSelection
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                        pageSize: 10,
                         },
-                      }}
-                      pageSizeOptions={[5]}
-                />
-           {/*</Box>*/}
+
+                    },
+                    }}
+                    slots={{ toolbar: GridToolbar}}
+                    //pageSizeOptions={[3]}
+            />*/}
+            <TableContainer sx={{ height: "369px", margin: 1 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Nome</TableCell>
+                            <TableCell>Login</TableCell>
+                            <TableCell>Tipo Usuário</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Filial</TableCell>
+                            <TableCell>Ações</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map(row => (
+                            <TableRow key={row.id}>
+                                <TableCell>{row.name}</TableCell>
+                                <TableCell>{row.email}</TableCell>
+                                <TableCell>{row.role}</TableCell>
+                                <TableCell>{row.status}</TableCell>
+                                <TableCell>{row.filialId}</TableCell>
+                                <TableCell width={200}>
+                                    <Button
+                                        variant="contained"
+                                        color="warning"
+                                        disableElevation
+                                        sx={{
+                                            marginRight: theme.spacing(1),
+                                        }}
+                                    >
+                                        Editar
+                                    </Button>
+    
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        disableElevation
+                                    >
+                                        Deletar
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </LayoutBasePagina>
     );
 };

@@ -11,9 +11,10 @@ interface ILayoutBasePaginaProps {
     children: ReactNode;
     titulo: string;
     subTitulo?: string;
+    renderTabela: boolean;
 };
 
-export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, subTitulo, barraFerramentas }) => {
+export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, subTitulo, barraFerramentas, renderTabela }) => {
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
 
@@ -48,7 +49,8 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                     //overflow="hidden"
                     whiteSpace="nowrap"
                     textOverflow="ellipses"
-                    variant={smDown ? 'h6' : mdDown ? 'h4' : 'h3'}
+                    //variant={smDown ? 'h6' : mdDown ? 'h4' : 'h3'}
+                    variant='h4'
                     marginLeft="2px"
                 >
                     {titulo}
@@ -76,40 +78,16 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                component={Paper}
             >
                 <Box 
-                    //gap={1} 
                     marginX={1}
-                   // overflow="auto"
-                    //padding={4}
                     paddingX={2}
-                   // display="flex"
-                   // alignItems="center"
-                   // height="100%"
-                    //height={theme.spacing(5)}
-                   // component={Paper}
                    flex={1}
                 >
                     {barraFerramentas && (
                         barraFerramentas
                     )}
-                    {/*<Box
-                        //marginX={1}
-                        //marginY={2}
-                        component={Paper}
-                        padding={2}
-                        flex={1}
-                       height="100%"
-                        //overflow="auto"
-                    >
-                        <Typography >
-                            {subTitulo}
-                        </Typography>
-                        <Divider/>
-
-                    {children}
-                    </Box>*/}
 
                 </Box>
-                <Box
+                {renderTabela && (<Box
                     component={Paper}
                     marginX={3}
                     marginTop={2}
@@ -118,16 +96,17 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                     height="50%"
                     //overflow="auto"
                     >
-                        <Typography >
+                        <Typography variant="subtitle1" fontWeight="bold">
                             {subTitulo}
                         </Typography>
                         <Divider/>
                         <Box 
-                            height="89%"
+                            height="20%"
                             marginTop={3}>
-                            {children}
+                        {children}
                         </Box>
-                    </Box>
+                </Box>)}
+
             </Box>
                 
         </Box>

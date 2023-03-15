@@ -3,7 +3,8 @@ import { LayoutBasePagina } from '../layouts';
 
 export const Dashboard = () => {
     return (
-        <LayoutBasePagina 
+        <LayoutBasePagina
+            renderTabela={false}
             titulo="Home"
         >
         </LayoutBasePagina>
