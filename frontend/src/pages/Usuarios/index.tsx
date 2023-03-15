@@ -55,24 +55,6 @@ export const Usuarios: React.FC = () => {
                 />
             }
         >
-           
-            {/*<DataGrid
-                rows={rows}
-                columns={columns}
-                //pageSize={5}
-                //rowsPerPageOptions={[5]}
-                //checkboxSelection
-                initialState={{
-                    pagination: {
-                        paginationModel: {
-                        pageSize: 10,
-                        },
-
-                    },
-                    }}
-                    slots={{ toolbar: GridToolbar}}
-                    //pageSizeOptions={[3]}
-            />*/}
             <TableContainer sx={{ height: "369px", margin: 1 }}>
                 <Table>
                     <TableHead>
@@ -118,6 +100,7 @@ export const Usuarios: React.FC = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            
         </LayoutBasePagina>
     );
 };

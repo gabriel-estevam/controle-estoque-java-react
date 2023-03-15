@@ -24,9 +24,9 @@ type TUsuarioLista = {
     totalElements: number;
 }
 
-const getAll = async (page = 0, filter = ''): Promise<TUsuarioLista | Error> => {
+const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error> => {
     try {
-        const urlRelativa = `/users?page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
+        const urlRelativa = `/users?name=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
         const response = await Api.get(urlRelativa);
 
         if(response) {
