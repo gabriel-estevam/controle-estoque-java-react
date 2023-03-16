@@ -34,6 +34,7 @@ export const Usuarios: React.FC = () => {
                     alert(result.message);
                 }
                 else {
+                    console.log(result.content);
                   setTotalElements(result.totalElements);
                   setRows(result.content);
                 }
@@ -76,7 +77,7 @@ export const Usuarios: React.FC = () => {
                                 <TableCell>{row.email}</TableCell>
                                 <TableCell>{row.role}</TableCell>
                                 <TableCell>{row.status}</TableCell>
-                                <TableCell>{row.filialId}</TableCell>
+                                <TableCell>{row.filialName}</TableCell>
                                 <TableCell width={200}>
                                     <Button
                                         variant="contained"

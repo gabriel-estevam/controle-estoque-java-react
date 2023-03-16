@@ -8,6 +8,7 @@ export interface IListagemUsuario {
     role: string;
     status: string;
     filialId: number;
+    filialName: string;
 }
 
 interface IDetalheUsuario {
@@ -17,6 +18,7 @@ interface IDetalheUsuario {
     role: string;
     status: string;
     filialId: number;
+    filialName: string;
 }
 
 type TUsuarioLista = {

@@ -108,6 +108,10 @@ public class Usuario implements Serializable {
     public Filial getFilial() {
         return filial;
     }
+
+    public String getFilialName() {
+        return filial.getName();
+    }
     
     public Long getFilialId() {
         return filial.getId();
