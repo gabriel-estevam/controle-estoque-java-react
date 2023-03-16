@@ -32,7 +32,8 @@ const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error>
         if(response) {
             return {
                 content: response.data.content,
-                totalElements: Number(response.data.totalElements || Environment.LIMITE_DE_LINHAS),
+                //totalElements: Number(response.data.totalElements || Environment.LIMITE_DE_LINHAS),
+                totalElements: Number(response.data.totalElements),
             };
         }
 

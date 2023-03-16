@@ -4,9 +4,10 @@ import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 
-import { Button, Table, TableBody, TableCell, TableHead, TableRow, useTheme } from '@mui/material';
+import { Button, LinearProgress, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import { useDebounce } from '../../hooks';
+import { Environment } from '../../environment/index';
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
@@ -15,7 +16,8 @@ export const Usuarios: React.FC = () => {
     const { debounce } = useDebounce(3000, true);
     const [rows, setRows] = useState<IListagemUsuario[]>([]);
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
-    
+    const [totalElements, setTotalElements] = useState(0);
+
     const busca = useMemo(() => {
         return searchParams.get('busca') || '';
     },[searchParams]);
@@ -32,8 +34,7 @@ export const Usuarios: React.FC = () => {
                     alert(result.message);
                 }
                 else {
-                  console.log(result.content);
-                  console.log(result.totalElements);
+                  setTotalElements(result.totalElements);
                   setRows(result.content);
                 }
             });
@@ -45,6 +46,7 @@ export const Usuarios: React.FC = () => {
             renderTabela
             titulo="Cadastro de Usuários"
             subTitulo="Gerenciamento de Usuários"
+            totalElements={totalElements === 0 ? 20 : 50}
             barraFerramentas={
                 <BarraFerramentas
                     textoBotaoNovo="NOVO"
@@ -98,6 +100,20 @@ export const Usuarios: React.FC = () => {
                             </TableRow>
                         ))}
                     </TableBody>
+
+                    {totalElements === 0 && !isLoading && (
+                        <caption>{Environment.LISTAGEM_VAZIA}</caption>
+                    )}
+
+                    <TableFooter>
+                        {isLoading && (
+                            <TableRow>
+                                <TableCell colSpan={6}>
+                                    <LinearProgress variant='indeterminate' />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableFooter>
                 </Table>
             </TableContainer>
             
