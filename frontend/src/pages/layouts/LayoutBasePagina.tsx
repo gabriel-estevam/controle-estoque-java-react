@@ -21,7 +21,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
 
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-    const mdDown = useMediaQuery(theme.breakpoints.down('md'));
+    //const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
     const { toggleDrawerOpen } = useDrawerContext();
     
@@ -72,31 +72,33 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
             </Box>
 
            
-          <Box flex={1} 
-                overflow="auto"
-               height="100%"
-               marginX={1}
-               component={Paper}
-            >
+            {renderTabela && (
                 <Box 
+                    flex={1} 
+                    overflow="auto"
+                    height="100%"
                     marginX={1}
-                    paddingX={2}
-                   flex={1}
-                >
-                    {barraFerramentas && (
-                        barraFerramentas
-                    )}
-
-                </Box>
-                {renderTabela && (<Box
                     component={Paper}
-                    marginX={3}
-                    marginTop={2}
-                    padding={2}
+                >
+                    <Box 
+                        marginX={1}
+                        paddingX={2}
                     flex={1}
-                    //height="50%"
-                    height={`${totalElements}%`}
-                    //overflow="auto"
+                    >
+                        {barraFerramentas && (
+                            barraFerramentas
+                        )}
+
+                    </Box>
+                    <Box
+                        component={Paper}
+                        marginX={3}
+                        marginTop={2}
+                        padding={2}
+                        flex={1}
+                        //height="50%"
+                        height={`${totalElements}%`}
+                        //overflow="auto"
                     >
                         <Typography variant="subtitle1" fontWeight="bold">
                             {subTitulo}
@@ -104,12 +106,14 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                         <Divider/>
                         <Box 
                             height="20%"
-                            marginTop={3}>
-                        {children}
+                            marginTop={3}
+                        >
+                            {children}
                         </Box>
-                </Box>)}
+                    </Box>
 
-            </Box>
+                </Box>
+            )}
                 
         </Box>
     );

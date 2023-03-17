@@ -24,6 +24,7 @@ interface IDetalheUsuario {
 type TUsuarioLista = {
     content: IListagemUsuario[];
     totalElements: number;
+    totalPages: number;
 }
 
 const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error> => {
@@ -36,6 +37,7 @@ const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error>
                 content: response.data.content,
                 //totalElements: Number(response.data.totalElements || Environment.LIMITE_DE_LINHAS),
                 totalElements: Number(response.data.totalElements),
+                totalPages: Number(response.data.totalPages),
             };
         }
 

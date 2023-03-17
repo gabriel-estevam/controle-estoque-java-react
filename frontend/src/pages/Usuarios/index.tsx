@@ -4,7 +4,7 @@ import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 
-import { Button, LinearProgress, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
+import { Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import { useDebounce } from '../../hooks';
 import { Environment } from '../../environment/index';
@@ -17,16 +17,21 @@ export const Usuarios: React.FC = () => {
     const [rows, setRows] = useState<IListagemUsuario[]>([]);
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     const [totalElements, setTotalElements] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
     const busca = useMemo(() => {
         return searchParams.get('busca') || '';
+    },[searchParams]);
+
+    const pagina = useMemo(() => {
+        return Number(searchParams.get('pagina') || '0');
     },[searchParams]);
 
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
 
-            UsuarioService.getAll(0, busca)
+            UsuarioService.getAll(pagina, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -35,12 +40,13 @@ export const Usuarios: React.FC = () => {
                 }
                 else {
                     console.log(result.content);
-                  setTotalElements(result.totalElements);
-                  setRows(result.content);
+                    setTotalElements(result.totalElements);
+                    setTotalPages(result.totalPages);
+                    setRows(result.content);
                 }
             });
         });
-    }, [busca]);
+    }, [busca, pagina]);
 
     return (
         <LayoutBasePagina
@@ -54,7 +60,7 @@ export const Usuarios: React.FC = () => {
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
-                    aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto }, { replace: true })}
+                    aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '0' }, { replace: true })}
                 />
             }
         >
@@ -111,6 +117,18 @@ export const Usuarios: React.FC = () => {
                             <TableRow>
                                 <TableCell colSpan={6}>
                                     <LinearProgress variant='indeterminate' />
+                                </TableCell>
+                            </TableRow>
+                        )}
+
+                        {totalPages > 0 && (
+                            <TableRow>
+                                <TableCell colSpan={6}>
+                                    <Pagination
+                                        page={pagina}
+                                        count={totalPages - 1}
+                                        onChange={(_, newPage) => setSearchParams({ busca, pagina: (newPage).toString() }, { replace: true })}
+                                    />
                                 </TableCell>
                             </TableRow>
                         )}
