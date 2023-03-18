@@ -24,14 +24,18 @@ export const Usuarios: React.FC = () => {
     },[searchParams]);
 
     const pagina = useMemo(() => {
-        return Number(searchParams.get('pagina') || '0');
+        return Number(searchParams.get('pagina') || '1');
+    },[searchParams]);
+    
+    const paginaAPI = useMemo(() => {
+        return Number(searchParams.get('paginaAPI') || '1');
     },[searchParams]);
 
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
 
-            UsuarioService.getAll(pagina, busca)
+            UsuarioService.getAll(paginaAPI, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -39,35 +43,36 @@ export const Usuarios: React.FC = () => {
                     alert(result.message);
                 }
                 else {
-                    console.log(result.content);
+                    //console.log(result.content);
                     setTotalElements(result.totalElements);
                     setTotalPages(result.totalPages);
                     setRows(result.content);
                 }
             });
         });
-    }, [busca, pagina]);
+    }, [busca, pagina, paginaAPI]);
 
     return (
         <LayoutBasePagina
             renderTabela
             titulo="Cadastro de Usuários"
             subTitulo="Gerenciamento de Usuários"
-            totalElements={totalElements === 0 ? 20 : 50}
+            totalElements={totalElements === 0 ? 20 : 62}
             barraFerramentas={
                 <BarraFerramentas
                     textoBotaoNovo="NOVO"
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
-                    aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '0' }, { replace: true })}
+                    aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1', paginaAPI: '0' }, { replace: true })}
                 />
             }
         >
-            <TableContainer sx={{ height: "369px", margin: 1 }}>
+            <TableContainer sx={{ height: "500px", margin: 1 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>ID</TableCell>
                             <TableCell>Nome</TableCell>
                             <TableCell>Login</TableCell>
                             <TableCell>Tipo Usuário</TableCell>
@@ -79,6 +84,7 @@ export const Usuarios: React.FC = () => {
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.id}>
+                                <TableCell>{row.id}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.email}</TableCell>
                                 <TableCell>{row.role}</TableCell>
@@ -126,8 +132,9 @@ export const Usuarios: React.FC = () => {
                                 <TableCell colSpan={6}>
                                     <Pagination
                                         page={pagina}
-                                        count={totalPages - 1}
-                                        onChange={(_, newPage) => setSearchParams({ busca, pagina: (newPage).toString() }, { replace: true })}
+                                        count={totalPages}
+                                        onChange={(_, newPage) => setSearchParams({ busca, pagina: (newPage).toString(), paginaAPI: (newPage = newPage - 1).toString() }, { replace: true })
+                                        }
                                     />
                                 </TableCell>
                             </TableRow>

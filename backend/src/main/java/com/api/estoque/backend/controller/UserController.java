@@ -5,6 +5,8 @@ import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +40,11 @@ public class UserController {
     private FilialService filialService;
 
     @GetMapping
-    public ResponseEntity /*<List<Usuario>>*/ <Page<Usuario>> findByNameContaining(@RequestParam(name = "name", required = false) String name, Pageable pageable) {
+    public ResponseEntity<Page<Usuario>> findByNameContaining(
+                                                                @RequestParam(name = "name", required = false) String name, 
+                                                                @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable
+                                                            ) 
+    {
         Page<Usuario> list = service.findByNameContaining(name, pageable);
         //List<Usuario> list = service.findByNameContaining(name);
        // List<UserDTO> listDto = list.stream().map(parseDto -> new UserDTO(parseDto)).collect(Collectors.toList());

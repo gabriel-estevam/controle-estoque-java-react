@@ -15,7 +15,14 @@ interface ILayoutBasePaginaProps {
     totalElements?: number;
 };
 
-export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, titulo, subTitulo, barraFerramentas, renderTabela, totalElements = 50}) => {
+export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = 
+({ children, 
+    titulo, 
+    subTitulo, 
+    barraFerramentas, 
+    renderTabela, 
+    totalElements
+}) => {
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
 
@@ -96,7 +103,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = ({ children, t
                         marginTop={2}
                         padding={2}
                         flex={1}
-                        //height="50%"
+                        //height="70%"
                         height={`${totalElements}%`}
                         //overflow="auto"
                     >
