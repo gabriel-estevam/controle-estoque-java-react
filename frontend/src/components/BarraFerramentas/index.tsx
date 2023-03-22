@@ -65,16 +65,3 @@ export const BarraFerramentas: React.FC<IBarraDeFerramentasProps> = ({
             </Box>
     );
 };
-
-/* <Box 
-   gap={1} 
-   marginX={1}
-   //padding={4}
-   paddingX={2}
-   display="flex"
-   alignItems="center"
-   height="100%"
-  //height={theme.spacing(5)}
-   component={Paper}
->
-</Box>*/

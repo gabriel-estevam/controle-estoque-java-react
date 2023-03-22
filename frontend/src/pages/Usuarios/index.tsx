@@ -1,16 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { LayoutBasePagina } from '../layouts';
 import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 
-import { Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
+import {TextField, Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import { useDebounce } from '../../hooks';
 import { Environment } from '../../environment/index';
+import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usuarios';
+import { Form } from '@unform/web';
+import { VTextField } from '../../forms';
+import { FormHandles } from '@unform/core';
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
+    
+    const formRef = useRef<FormHandles>(null);
+
+    const [openModal, setOpenModal] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const { debounce } = useDebounce(3000, true);
@@ -28,8 +36,16 @@ export const Usuarios: React.FC = () => {
     },[searchParams]);
     
     const paginaAPI = useMemo(() => {
-        return Number(searchParams.get('paginaAPI') || '1');
+        return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
+
+    const handleOpen = () => {
+        setOpenModal(true);
+    };
+
+    const handleClose = () => {
+        setOpenModal(false);
+    };
 
     useEffect(() => {
         debounce(()=> {
@@ -64,6 +80,7 @@ export const Usuarios: React.FC = () => {
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
+                    aoClicarEmNovo={handleOpen}
                     aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1', paginaAPI: '0' }, { replace: true })}
                 />
             }
@@ -142,7 +159,39 @@ export const Usuarios: React.FC = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-            
+            <ModalCadastroUsuário 
+                open={openModal}
+                handleClose={handleClose}
+                formSubmit={() => formRef.current?.submitForm()}
+                titulo="Novo Usuário">
+                <Form ref={formRef} onSubmit={(dados) => console.log(dados)}>
+                    
+                    <VTextField
+                        name="name"
+                        //id="standard-basic" 
+                        label="Nome Completo" 
+                        variant="outlined"
+                        //type='email'
+                        type="text"
+                        sx={{
+                           // "& fieldset": { border: 'none' },
+                            "& input": {border: 'none', 
+                                        margin: 2, 
+                                        padding: 1, 
+                                        paddingY:0},
+                            width: '400px'
+                          }}
+                    />
+                    <VTextField
+                    margin='dense'
+                        name="name"
+                        //id="standard-basic" 
+                        label="Standard" 
+                        variant="outlined"
+                       type='email'
+                    />
+                </Form>
+            </ModalCadastroUsuário>
         </LayoutBasePagina>
     );
 };
