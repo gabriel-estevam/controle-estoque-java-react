@@ -1,5 +1,13 @@
 import React, { ReactNode } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { 
+        Button, 
+        Dialog, 
+        DialogActions, 
+        DialogContent, 
+        DialogTitle, 
+        IconButton
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface IProps {
     children?: ReactNode;
@@ -11,8 +19,13 @@ interface IProps {
 
 export const ModalCadastroUsuário: React.FC<IProps> = ({ open, handleClose, titulo, children, formSubmit }) => {
     return (
-        <Dialog open={open} onClose={handleClose} PaperProps={{style: { maxWidth: "800px"}}}>
-                <DialogTitle>{titulo}</DialogTitle>
+        <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", height: "500px"}}}>
+                <DialogTitle>
+                    {titulo} 
+                    <IconButton sx={{float: "right"}} onClick={handleClose}>
+                        <CloseIcon/>
+                    </IconButton>
+                </DialogTitle>
                 <DialogContent  
                     dividers 
                     sx={{ 
@@ -24,8 +37,18 @@ export const ModalCadastroUsuário: React.FC<IProps> = ({ open, handleClose, tit
                     {children}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancelar</Button>
-                    <Button onClick={formSubmit}>Salvar</Button>
+                    <Button 
+                        onClick={handleClose} 
+                        variant="contained" 
+                        color="secondary"
+                        disableElevation
+                    >Cancelar</Button>
+                    <Button 
+                        onClick={formSubmit}
+                        variant="contained" 
+                        color="primary"
+                        disableElevation
+                    >Adicionar Usuário</Button>
                 </DialogActions>
 
         </Dialog>

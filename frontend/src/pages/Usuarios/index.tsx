@@ -33,7 +33,7 @@ import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/Us
 import { useDebounce } from '../../hooks';
 import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usuarios';
 
-import "./index.css";
+import "../../styles/index.css";
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
@@ -114,7 +114,7 @@ export const Usuarios: React.FC = () => {
             totalElements={totalElements === 0 ? 20 : 62}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVO"
+                    textoBotaoNovo="NOVO USUÁRIO"
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
@@ -201,7 +201,7 @@ export const Usuarios: React.FC = () => {
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={() => formRef.current?.submitForm()}
-                titulo="Novo Usuário">
+                titulo="Adicionar Novo Usuário">
       
                 <Form ref={formRef} onSubmit={(dados) => console.log(dados)}>
 
