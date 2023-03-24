@@ -4,7 +4,7 @@ import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 
-import {TextField, Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme } from '@mui/material';
+import {Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme, Box, Grid, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import { useDebounce } from '../../hooks';
 import { Environment } from '../../environment/index';
@@ -12,6 +12,8 @@ import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usu
 import { Form } from '@unform/web';
 import { VTextField } from '../../forms';
 import { FormHandles } from '@unform/core';
+
+import "./index.css";
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
@@ -47,6 +49,12 @@ export const Usuarios: React.FC = () => {
         setOpenModal(false);
     };
 
+    const [role, setRole] = React.useState(1);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setRole(Number(event.target.value));
+        console.log(event.target.value);
+    };
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
@@ -164,32 +172,77 @@ export const Usuarios: React.FC = () => {
                 handleClose={handleClose}
                 formSubmit={() => formRef.current?.submitForm()}
                 titulo="Novo Usuário">
+      
                 <Form ref={formRef} onSubmit={(dados) => console.log(dados)}>
-                    
-                    <VTextField
-                        name="name"
-                        //id="standard-basic" 
-                        label="Nome Completo" 
-                        variant="outlined"
-                        //type='email'
-                        type="text"
-                        sx={{
-                           // "& fieldset": { border: 'none' },
-                            "& input": {border: 'none', 
-                                        margin: 2, 
-                                        padding: 1, 
-                                        paddingY:0},
-                            width: '400px'
-                          }}
-                    />
-                    <VTextField
-                    margin='dense'
-                        name="name"
-                        //id="standard-basic" 
-                        label="Standard" 
-                        variant="outlined"
-                       type='email'
-                    />
+                    <Box margin={1} display="flex" flexDirection="column">
+                        <Grid container direction="column" padding={2} spacing={2}>
+                            <Grid container item direction="row" spacing={2}>
+                                <Grid item md={12}>
+                                    <VTextField
+                                        name="name"
+                                        label="Nome Completo" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                        // "& fieldset": { border: 'none' },
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={2}>
+                                <Grid item md={6}>
+                                    <VTextField
+                                        name="email"
+                                        label="E-mail" 
+                                        variant="outlined"
+                                        type="email"
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={6}>
+                                    <VTextField
+                                        name="password"
+                                        label="Senha" 
+                                        variant="outlined"
+                                        type="password"
+                                        sx={{
+                                            // "& fieldset": { border: 'none' },
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                            
+                            <Grid container item direction="row" spacing={2}>
+                                <Grid item md={6}>
+                                    <InputLabel>Tipo Usuário</InputLabel>
+                                    <Select
+                                       // label="Tipo Usuário"
+                                        value={role.toString()}
+                                        onChange={handleChange}
+                                    >
+                                        <MenuItem value={1}>Administrador</MenuItem>
+                                        <MenuItem value={0}>Usuário</MenuItem>
+                                    </Select>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
                 </Form>
             </ModalCadastroUsuário>
         </LayoutBasePagina>

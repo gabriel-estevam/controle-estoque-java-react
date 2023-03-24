@@ -67,7 +67,7 @@ img {
   overflow: hidden;
 }
 
-form {
+.signin {
   position: absolute;
   margin-top: 80px;
  /* transition: .5s;

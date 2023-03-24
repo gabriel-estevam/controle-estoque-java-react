@@ -54,7 +54,7 @@ function Login() {
             <div className="box-left"><img src="" alt="" /></div>
             <div className="box-right">
                 <SignInOrForgotPassword/>
-                <form id="signin" className="" method='/' onSubmit={onSubmitForm}>
+                <form id="signin" className="signin" method='/' onSubmit={onSubmitForm}>
                     <input type="text" 
                            placeholder="Email" 
                            name="email"

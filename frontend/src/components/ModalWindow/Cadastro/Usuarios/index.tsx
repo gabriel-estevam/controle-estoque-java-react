@@ -11,9 +11,16 @@ interface IProps {
 
 export const ModalCadastroUsuário: React.FC<IProps> = ({ open, handleClose, titulo, children, formSubmit }) => {
     return (
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog open={open} onClose={handleClose} PaperProps={{style: { maxWidth: "800px"}}}>
                 <DialogTitle>{titulo}</DialogTitle>
-                <DialogContent dividers sx={{ height: '600px', width: '600px'}}>
+                <DialogContent  
+                    dividers 
+                    sx={{ 
+                        height: '500px', 
+                        width: '700px',
+                        paddingY: 0,
+                        paddingX: 0,
+                    }}>
                     {children}
                 </DialogContent>
                 <DialogActions>
