@@ -1,6 +1,6 @@
-import { Box, FilledTextFieldProps, OutlinedTextFieldProps, Paper, TextField, TextFieldProps } from '@mui/material';
-import { useField } from '@unform/core';
 import React, { useEffect, useState } from 'react';
+import { TextField, TextFieldProps } from '@mui/material';
+import { useField } from '@unform/core';
 
 type TVTextField = TextFieldProps & {
     name: string
@@ -25,9 +25,9 @@ export const VTextField: React.FC<TVTextField> = ({ name, ...rest}) => {
             error={!!error}
             helperText={error}
             defaultValue={defaultValue}
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onKeyDown={() => error ? clearError() : undefined}
+            value={value || ''}
+            onChange={e => { setValue(e.target.value); rest.onChange?.(e); }}
+            onKeyDown={(e) => { error && clearError(); rest.onKeyDown?.(e); }}
         />
     );
 };

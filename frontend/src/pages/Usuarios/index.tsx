@@ -1,17 +1,37 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { LayoutBasePagina } from '../layouts';
-import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { useSearchParams } from 'react-router-dom';
-import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
-
-import {Button, LinearProgress, Pagination, Table, TableBody, TableCell, TableFooter, TableHead, TableRow, useTheme, Box, Grid, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
+import {
+    Button, 
+    LinearProgress, 
+    Pagination, 
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableFooter, 
+    TableHead, 
+    TableRow, 
+    useTheme,
+    Box, 
+    Grid, 
+    Select, 
+    MenuItem, 
+    InputLabel, 
+    SelectChangeEvent, 
+    Typography, 
+    Stack }
+from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
-import { useDebounce } from '../../hooks';
-import { Environment } from '../../environment/index';
-import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usuarios';
+
 import { Form } from '@unform/web';
-import { VTextField } from '../../forms';
 import { FormHandles } from '@unform/core';
+
+import { VSwitch, VTextField } from '../../forms';
+import { BarraFerramentas } from '../../components/BarraFerramentas';
+import { LayoutBasePagina } from '../layouts';
+import { Environment } from '../../environment/index';
+import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
+import { useDebounce } from '../../hooks';
+import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usuarios';
 
 import "./index.css";
 
@@ -23,10 +43,15 @@ export const Usuarios: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
+    
     const { debounce } = useDebounce(3000, true);
+    
     const [rows, setRows] = useState<IListagemUsuario[]>([]);
+    
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
+    
     const [totalElements, setTotalElements] = useState(0);
+    
     const [totalPages, setTotalPages] = useState(0);
 
     const busca = useMemo(() => {
@@ -49,12 +74,17 @@ export const Usuarios: React.FC = () => {
         setOpenModal(false);
     };
 
-    const [role, setRole] = React.useState(1);
-
-    const handleChange = (event: SelectChangeEvent) => {
+    const [role, setRole] = useState(1);
+    
+    const handleChangeRole = (event: SelectChangeEvent) => {
         setRole(Number(event.target.value));
-        console.log(event.target.value);
     };
+    const [filialFK, setfilialFK] = useState(1);
+    
+    const handleChangeFilialFK = (event: SelectChangeEvent) => {
+        setfilialFK(Number(event.target.value));
+    };
+    
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
@@ -174,10 +204,15 @@ export const Usuarios: React.FC = () => {
                 titulo="Novo Usuário">
       
                 <Form ref={formRef} onSubmit={(dados) => console.log(dados)}>
+
                     <Box margin={1} display="flex" flexDirection="column">
+
                         <Grid container direction="column" padding={2} spacing={2}>
+
                             <Grid container item direction="row" spacing={2}>
+
                                 <Grid item md={12}>
+
                                     <VTextField
                                         name="name"
                                         label="Nome Completo" 
@@ -198,7 +233,9 @@ export const Usuarios: React.FC = () => {
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>
+
                                 <Grid item md={6}>
+
                                     <VTextField
                                         name="email"
                                         label="E-mail" 
@@ -209,6 +246,7 @@ export const Usuarios: React.FC = () => {
                                 </Grid>
 
                                 <Grid item md={6}>
+
                                     <VTextField
                                         name="password"
                                         label="Senha" 
@@ -229,16 +267,48 @@ export const Usuarios: React.FC = () => {
                             </Grid>
                             
                             <Grid container item direction="row" spacing={2}>
+
                                 <Grid item md={6}>
+
                                     <InputLabel>Tipo Usuário</InputLabel>
                                     <Select
-                                       // label="Tipo Usuário"
+                                        name="role"
                                         value={role.toString()}
-                                        onChange={handleChange}
+                                        onChange={handleChangeRole}
+                                        fullWidth
                                     >
                                         <MenuItem value={1}>Administrador</MenuItem>
                                         <MenuItem value={0}>Usuário</MenuItem>
                                     </Select>
+                                </Grid>
+
+                                <Grid item md={6}>
+
+                                    <InputLabel>Filial</InputLabel>
+                                    <Select
+                                        name="filialFK" 
+                                        value={filialFK.toString()}
+                                        onChange={handleChangeFilialFK}
+                                        fullWidth
+                                    >
+                                        <MenuItem value={1}>Administrador</MenuItem>
+                                        <MenuItem value={0}>Usuário</MenuItem>
+                                    </Select>
+                                </Grid>
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item>
+                
+                                    <InputLabel>Status</InputLabel>
+                                    
+                                    <Stack direction="row" spacing={1} alignItems="center">
+
+                                        <Typography>Inativo</Typography>
+                                           <VSwitch name="status"/>
+                                        <Typography>Ativo</Typography>
+                                    </Stack>
                                 </Grid>
                             </Grid>
                         </Grid>
