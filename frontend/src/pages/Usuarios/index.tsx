@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
     Button, 
@@ -22,23 +22,31 @@ import {
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { Form } from '@unform/web';
-import { FormHandles } from '@unform/core';
+import { VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
-import { VSwitch, VTextField } from '../../forms';
 import { BarraFerramentas } from '../../components/BarraFerramentas';
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 import { useDebounce } from '../../hooks';
-import { ModalCadastroUsuário } from '../../components/ModalWindow/Cadastro/Usuarios';
+import { ModalCadastroUsuario } from '../../components/ModalWindow/Cadastro/Usuarios';
 
 import "../../styles/index.css";
 
+interface IFormData {
+    name: string;
+    email: string;
+    role: string;
+    status: string;
+    filialId: number;
+    filialName: string;
+}
+
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
-    
-    const formRef = useRef<FormHandles>(null);
+    const { formRef, save } = useVForm();
+
+    //const formRef = useRef<FormHandles>(null);
 
     const [openModal, setOpenModal] = useState(false);
 
@@ -106,6 +114,10 @@ export const Usuarios: React.FC = () => {
         });
     }, [busca, pagina, paginaAPI]);
 
+    const handleSave = (dados: IFormData) => {
+        //setIsLoading(true);
+        console.log(dados);
+    };
     return (
         <LayoutBasePagina
             renderTabela
@@ -197,13 +209,13 @@ export const Usuarios: React.FC = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <ModalCadastroUsuário 
+            <ModalCadastroUsuario 
                 open={openModal}
                 handleClose={handleClose}
-                formSubmit={() => formRef.current?.submitForm()}
+                formSubmit={save}
                 titulo="Adicionar Novo Usuário">
       
-                <Form ref={formRef} onSubmit={(dados) => console.log(dados)}>
+                <VForm ref={formRef} onSubmit={handleSave}>
 
                     <Box margin={1} display="flex" flexDirection="column">
 
@@ -313,8 +325,8 @@ export const Usuarios: React.FC = () => {
                             </Grid>
                         </Grid>
                     </Box>
-                </Form>
-            </ModalCadastroUsuário>
+                </VForm>
+            </ModalCadastroUsuario>
         </LayoutBasePagina>
     );
 };
