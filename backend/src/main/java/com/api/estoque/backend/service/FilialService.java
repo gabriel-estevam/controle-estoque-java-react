@@ -8,6 +8,8 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.FilialDTO;
@@ -23,10 +25,10 @@ public class FilialService {
     @Autowired
     private FilialRepository repository;
 
-    public List<Filial> findAll() {
-        return repository.findAll();
+    public Page<Filial> findByNameContaining(String name,  Pageable pageable) {
+        return repository.findByNameContaining(name, pageable);
     }
-
+    
     public Filial findById(Long id) {
         Optional<Filial> filial = repository.findById(id);
         return filial.orElseThrow(() -> new ResourceNotFoundException(id));

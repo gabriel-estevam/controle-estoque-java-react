@@ -13,10 +13,7 @@ import {
     useTheme,
     Box, 
     Grid, 
-    Select, 
-    MenuItem, 
-    InputLabel, 
-    SelectChangeEvent, 
+    InputLabel,
     Typography, 
     Stack }
 from '@mui/material';
@@ -24,14 +21,16 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
-import { BarraFerramentas } from '../../components/BarraFerramentas';
+import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
+
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
 import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 import { useDebounce } from '../../hooks';
-import { ModalCadastroUsuario } from '../../components/ModalWindow/Cadastro/Usuarios';
+import { ModalCadastro } from '../../components';
 
 import "../../styles/index.css";
+import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 interface IFormData {
     name: string;
@@ -45,8 +44,6 @@ interface IFormData {
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
     const { formRef, save } = useVForm();
-
-    //const formRef = useRef<FormHandles>(null);
 
     const [openModal, setOpenModal] = useState(false);
 
@@ -82,17 +79,6 @@ export const Usuarios: React.FC = () => {
         setOpenModal(false);
     };
 
-    const [role, setRole] = useState(1);
-    
-    const handleChangeRole = (event: SelectChangeEvent) => {
-        setRole(Number(event.target.value));
-    };
-    const [filialFK, setfilialFK] = useState(1);
-    
-    const handleChangeFilialFK = (event: SelectChangeEvent) => {
-        setfilialFK(Number(event.target.value));
-    };
-    
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
@@ -209,7 +195,7 @@ export const Usuarios: React.FC = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <ModalCadastroUsuario 
+            <ModalCadastro 
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
@@ -281,31 +267,11 @@ export const Usuarios: React.FC = () => {
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-
-                                    <InputLabel>Tipo Usuário</InputLabel>
-                                    <Select
-                                        name="role"
-                                        value={role.toString()}
-                                        onChange={handleChangeRole}
-                                        fullWidth
-                                    >
-                                        <MenuItem value={1}>Administrador</MenuItem>
-                                        <MenuItem value={0}>Usuário</MenuItem>
-                                    </Select>
+                                    <AutoCompleteUsuario />
                                 </Grid>
 
                                 <Grid item md={6}>
-
-                                    <InputLabel>Filial</InputLabel>
-                                    <Select
-                                        name="filialFK" 
-                                        value={filialFK.toString()}
-                                        onChange={handleChangeFilialFK}
-                                        fullWidth
-                                    >
-                                        <MenuItem value={1}>Administrador</MenuItem>
-                                        <MenuItem value={0}>Usuário</MenuItem>
-                                    </Select>
+                                    <AutoCompleteFilial isExternalLoading={isLoading} />
                                 </Grid>
                             </Grid>
 
@@ -326,7 +292,7 @@ export const Usuarios: React.FC = () => {
                         </Grid>
                     </Box>
                 </VForm>
-            </ModalCadastroUsuario>
+            </ModalCadastro>
         </LayoutBasePagina>
     );
 };

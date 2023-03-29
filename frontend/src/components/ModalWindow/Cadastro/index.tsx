@@ -17,7 +17,7 @@ interface IProps {
     handleClose: () => void;
 };
 
-export const ModalCadastroUsuario: React.FC<IProps> = ({ open, handleClose, titulo, children, formSubmit }) => {
+export const ModalCadastro: React.FC<IProps> = ({ open, handleClose, titulo, children, formSubmit }) => {
     return (
         <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", height: "500px"}}}>
                 <DialogTitle>

@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
-import { Home } from '../pages/Home';
-import { Dashboard } from '../pages/Dashboard';
-import { useDrawerContext } from '../contexts/DrawerContext';
-import { Usuarios } from '../pages/Usuarios';
+import { useDrawerContext } from '../contexts';
+import { Dashboard, Home, Usuarios } from '../pages';
 import { FaHome, FaUsers } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { MenuLateral } from '../../components/MenuLateral';
+import { MenuLateral } from '../../components';
 
 type Props = {
     children: ReactNode;
