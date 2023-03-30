@@ -33,20 +33,22 @@ import { ModalCadastro } from '../../components';
 import "../../styles/index.css";
 import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
+import '../../forms/TraducoesYup';
+
 interface IFormData {
     name: string;
     email: string;
-    password: number;
+    password: string;
     role: number;
     status: number;
     filialFK: number;
     //filialName: string;
 }
 
-const formValidationSchema: yup.SchemaOf<IFormData>= yup.object().shape({
+const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
     name: yup.string().required(),
     email: yup.string().required().email(),
-    password: yup.number().required().min(5),
+    password: yup.string().required().min(5),
     role: yup.number().required(),
     status: yup.number().required(),
     filialFK: yup.number().required(),

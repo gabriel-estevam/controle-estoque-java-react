@@ -15,7 +15,7 @@ interface IDetalheUsuario {
     id: number;
     name: string;
     email: string;
-    password: number;
+    password: string;
     role: number;
     status: number;
     filialFK: number;
