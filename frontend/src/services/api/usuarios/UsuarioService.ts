@@ -15,10 +15,11 @@ interface IDetalheUsuario {
     id: number;
     name: string;
     email: string;
-    role: string;
-    status: string;
-    filialId: number;
-    filialName: string;
+    password: number;
+    role: number;
+    status: number;
+    filialFK: number;
+   // filialName: string;
 }
 
 type TUsuarioLista = {
@@ -66,8 +67,20 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 
 };
 
-const create = async (): Promise<any> => {
-    
+const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Error> => {
+    try {
+        const { data } = await Api.post<IDetalheUsuario>('/users', dados);
+        if(data) {
+            return data.id;
+        }
+        
+        return new Error('Erro ao criar registro.');
+
+    } 
+    catch (error) {
+        console.error(error);
+        return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
+    }
 };
 const updateById = async (): Promise<any> => {
     

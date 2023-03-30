@@ -10,15 +10,15 @@ export const VSwitch: React.FC<TVSwitchProps> = ({ name, ...rest }) => {
   const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 
   const [value, setValue] = useState(defaultValue || false);
-
+  const [status, setStatus] = useState(0);
 
   useEffect(() => {
     registerField({
       name: fieldName,
-      getValue: () => value,
-      setValue: (_, newValue) => setValue(newValue),
+      getValue: () => status,
+      setValue: (_, newValue) => setStatus(newValue),
     });
-  }, [registerField, fieldName, value]);
+  }, [registerField, fieldName, value, status]);
 
 
   return (
@@ -28,7 +28,7 @@ export const VSwitch: React.FC<TVSwitchProps> = ({ name, ...rest }) => {
       defaultChecked={defaultValue}
 
       checked={value || false}
-      onChange={(e, checked) => { setValue(checked); rest.onChange?.(e, checked); error && clearError(); }}
+      onChange={(e, checked) => { setValue(checked); rest.onChange?.(e, checked); setStatus(checked ? 1 : 0); error && clearError(); }}
     />
   );
 };

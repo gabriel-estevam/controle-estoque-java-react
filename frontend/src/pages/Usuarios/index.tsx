@@ -18,8 +18,9 @@ import {
     Stack }
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
+import * as yup from 'yup';
 
-import { VForm, VSwitch, VTextField, useVForm } from '../../forms';
+import { IVFormErrors, VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
 import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
 
@@ -35,11 +36,21 @@ import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 interface IFormData {
     name: string;
     email: string;
-    role: string;
-    status: string;
-    filialId: number;
-    filialName: string;
+    password: number;
+    role: number;
+    status: number;
+    filialFK: number;
+    //filialName: string;
 }
+
+const formValidationSchema: yup.SchemaOf<IFormData>= yup.object().shape({
+    name: yup.string().required(),
+    email: yup.string().required().email(),
+    password: yup.number().required().min(5),
+    role: yup.number().required(),
+    status: yup.number().required(),
+    filialFK: yup.number().required(),
+});
 
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
@@ -101,8 +112,35 @@ export const Usuarios: React.FC = () => {
     }, [busca, pagina, paginaAPI]);
 
     const handleSave = (dados: IFormData) => {
-        //setIsLoading(true);
-        console.log(dados);
+        formValidationSchema
+        .validate(dados, {abortEarly: false})
+        .then((dadosValidados) => {
+            setIsLoading(true);
+            UsuarioService.create(dadosValidados)
+            .then((result) => {
+                setIsLoading(false);
+
+                if(result instanceof Error) {
+                    alert(result.message);
+                }
+                else {
+                    alert(result);
+                    handleClose();
+                }
+            });
+           
+        })
+        .catch((errors: yup.ValidationError) => {
+            const validationErrors: IVFormErrors = {};
+            errors.inner.forEach(error => {
+                if(!error.path) return; //se  path undefined não executa que esta abaixo
+                validationErrors[error.path] = error.message;
+            });
+
+            formRef.current?.setErrors(validationErrors);
+        });
+        
+        //console.log(dados);
     };
     return (
         <LayoutBasePagina

@@ -13,7 +13,7 @@ interface IAutoCompleteFilialProps {
     isExternalLoading?: boolean;
 }
 export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ isExternalLoading = false }) => {
-    const { fieldName, registerField, error, clearError, defaultValue } = useField('filialId');
+    const { fieldName, registerField, error, clearError, defaultValue } = useField('filialFK');
 
     const { debounce } = useDebounce();
     
