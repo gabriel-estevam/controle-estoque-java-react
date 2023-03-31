@@ -2,7 +2,6 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +22,7 @@ public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "id_usuario")
+    @Column(name = "usuarioId")
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT no banco de dados
     private Long id;
     private String name;
@@ -35,8 +34,10 @@ public class Usuario implements Serializable {
     private Integer role;
     private Integer status;
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "id_filial")
+//(cascade = CascadeType.ALL)
+
+   @OneToOne 
+   @JoinColumn(name = "idFilial", insertable = true, updatable = true)
    private Filial filial; //filial do usuario
 
     public Usuario() {

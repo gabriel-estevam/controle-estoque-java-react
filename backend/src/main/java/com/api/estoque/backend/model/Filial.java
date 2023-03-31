@@ -22,7 +22,7 @@ public class Filial implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @Column(name = "id_filial")
+    @Column(name = "idFilial")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,7 +33,7 @@ public class Filial implements Serializable {
     private Integer status;
     
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_usuario")
+    @JoinColumn(name = "usuarioId", insertable = true, updatable = true)
     private Usuario usuario;
 
     public Filial() {

@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.UserDTO;
 import com.api.estoque.backend.model.Usuario;
+import com.api.estoque.backend.model.Filial;
+import com.api.estoque.backend.repository.FilialRepository;
 import com.api.estoque.backend.repository.UsuarioRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
@@ -23,6 +24,9 @@ public class UserService {
 
     @Autowired
     private UsuarioRepository repository;
+    
+    @Autowired 
+    private FilialRepository filialRepository;
 
     public Page<Usuario> findByNameContaining(String name, Pageable pageable) {
         return repository.findByNameContaining(name, pageable);
@@ -38,12 +42,18 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        try {
-            repository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException(e.getMessage());
+        Optional<Filial> fOptional = filialRepository.findByusuario_id(id);
+        if(!fOptional.isEmpty()) {
+            throw new DataBaseException("Não é possivel deletar Usuario[" + fOptional.get().getUsuario().getName()+ "] Pois o mesmo é ADMINISTRADOR da filial [" + fOptional.get().getName() + "]");
+        }
+        else 
+        {
+            try {
+                repository.deleteById(id);
+            } 
+            catch (EmptyResultDataAccessException e) {
+                throw new ResourceNotFoundException(id);
+            } 
         }
     }
 

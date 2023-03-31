@@ -1,6 +1,5 @@
 package com.api.estoque.backend.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
