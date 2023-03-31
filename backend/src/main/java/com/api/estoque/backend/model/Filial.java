@@ -2,7 +2,6 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,8 +31,8 @@ public class Filial implements Serializable {
     @Column(name = "status")
     private Integer status;
     
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "usuarioId", insertable = true, updatable = true)
+    @OneToOne //(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuarioId")
     private Usuario usuario;
 
     public Filial() {
