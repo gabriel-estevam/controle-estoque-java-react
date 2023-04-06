@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
     Button, 
     LinearProgress, 
@@ -178,22 +178,44 @@ export const Usuarios: React.FC = () => {
     };
 
     const handleUpdate = (dados: IFormData) => {
+        formValidationSchema
+        .validate(dados, {abortEarly: false })
+        .then((dadosValidados) => {
+            UsuarioService.updateById(dadoUsuario?.id, dadosValidados)
+            .then((result) => {
+                 //setIsLoading(true);
+                if(result instanceof Error) {
+                    alert(result.message);
+                }
+                else {
+                    //alert(result);
+                    handleCloseEdit();
+                }
+     
+            });
+        })
+        .catch((errors: yup.ValidationError) => {
+            const validationErrors: IVFormErrors = {};
+            errors.inner.forEach(error => {
+                if(!error.path) return; //se path undefined não executa que esta abaixo
+                validationErrors[error.path] = error.message;
+            });
 
-       UsuarioService.updateById(dadoUsuario?.id, dados)
+            formRef.current?.setErrors(validationErrors);
+        });
+    };
+    const handleDelete = (id: number) => {
+        UsuarioService.deleteById(id)
         .then((result) => {
-            //setIsLoading(true);
             if(result instanceof Error) {
                 alert(result.message);
             }
             else {
-                alert(result);
+                alert("Usuário Deletado com sucesso!");
                 handleCloseEdit();
             }
-
         });
-        console.log(dados)
     };
-    
     return (
         <LayoutBasePagina
             renderTabela
@@ -250,6 +272,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="error"
                                         disableElevation
+                                        onClick={() => { handleDelete(row.id) }}
                                     >
                                         Deletar
                                     </Button>

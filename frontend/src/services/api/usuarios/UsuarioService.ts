@@ -97,13 +97,9 @@ const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Erro
     }
 };
 
-const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password'>): Promise<string | Error> => {
+const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password'>): Promise<void | Error> => {
     try {
-        const { data } =  await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
-        if(data) {
-            return data.name;
-        }
-        return new Error('Erro ao atualizar registro');
+        await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
     } 
     catch (error) {
         console.error(error);
@@ -111,8 +107,14 @@ const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'passwo
     }
 };
 
-const deleteById = async (): Promise<any> => {
-    
+const deleteById = async (id: number): Promise<void | Error> => {
+    try {
+        await Api.delete(`/users/${id}`);
+    } 
+    catch (error) {
+        console.error(error);
+        return new Error((error as { message: string }).message || 'Erro ao deletar o registro.');
+    }
 };
 
 export const UsuarioService = {
