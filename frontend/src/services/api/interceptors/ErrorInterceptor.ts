@@ -14,7 +14,10 @@ export const errorInterceptor = (error: AxiosError) => {
     }
 
     if(error.response?.status === 400) {
-        return Promise.reject(new Error(error.message));
+        let dataResponseError: any;
+        dataResponseError = JSON.stringify(error.response.data);
+        const dataJSON = JSON.parse(dataResponseError);
+        return Promise.reject(new Error(dataJSON.message));
     }
 
     return Promise.reject(error);

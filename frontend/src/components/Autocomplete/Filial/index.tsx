@@ -10,10 +10,11 @@ type TAutoCompleteOption = {
 }
 
 interface IAutoCompleteFilialProps {
+    name: string;
     isExternalLoading?: boolean;
 }
-export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ isExternalLoading = false }) => {
-    const { fieldName, registerField, error, clearError, defaultValue } = useField('filialFK');
+export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,isExternalLoading = false }) => {
+    const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
     

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Button, 
     LinearProgress, 
@@ -26,7 +26,7 @@ import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
-import { IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
+import { IDetalheUsuario, IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
 
@@ -46,6 +46,7 @@ interface IFormData {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
+    id: yup.number(),
     name: yup.string().required(),
     email: yup.string().required().email(),
     password: yup.string().required().min(5),
@@ -57,8 +58,9 @@ const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
 export const Usuarios: React.FC = () => {
     const theme = useTheme();
     const { formRef, save } = useVForm();
-
+    
     const [openModal, setOpenModal] = useState(false);
+    const [openModalEdit, setOpenModalEdit] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
     
@@ -66,6 +68,9 @@ export const Usuarios: React.FC = () => {
     
     const [rows, setRows] = useState<IListagemUsuario[]>([]);
     
+    const [dadoUsuario, setdadoUsuario] = useState<IDetalheUsuario>();
+    
+
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
     const [totalElements, setTotalElements] = useState(0);
@@ -83,13 +88,42 @@ export const Usuarios: React.FC = () => {
     const paginaAPI = useMemo(() => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
+    
+   const getUsuarioById = (pId : number) => {
+        UsuarioService.getById(pId)
+        .then((result) => {
+            if(result instanceof Error) {
+                alert(result.message);
+            }
+            else {
+                setdadoUsuario(result);
+                console.log(result);
+                formRef.current?.setData({
+                    name: result.name,
+                    email: result.email,
+                    role: result.role === 0 ? 1 : 2,
+                    status: result.status,
+                    filialFK: result.filialFK,
+                    password: 'VALUES',
+                })
+            }
+        });
+   };
 
     const handleOpen = () => {
         setOpenModal(true);
     };
 
+    const handleOpenEdit = () => {
+        setOpenModalEdit(true);
+    };
+
     const handleClose = () => {
         setOpenModal(false);
+    };
+
+    const handleCloseEdit = () => {
+        setOpenModalEdit(false);
     };
 
     useEffect(() => {
@@ -104,7 +138,6 @@ export const Usuarios: React.FC = () => {
                     alert(result.message);
                 }
                 else {
-                    //console.log(result.content);
                     setTotalElements(result.totalElements);
                     setTotalPages(result.totalPages);
                     setRows(result.content);
@@ -135,21 +168,38 @@ export const Usuarios: React.FC = () => {
         .catch((errors: yup.ValidationError) => {
             const validationErrors: IVFormErrors = {};
             errors.inner.forEach(error => {
-                if(!error.path) return; //se  path undefined não executa que esta abaixo
+                if(!error.path) return; //se path undefined não executa que esta abaixo
                 validationErrors[error.path] = error.message;
             });
 
             formRef.current?.setErrors(validationErrors);
         });
         
-        //console.log(dados);
     };
+
+    const handleUpdate = (dados: IFormData) => {
+
+       UsuarioService.updateById(dadoUsuario?.id, dados)
+        .then((result) => {
+            //setIsLoading(true);
+            if(result instanceof Error) {
+                alert(result.message);
+            }
+            else {
+                alert(result);
+                handleCloseEdit();
+            }
+
+        });
+        console.log(dados)
+    };
+    
     return (
         <LayoutBasePagina
             renderTabela
             titulo="Cadastro de Usuários"
             subTitulo="Gerenciamento de Usuários"
-            totalElements={totalElements === 0 ? 20 : 62}
+            totalElements={totalElements >=0 && totalElements <=5 ? 32 : 62}
             barraFerramentas={
                 <BarraFerramentas
                     textoBotaoNovo="NOVO USUÁRIO"
@@ -188,6 +238,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
+                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -220,7 +271,7 @@ export const Usuarios: React.FC = () => {
                             </TableRow>
                         )}
 
-                        {totalPages > 0 && (
+                        {totalPages > 0 && totalElements > 5 && (
                             <TableRow>
                                 <TableCell colSpan={6}>
                                     <Pagination
@@ -235,12 +286,14 @@ export const Usuarios: React.FC = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
+
             <ModalCadastro 
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
-                titulo="Adicionar Novo Usuário">
-      
+                titulo="Adicionar Novo Usuário"
+            >
+
                 <VForm ref={formRef} onSubmit={handleSave}>
 
                     <Box margin={1} display="flex" flexDirection="column">
@@ -257,7 +310,6 @@ export const Usuarios: React.FC = () => {
                                         variant="outlined"
                                         type="text"
                                         sx={{
-                                        // "& fieldset": { border: 'none' },
                                             "& input": {border: 'none', 
                                                         margin: 2, 
                                                         padding: 1, 
@@ -291,7 +343,6 @@ export const Usuarios: React.FC = () => {
                                         variant="outlined"
                                         type="password"
                                         sx={{
-                                            // "& fieldset": { border: 'none' },
                                             "& input": {border: 'none', 
                                                         margin: 2, 
                                                         padding: 1, 
@@ -307,11 +358,11 @@ export const Usuarios: React.FC = () => {
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario />
+                                    <AutoCompleteUsuario name="role" />
                                 </Grid>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteFilial isExternalLoading={isLoading} />
+                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} />
                                 </Grid>
                             </Grid>
 
@@ -333,6 +384,111 @@ export const Usuarios: React.FC = () => {
                     </Box>
                 </VForm>
             </ModalCadastro>
+
+            <ModalCadastro 
+                open={openModalEdit}
+                handleClose={handleCloseEdit}
+                formSubmit={save}
+                titulo="Editar Usuário"
+                edit={openModalEdit}
+            >
+
+                <VForm ref={formRef} onSubmit={handleUpdate}>
+
+                    <Box margin={1} display="flex" flexDirection="column">
+
+                        <Grid container direction="column" padding={2} spacing={2}>
+
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item md={12}>
+
+                                    <VTextField
+                                        //edit={openModalEdit}
+                                        name="name"
+                                        label="Nome Completo" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item md={6}>
+
+                                    <VTextField
+                                        //edit={openModalEdit}
+                                        name="email"
+                                        label="E-mail" 
+                                        variant="outlined"
+                                        type="email"
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={6}>
+
+                                    <VTextField
+                                        disabled
+                                        name="password"
+                                        label="Senha" 
+                                        variant="outlined"
+                                        type="password"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                            
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item md={6}>
+                                    <AutoCompleteUsuario name="role"  //edit={true} 
+                                    />
+                                </Grid>
+
+                                <Grid item md={6}>
+                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} />
+                                </Grid>
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item>
+                
+                                    <InputLabel>Status</InputLabel>
+                                    
+                                    <Stack direction="row" spacing={1} alignItems="center">
+
+                                        <Typography>Inativo</Typography>
+                                           <VSwitch name="status" edit={true} />
+                                        <Typography>Ativo</Typography>
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </VForm>
+            </ModalCadastro>
+
+          
         </LayoutBasePagina>
     );
 };

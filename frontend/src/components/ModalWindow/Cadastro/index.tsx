@@ -13,11 +13,12 @@ interface IProps {
     children?: ReactNode;
     titulo: string;
     open: boolean;
+    edit?: boolean;
     formSubmit: () => void;
     handleClose: () => void;
 };
 
-export const ModalCadastro: React.FC<IProps> = ({ open, handleClose, titulo, children, formSubmit }) => {
+export const ModalCadastro: React.FC<IProps> = ({ open, handleClose, titulo, edit, children, formSubmit }) => {
     return (
         <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", height: "500px"}}}>
                 <DialogTitle>
@@ -43,12 +44,21 @@ export const ModalCadastro: React.FC<IProps> = ({ open, handleClose, titulo, chi
                         color="secondary"
                         disableElevation
                     >Cancelar</Button>
-                    <Button 
+                    { edit ? 
+                        <Button 
+                        onClick={formSubmit}
+                        variant="contained" 
+                        color="warning"
+                        disableElevation
+                      > Salvar Usuário</Button>
+                        : 
+                        <Button 
                         onClick={formSubmit}
                         variant="contained" 
                         color="primary"
                         disableElevation
-                    >Adicionar Usuário</Button>
+                        > Adicionar Usuário</Button>                  
+                    }
                 </DialogActions>
 
         </Dialog>

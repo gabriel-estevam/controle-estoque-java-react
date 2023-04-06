@@ -11,7 +11,7 @@ export interface IListagemUsuario {
     filialName: string;
 }
 
-interface IDetalheUsuario {
+export interface IDetalheUsuario {
     id: number;
     name: string;
     email: string;
@@ -21,6 +21,17 @@ interface IDetalheUsuario {
     filialFK: number;
    // filialName: string;
 }
+export interface IDetalheUsuarioEdit {
+    //id: number;
+    name: string;
+    email: string;
+    password: string;
+    role: number;
+    status: number;
+    filialFK: number;
+   // filialName: string;
+}
+
 
 type TUsuarioLista = {
     content: IListagemUsuario[];
@@ -55,6 +66,8 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
        const { data } = await Api.get(`/users/${id}`);
 
        if(data) {
+        data.role === "ADMIN" ? data.role = 1 : data.role = 0;
+        data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
         return data;
        }
 
@@ -69,6 +82,7 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 
 const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Error> => {
     try {
+        dados.role === 1 ? dados.role = 0 : dados.role = 1;
         const { data } = await Api.post<IDetalheUsuario>('/users', dados);
         if(data) {
             return data.id;
@@ -82,9 +96,21 @@ const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Erro
         return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
     }
 };
-const updateById = async (): Promise<any> => {
-    
+
+const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password'>): Promise<string | Error> => {
+    try {
+        const { data } =  await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
+        if(data) {
+            return data.name;
+        }
+        return new Error('Erro ao atualizar registro');
+    } 
+    catch (error) {
+        console.error(error);
+        return new Error((error as { message: string }).message || 'Erro ao atulizar o registro.');
+    }
 };
+
 const deleteById = async (): Promise<any> => {
     
 };

@@ -83,7 +83,7 @@ public class UserController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         userDTO.setId(id);
-        userDTO.setPassword(encoder.encode(userDTO.getPassword()));
+        //userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         Usuario usuario = service.fromDto(userDTO);
         Filial filialUpdate = filialService.findById(Long.parseLong(userDTO.getFilialFK()));
         usuario.setFilial(filialUpdate);

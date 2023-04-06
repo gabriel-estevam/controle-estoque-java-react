@@ -6,10 +6,15 @@ type TAutoCompleteOption = {
     id: number;
     label: string;
 }
-export const AutoCompleteUsuario = () => {
-    const opcoesValue = [{id: 0, name: 'Usuário'}, {id: 1, name: 'Administrador'}];
+
+type TAutoCompleteProps = {
+    name: string;
+}
+
+export const AutoCompleteUsuario: React.FC<TAutoCompleteProps> = ({ name }) => {
+    const opcoesValue = [{id: 1, name: 'Usuário'}, {id: 2, name: 'Administrador'}];
     
-    const { fieldName, registerField, defaultValue, error, clearError } = useField('role');
+    const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 
     const [selectedId, setSelectedId] = useState<number | undefined>(defaultValue);
 

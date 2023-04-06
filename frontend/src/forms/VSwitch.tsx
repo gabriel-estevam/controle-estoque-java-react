@@ -4,9 +4,10 @@ import { useField } from '@unform/core';
 
 type TVSwitchProps = SwitchProps & {
   name: string;
+  edit?: boolean;
 }
 
-export const VSwitch: React.FC<TVSwitchProps> = ({ name, ...rest }) => {
+export const VSwitch: React.FC<TVSwitchProps> = ({ edit ,name, ...rest }) => {
   const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 
   const [value, setValue] = useState(defaultValue || false);
@@ -24,10 +25,9 @@ export const VSwitch: React.FC<TVSwitchProps> = ({ name, ...rest }) => {
   return (
     <Switch
       {...rest}
-
+      
       defaultChecked={defaultValue}
-
-      checked={value || false}
+      checked={(edit && status === 1 ? true : false) || ( value || false)}
       onChange={(e, checked) => { setValue(checked); rest.onChange?.(e, checked); setStatus(checked ? 1 : 0); error && clearError(); }}
     />
   );

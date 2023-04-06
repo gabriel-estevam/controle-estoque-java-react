@@ -70,7 +70,7 @@ public class UserService {
     private void updateData(Usuario entity, Usuario user) {
         entity.setName(user.getName());
         entity.setEmail(user.getEmail());
-        entity.setPassword(user.getPassword());
+       // entity.setPassword(user.getPassword());
         entity.setStatus(user.getStatus());
         entity.setRole(user.getRole());
         entity.setFilial(user.getFilial());

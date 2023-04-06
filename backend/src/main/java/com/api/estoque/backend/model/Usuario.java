@@ -114,7 +114,7 @@ public class Usuario implements Serializable {
         return filial.getName();
     }
     
-    public Long getFilialId() {
+    public Long getFilialFK() {
         return filial.getId();
     }
     
