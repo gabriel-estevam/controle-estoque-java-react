@@ -22,7 +22,7 @@ export interface IDetalheUsuario {
    // filialName: string;
 }
 export interface IDetalheUsuarioEdit {
-    //id: number;
+    id?: number;
     name: string;
     email: string;
     password: string;
@@ -97,9 +97,17 @@ const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Erro
     }
 };
 
-const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password'>): Promise<void | Error> => {
+const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password' & 'id'>): Promise<number | Error | undefined> => {
     try {
-        await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
+
+        //@ts-ignore
+        dados.role === 1 ? dados.role = 0 : dados.role = 1;
+        
+        const { data } = await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
+        
+        if(data) {
+            return data.id;
+        }
     } 
     catch (error) {
         console.error(error);

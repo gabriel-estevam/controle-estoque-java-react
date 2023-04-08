@@ -4,3 +4,4 @@ export * from './BarraFerramentas/index';
 export * from './MenuLateral/index';
 export * from './ModalWindow/Cadastro/index';
 export * from './SignInOrForgotPassword/index';
+export * from './Alerts/index';

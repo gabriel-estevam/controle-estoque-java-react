@@ -15,7 +15,11 @@ import {
     Grid, 
     InputLabel,
     Typography, 
-    Stack }
+    Stack, 
+    Alert,
+    AlertTitle,
+    Collapse,
+    IconButton }
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
@@ -34,6 +38,7 @@ import "../../styles/index.css";
 import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 import '../../forms/TraducoesYup';
+import { Close } from '@mui/icons-material';
 
 interface IFormData {
     name: string;
@@ -77,6 +82,9 @@ export const Usuarios: React.FC = () => {
     
     const [totalPages, setTotalPages] = useState(0);
 
+    const [open, setOpen] = useState(false);
+    const [AlertTipo, setAlertTipo] = useState(false);
+    const [AlertMsg, setAlertMsg] = useState('');
     const busca = useMemo(() => {
         return searchParams.get('busca') || '';
     },[searchParams]);
@@ -88,7 +96,7 @@ export const Usuarios: React.FC = () => {
     const paginaAPI = useMemo(() => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
-    
+
    const getUsuarioById = (pId : number) => {
         UsuarioService.getById(pId)
         .then((result) => {
@@ -156,10 +164,16 @@ export const Usuarios: React.FC = () => {
                 setIsLoading(false);
 
                 if(result instanceof Error) {
-                    alert(result.message);
+                   // alert(result);
+                   setOpen(true);
+                    setAlertTipo(true);
+                    setAlertMsg(result.message);
                 }
                 else {
-                    alert(result);
+                    //alert(result);
+                    setAlertTipo(false);
+                    setOpen(true);
+                    setAlertMsg('Usuário inserido com Sucesso!');
                     handleClose();
                 }
             });
@@ -181,15 +195,23 @@ export const Usuarios: React.FC = () => {
         formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
+            setIsLoading(true);
             UsuarioService.updateById(dadoUsuario?.id, dadosValidados)
             .then((result) => {
-                 //setIsLoading(true);
+                setIsLoading(false);
                 if(result instanceof Error) {
-                    alert(result.message);
+                    //alert(result.message);
+                    setOpen(true);
+                    setAlertTipo(true);
+                    setAlertMsg(result.message);
                 }
                 else {
+                    setAlertTipo(false);
+                    setOpen(true);
+                    setAlertMsg('Usuário atualizado com Sucesso!');
                     //alert(result);
-                    handleCloseEdit();
+                   handleCloseEdit();
+                   window.location.reload();
                 }
      
             });
@@ -211,8 +233,12 @@ export const Usuarios: React.FC = () => {
                 alert(result.message);
             }
             else {
-                alert("Usuário Deletado com sucesso!");
+                //alert("Usuário Deletado com sucesso!");
+                setAlertTipo(false);
+                setOpen(true);
+                setAlertMsg('Usuário deletado com Sucesso!');
                 handleCloseEdit();
+                window.location.reload();
             }
         });
     };
@@ -260,7 +286,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
+                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); /*setOpen(true)*/ }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -511,6 +537,28 @@ export const Usuarios: React.FC = () => {
                 </VForm>
             </ModalCadastro>
 
+            <Box sx={{
+                width: '20%',
+                float: 'right',
+                
+            }}>
+            <Collapse in={open}>
+            <Alert 
+                severity={AlertTipo ? "error" : "success"} 
+                color={AlertTipo ? "error" : "success"}
+                action={
+                    <IconButton
+                        onClick={() => { setOpen(false); } }
+                    >
+                        <Close/>
+                    </IconButton>
+                }
+            >
+                <AlertTitle>{AlertTipo ? "Erro" : "Sucesso"}</AlertTitle>
+                    {AlertMsg}
+            </Alert>
+            </Collapse>
+        </Box>
           
         </LayoutBasePagina>
     );
