@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from '../pages/Login';
+import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
 import { Dashboard, Home, Usuarios } from '../pages';
 import { FaHome, FaUsers } from 'react-icons/fa';

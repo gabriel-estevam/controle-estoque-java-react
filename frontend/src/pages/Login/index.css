@@ -46,14 +46,14 @@
   box-shadow: 0 0 20px 0 darkgrey;*/
 }
 .box-left {
- /* border-style: dashed;*/
+ /* border-style: dashed
   width: 100%;
-  border-radius: 10px 10px 10px 0px;
+  overflow: hidden;
+  border-radius: 10px 10px 10px 0px;;*/
   background-image: url('../../assets/login-background.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  overflow: hidden;
 }
 
 img {
