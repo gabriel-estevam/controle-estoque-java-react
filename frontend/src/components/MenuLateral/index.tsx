@@ -52,12 +52,9 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }
         </ListItemButton>
     );
 }
+
 const NestedListSubheader: React.FC<IListItemLinkProps> = ({ to, icon, label, onClick }) => {
-    const [open, setOpen] = useState(false);
-    
-    const handleClickOpenList = () => {
-        setOpen(!open);
-    };
+
     const navigate = useNavigate();
 
     const resolvedPath = useResolvedPath(to);
@@ -68,6 +65,24 @@ const NestedListSubheader: React.FC<IListItemLinkProps> = ({ to, icon, label, on
         onClick?.();
       };
 
+    return (
+        <ListItemButton sx={{pl: 2,  }} selected={!!match}  onClick={handleClick}>
+            <ListItemIcon>
+                <Icon>
+                    {icon}
+                </Icon>
+            </ListItemIcon>
+            <ListItemText primary={label}/>
+        </ListItemButton>        
+    );
+}
+
+const NestedListHeader: React.FC<Props> = ({ children })  => {
+    const [open, setOpen] = useState(false);
+    
+    const handleClickOpenList = () => {
+        setOpen(!open);
+    };
     return (
         <>
             <ListItemButton onClick={handleClickOpenList}>
@@ -81,20 +96,30 @@ const NestedListSubheader: React.FC<IListItemLinkProps> = ({ to, icon, label, on
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                    <ListItemButton sx={{pl: 2,  }} selected={!!match}  onClick={handleClick}>
-                        <ListItemIcon>
-                            <Icon>
-                                {icon}
-                            </Icon>
-                        </ListItemIcon>
-                        <ListItemText primary={label}/>
-                    </ListItemButton>
+                    { children }
                 </List>
             </Collapse>
         </>
     );
-}
+};
 
+const LinksItensNested = (drawerOptionsNestedList : any, smDown: any, toggleDrawerOpen : any) => {
+    return (
+        //{
+            //@ts-ignore
+            drawerOptionsNestedList.map(drawerOptionsNestedList => (
+
+                <NestedListSubheader 
+                    to={drawerOptionsNestedList.path}
+                    key={drawerOptionsNestedList.path}
+                    icon={drawerOptionsNestedList.icon}
+                    label={drawerOptionsNestedList.label}
+                    onClick={smDown ? toggleDrawerOpen : undefined}
+                />
+            ))
+        //}
+    );
+};
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
 
@@ -180,16 +205,21 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                 ></ListItemLink>
                             ))}
 
-                            {drawerOptionsNestedList.map(drawerOptionsNestedList => (
-                                <NestedListSubheader 
-                                    to={drawerOptionsNestedList.path}
-                                    key={drawerOptionsNestedList.path}
-                                    icon={drawerOptionsNestedList.icon}
-                                    label={drawerOptionsNestedList.label}
-                                    onClick={smDown ? toggleDrawerOpen : undefined}
-                                />
-                            ))}
-                          
+                            {
+                                <NestedListHeader>
+                                    {
+                                        drawerOptionsNestedList.map(drawerOptionsNestedList => (
+                                            <NestedListSubheader 
+                                                to={drawerOptionsNestedList.path}
+                                                key={drawerOptionsNestedList.path}
+                                                icon={drawerOptionsNestedList.icon}
+                                                label={drawerOptionsNestedList.label}
+                                                onClick={smDown ? toggleDrawerOpen : undefined}
+                                            />
+                                        ))
+                                    }
+                                </NestedListHeader>
+                            }
                         </List>
 
                     </Box>

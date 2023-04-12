@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Home, Usuarios } from '../pages';
-import { FaHome, FaUsers } from 'react-icons/fa';
+import { Dashboard, Filiais, Home, Usuarios } from '../pages';
+import { FaHome, FaUsers, FaBuilding } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
     const isAuthenticated = localStorage.getItem("token") !== null;
@@ -37,6 +37,11 @@ export const AppRoutes = () => {
           label: 'Usuários',
           icon: <FaUsers color='#b7b9bb'/>
         },
+        {
+          path: '/filial',
+          label: 'Filiais',
+          icon: <FaBuilding color='#b7b9bb'/>
+        },
       ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -52,6 +57,12 @@ export const AppRoutes = () => {
             <Route path="/usuario" 
                   element={<PrivateRoute redirectTo="/">
                               <Usuarios/>
+                           </PrivateRoute>
+                  } 
+            />
+            <Route path="/filial" 
+                  element={<PrivateRoute redirectTo="/">
+                              <Filiais/>
                            </PrivateRoute>
                   } 
             />
