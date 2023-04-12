@@ -96,7 +96,7 @@ export const Usuarios: React.FC = () => {
     const paginaAPI = useMemo(() => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
-
+    
    const getUsuarioById = (pId : number) => {
         UsuarioService.getById(pId)
         .then((result) => {
@@ -175,6 +175,7 @@ export const Usuarios: React.FC = () => {
                     setOpen(true);
                     setAlertMsg('Usuário inserido com Sucesso!');
                     handleClose();
+                    window.location.reload();
                 }
             });
            
@@ -247,7 +248,7 @@ export const Usuarios: React.FC = () => {
             renderTabela
             titulo="Cadastro de Usuários"
             subTitulo="Gerenciamento de Usuários"
-            totalElements={totalElements >=0 && totalElements <=5 ? 32 : 62}
+            totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
                     textoBotaoNovo="NOVO USUÁRIO"

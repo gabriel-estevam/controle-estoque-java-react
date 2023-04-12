@@ -7,6 +7,7 @@ const Api = axios.create({
     headers:{Authorization: `Bearer ${Environment.TOKEN}`},
 });
 
+
 Api.interceptors.response.use(
     (response) => responseInterceptor(response),
     (error) => errorInterceptor(error),

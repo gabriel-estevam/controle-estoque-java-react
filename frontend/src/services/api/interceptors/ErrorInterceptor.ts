@@ -6,7 +6,10 @@ export const errorInterceptor = (error: AxiosError) => {
     }
     
     if(error.response?.status === 401) {
-        return Promise.reject(new Error('Erro ao autenticar! ' + error.message))
+        let dataResponseError: any;
+        dataResponseError = JSON.stringify(error.response.data);
+        const dataJSON = JSON.parse(dataResponseError);
+        return Promise.reject(new Error(dataJSON.message));
     }
 
     if(error.response?.status === 403) {

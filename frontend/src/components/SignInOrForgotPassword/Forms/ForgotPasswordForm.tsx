@@ -28,7 +28,7 @@ export const ForgotPasswordForm: React.FC = () => {
                         paddingY: 2,
                        // marginTop: 5,
                     }}
-                >Entrar</Button>
+                >Reset Senha</Button>
             </VForm>
         </Box>
     );

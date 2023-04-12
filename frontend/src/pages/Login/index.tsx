@@ -14,7 +14,6 @@ export const Login: React.FC = () => {
             height="40vw"
             alignItems="center" 
             justifyContent="center"
-           // margin={5}
             marginX="20%"
             marginY={10}
             marginRight={2}
@@ -27,7 +26,6 @@ export const Login: React.FC = () => {
                     width="100%"
                     height="40vw"
                     elevation={5}
-                    //variant='outlined'
                 >
                     <Box
                         component="img"
@@ -36,7 +34,6 @@ export const Login: React.FC = () => {
                         width: '100%',
                         }}
                         
-                       // alt=''
                         src=''
                         className='box-left'
                     />
