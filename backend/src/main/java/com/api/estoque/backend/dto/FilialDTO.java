@@ -1,7 +1,9 @@
 package com.api.estoque.backend.dto;
 
+import com.api.estoque.backend.model.Endereco;
 import com.api.estoque.backend.model.Filial;
 import com.api.estoque.backend.model.enums.StatusOption;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FilialDTO {
@@ -9,11 +11,17 @@ public class FilialDTO {
     private Long id;
     private String name;
     private String phoneNumber;
+    
+    
+    
     private String cnpj;
     private Integer status;
-
+    
     @JsonProperty("usuarioFK")
     private String usuarioFK;
+    
+    @JsonProperty("Endereco")
+    private Endereco endereco;
 
     public FilialDTO() {
 
@@ -24,6 +32,7 @@ public class FilialDTO {
         name = objFilial.getName();
         cnpj = objFilial.getCnpj();
         phoneNumber = objFilial.getPhoneNumber();
+        endereco = objFilial.getEndereco();
         setStatus(objFilial.getStatus());
     }
 
@@ -75,5 +84,14 @@ public class FilialDTO {
 
     public void setUsuarioFK(String usuarioFK) {
         this.usuarioFK = usuarioFK;
+    }
+
+    @JsonIgnore
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
     }
 }

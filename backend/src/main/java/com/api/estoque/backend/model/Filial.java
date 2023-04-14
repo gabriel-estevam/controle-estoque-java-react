@@ -28,12 +28,19 @@ public class Filial implements Serializable {
     private String name;
     private String phoneNumber;
     private String cnpj;
+
+    
+    
     @Column(name = "status")
     private Integer status;
     
     @OneToOne //(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuarioId")
     private Usuario usuario;
+    
+    @OneToOne
+    @JoinColumn(name = "idEndereco")
+    private Endereco endereco;
 
     public Filial() {
 
@@ -100,6 +107,14 @@ public class Filial implements Serializable {
     }
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
     }
 
     @Override

@@ -103,23 +103,6 @@ const NestedListHeader: React.FC<Props> = ({ children })  => {
     );
 };
 
-const LinksItensNested = (drawerOptionsNestedList : any, smDown: any, toggleDrawerOpen : any) => {
-    return (
-        //{
-            //@ts-ignore
-            drawerOptionsNestedList.map(drawerOptionsNestedList => (
-
-                <NestedListSubheader 
-                    to={drawerOptionsNestedList.path}
-                    key={drawerOptionsNestedList.path}
-                    icon={drawerOptionsNestedList.icon}
-                    label={drawerOptionsNestedList.label}
-                    onClick={smDown ? toggleDrawerOpen : undefined}
-                />
-            ))
-        //}
-    );
-};
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
 

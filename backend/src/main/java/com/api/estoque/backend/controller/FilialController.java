@@ -1,6 +1,7 @@
 package com.api.estoque.backend.controller;
 
 import java.net.URI;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.api.estoque.backend.dto.FilialDTO;
+import com.api.estoque.backend.model.Endereco;
 import com.api.estoque.backend.model.Filial;
 import com.api.estoque.backend.model.Usuario;
+import com.api.estoque.backend.repository.EnderecoRepository;
 import com.api.estoque.backend.service.FilialService;
 import com.api.estoque.backend.service.UserService;
 
@@ -34,6 +37,9 @@ public class FilialController {
 
     @Autowired
     private UserService usuarioService;
+
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
     @GetMapping
     public ResponseEntity<Page<Filial>> 
@@ -53,8 +59,13 @@ public class FilialController {
     public ResponseEntity<Filial> insert(@RequestBody FilialDTO filialDTO) {
         Usuario instanceUsuario = usuarioService.findById(Long.parseLong(filialDTO.getUsuarioFK()));
         Filial newFilial = service.fromDto(filialDTO);
+        Endereco endereco = service.enderecoFilialExists(filialDTO.getEndereco());
+        
         newFilial.setUsuario(instanceUsuario);
+        newFilial.setEndereco(endereco);
+
         newFilial = service.insert(newFilial);
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                                              .path("/{id}")
                                              .buildAndExpand(newFilial.getId())
@@ -73,6 +84,10 @@ public class FilialController {
         filialDTO.setId(id);
         Usuario usuarioFK = usuarioService.findById(Long.parseLong(filialDTO.getUsuarioFK()));
         Filial filialUpdate = service.fromDto(filialDTO);
+        Endereco endereco = service.enderecoFilialExists(filialDTO.getEndereco());
+        endereco = enderecoRepository.findById(filialUpdate.getId()).get();
+        endereco.setFilial(filialUpdate);
+        filialUpdate.setEndereco(endereco);
         filialUpdate.setUsuario(usuarioFK);
         filialUpdate = service.update(id, filialUpdate);
         return ResponseEntity.ok().body(filialUpdate);
