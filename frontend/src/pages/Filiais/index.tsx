@@ -512,9 +512,7 @@ export const Filiais: React.FC = () => {
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>
-
-                                <Grid item>
-                
+                                <Grid item md={6}>
                                     <InputLabel>Status</InputLabel>
                                     
                                     <Stack direction="row" spacing={1} alignItems="center">
@@ -524,6 +522,11 @@ export const Filiais: React.FC = () => {
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>
+
+                                <Grid item md={6}>
+                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading}/>
+                                </Grid>
+
                             </Grid>
                         </Grid>
                     </Box>
@@ -605,8 +608,7 @@ export const Filiais: React.FC = () => {
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="role"  //edit={true} 
-                                    />
+                                    <AutoCompleteUsuario name="role" />
                                 </Grid>
 
                                 <Grid item md={6}>

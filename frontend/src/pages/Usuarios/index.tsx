@@ -26,7 +26,7 @@ import * as yup from 'yup';
 
 import { IVFormErrors, VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
-import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
+import { AutoCompleteTipoUsuario, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
@@ -47,7 +47,6 @@ interface IFormData {
     role: number;
     status: number;
     filialFK: number;
-    //filialName: string;
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
@@ -164,13 +163,11 @@ export const Usuarios: React.FC = () => {
                 setIsLoading(false);
 
                 if(result instanceof Error) {
-                   // alert(result);
                    setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
                 }
                 else {
-                    //alert(result);
                     setAlertTipo(false);
                     setOpen(true);
                     setAlertMsg('Usuário inserido com Sucesso!');
@@ -201,7 +198,6 @@ export const Usuarios: React.FC = () => {
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
-                    //alert(result.message);
                     setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
@@ -210,7 +206,6 @@ export const Usuarios: React.FC = () => {
                     setAlertTipo(false);
                     setOpen(true);
                     setAlertMsg('Usuário atualizado com Sucesso!');
-                    //alert(result);
                    handleCloseEdit();
                    window.location.reload();
                 }
@@ -287,7 +282,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); /*setOpen(true)*/ }}
+                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -408,7 +403,7 @@ export const Usuarios: React.FC = () => {
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="role" />
+                                    <AutoCompleteTipoUsuario name="role" />
                                 </Grid>
 
                                 <Grid item md={6}>
@@ -454,7 +449,6 @@ export const Usuarios: React.FC = () => {
                                 <Grid item md={12}>
 
                                     <VTextField
-                                        //edit={openModalEdit}
                                         name="name"
                                         label="Nome Completo" 
                                         variant="outlined"
@@ -477,7 +471,6 @@ export const Usuarios: React.FC = () => {
                                 <Grid item md={6}>
 
                                     <VTextField
-                                        //edit={openModalEdit}
                                         name="email"
                                         label="E-mail" 
                                         variant="outlined"
@@ -510,8 +503,7 @@ export const Usuarios: React.FC = () => {
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="role"  //edit={true} 
-                                    />
+                                    <AutoCompleteTipoUsuario name="role" />
                                 </Grid>
 
                                 <Grid item md={6}>
@@ -548,9 +540,7 @@ export const Usuarios: React.FC = () => {
                 severity={AlertTipo ? "error" : "success"} 
                 color={AlertTipo ? "error" : "success"}
                 action={
-                    <IconButton
-                        onClick={() => { setOpen(false); } }
-                    >
+                    <IconButton onClick={() => { setOpen(false); } } >
                         <Close/>
                     </IconButton>
                 }
