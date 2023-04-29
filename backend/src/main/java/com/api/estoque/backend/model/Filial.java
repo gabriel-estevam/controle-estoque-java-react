@@ -102,7 +102,7 @@ public class Filial implements Serializable {
         return usuario;
     }
 
-    public Long getUsuarioId() {
+    public Long getUsuarioFK() {
         return usuario.getId();
     }
     public void setUsuario(Usuario usuario) {

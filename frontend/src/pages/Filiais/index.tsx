@@ -39,27 +39,35 @@ import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 import '../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
-import { FilialService, IListagemFilial } from '../../services/api/filial/FilialService';
+
+import { FilialService, IEndereco, IListagemFilial } from '../../services/api/filial/FilialService';
 import { VInputMask } from '../../forms/VInputMask';
+
 
 interface IFormData {
     name: string;
-    email: string;
-    password: string;
-    role: number;
+    cnpj: string;
+    phoneNumber: string;
+    endereco: IEndereco;
     status: number;
-    filialFK: number;
-    //filialName: string;
+    usuarioFK: number;
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
     id: yup.number(),
     name: yup.string().required(),
-    email: yup.string().required().email(),
-    password: yup.string().required().min(5),
-    role: yup.number().required(),
+    cnpj: yup.string().required(),
+    phoneNumber: yup.string().required(),
     status: yup.number().required(),
-    filialFK: yup.number().required(),
+    usuarioFK: yup.number().required(),
+    endereco: yup.object({
+        endereco: yup.string().required(),
+        cep: yup.string().required(),
+        numero: yup.number().required(),
+        cidade: yup.string().required(),
+        estado: yup.string().required(),
+        complemento: yup.string(),
+    }),
 });
 
 export const Filiais: React.FC = () => {
@@ -161,21 +169,19 @@ export const Filiais: React.FC = () => {
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
             setIsLoading(true);
-            UsuarioService.create(dadosValidados)
+            FilialService.create(dadosValidados)
             .then((result) => {
                 setIsLoading(false);
 
                 if(result instanceof Error) {
-                   // alert(result);
                    setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
                 }
                 else {
-                    //alert(result);
                     setAlertTipo(false);
                     setOpen(true);
-                    setAlertMsg('Usuário inserido com Sucesso!');
+                    setAlertMsg('Filial inserida com Sucesso!');
                     handleClose();
                     window.location.reload();
                 }
@@ -195,7 +201,7 @@ export const Filiais: React.FC = () => {
     };
 
     const handleUpdate = (dados: IFormData) => {
-        formValidationSchema
+     /*   formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
@@ -227,7 +233,7 @@ export const Filiais: React.FC = () => {
             });
 
             formRef.current?.setErrors(validationErrors);
-        });
+        });*/
     };
 
     return (

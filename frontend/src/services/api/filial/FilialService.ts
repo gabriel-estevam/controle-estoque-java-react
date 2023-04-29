@@ -1,23 +1,33 @@
 import { Environment } from "../../../environment";
 import { Api } from "../axios-config";
 
-interface IEndereco {
+export interface IEndereco {
   endereco: string;
   cep: string;
   numero: number;
-  complemento: string;
+  complemento: string | undefined | null;
   cidade: string
   estado: string
 }
 
 export interface IListagemFilial {
-    id: number;
-    name: string;
-    phoneNumber: string;
-    cnpj: string;
-    status: string;
-    usuarioId: number;
-    endereco: IEndereco;
+  id: number;
+  name: string;
+  phoneNumber: string;
+  cnpj: string;
+  status: number;
+  usuarioFK: number;
+  endereco: IEndereco;
+}
+
+export interface IDetalheFilial {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  cnpj: string;
+  status: number;
+  usuarioFK: number;
+  endereco: IEndereco;
 }
 
 type TFilialLista = {
@@ -47,6 +57,21 @@ const getAll = async (page = 0, filter?: string): Promise<TFilialLista | Error> 
   }  
 };
 
+const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
+  try {
+    const { data } = await Api.post<IDetalheFilial>('/filiais', dados);
+    if(data) {
+      return data.id;
+    }
+    return new Error('Erro ao criar registro.');
+  } 
+  catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
+  }
+};
+
 export const FilialService = {
   getAll,
+  create,
 };

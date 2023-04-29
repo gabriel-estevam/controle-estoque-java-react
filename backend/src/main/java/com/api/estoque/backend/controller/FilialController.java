@@ -49,7 +49,7 @@ public class FilialController {
     }
     
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Filial> findByID(@PathVariable Long id) {
+    public ResponseEntity<Filial> findByid(@PathVariable Long id) {
         Filial filial = service.findById(id);
         return ResponseEntity.ok().body(filial);
     }
