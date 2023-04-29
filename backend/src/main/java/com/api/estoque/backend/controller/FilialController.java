@@ -1,7 +1,6 @@
 package com.api.estoque.backend.controller;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

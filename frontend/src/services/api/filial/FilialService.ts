@@ -1,13 +1,23 @@
 import { Environment } from "../../../environment";
 import { Api } from "../axios-config";
 
-interface IListagemFilial {
+interface IEndereco {
+  endereco: string;
+  cep: string;
+  numero: number;
+  complemento: string;
+  cidade: string
+  estado: string
+}
+
+export interface IListagemFilial {
     id: number;
     name: string;
     phoneNumber: string;
     cnpj: string;
     status: string;
     usuarioId: number;
+    endereco: IEndereco;
 }
 
 type TFilialLista = {
@@ -38,5 +48,5 @@ const getAll = async (page = 0, filter?: string): Promise<TFilialLista | Error> 
 };
 
 export const FilialService = {
-    getAll,
+  getAll,
 };

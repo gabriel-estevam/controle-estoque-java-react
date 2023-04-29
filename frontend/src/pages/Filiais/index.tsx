@@ -30,7 +30,7 @@ import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
-import { IDetalheUsuario, IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
+import { IDetalheUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
 import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
 
@@ -39,6 +39,8 @@ import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 import '../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
+import { FilialService, IListagemFilial } from '../../services/api/filial/FilialService';
+import { VInputMask } from '../../forms/VInputMask';
 
 interface IFormData {
     name: string;
@@ -71,7 +73,7 @@ export const Filiais: React.FC = () => {
     
     const { debounce } = useDebounce(3000, true);
     
-    const [rows, setRows] = useState<IListagemUsuario[]>([]);
+    const [rows, setRows] = useState<IListagemFilial[]>([]);
     
     const [dadoUsuario, setdadoUsuario] = useState<IDetalheUsuario>();
     
@@ -138,7 +140,7 @@ export const Filiais: React.FC = () => {
         debounce(()=> {
             setIsLoading(true);
 
-            UsuarioService.getAll(paginaAPI, busca)
+            FilialService.getAll(paginaAPI, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -227,31 +229,16 @@ export const Filiais: React.FC = () => {
             formRef.current?.setErrors(validationErrors);
         });
     };
-    const handleDelete = (id: number) => {
-        UsuarioService.deleteById(id)
-        .then((result) => {
-            if(result instanceof Error) {
-                alert(result.message);
-            }
-            else {
-                //alert("Usuário Deletado com sucesso!");
-                setAlertTipo(false);
-                setOpen(true);
-                setAlertMsg('Usuário deletado com Sucesso!');
-                handleCloseEdit();
-                window.location.reload();
-            }
-        });
-    };
+
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Cadastro de Usuários"
-            subTitulo="Gerenciamento de Usuários"
+            titulo="Cadastro de Filiais"
+            subTitulo="Gerenciamento de Filiais"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVO USUÁRIO"
+                    textoBotaoNovo="NOVA FILIAL"
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
@@ -265,11 +252,16 @@ export const Filiais: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
+                            <TableCell>CNPJ</TableCell>
                             <TableCell>Nome</TableCell>
-                            <TableCell>Login</TableCell>
-                            <TableCell>Tipo Usuário</TableCell>
+                            <TableCell>Contato</TableCell>
+                            <TableCell>Endereço</TableCell>
+                            <TableCell>CEP</TableCell>
+                            <TableCell>Numero</TableCell>
+                            <TableCell>Complemento</TableCell>
+                            <TableCell>Cidade</TableCell>
+                            <TableCell>Estado</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Filial</TableCell>
                             <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
@@ -277,35 +269,31 @@ export const Filiais: React.FC = () => {
                         {rows.map(row => (
                             <TableRow key={row.id}>
                                 <TableCell>{row.id}</TableCell>
+                                <TableCell>{row.cnpj}</TableCell>
                                 <TableCell>{row.name}</TableCell>
-                                <TableCell>{row.email}</TableCell>
-                                <TableCell>{row.role}</TableCell>
+                                <TableCell>{row.phoneNumber}</TableCell>
+                                <TableCell>{row.endereco.endereco}</TableCell>
+                                <TableCell>{row.endereco.cep}</TableCell>
+                                <TableCell>{row.endereco.numero}</TableCell>
+                                <TableCell>{row.endereco.complemento}</TableCell>
+                                <TableCell>{row.endereco.cidade}</TableCell>
+                                <TableCell>{row.endereco.estado}</TableCell>
                                 <TableCell>{row.status}</TableCell>
-                                <TableCell>{row.filialName}</TableCell>
                                 <TableCell width={200}>
                                     <Button
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); /*setOpen(true)*/ }}
+                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
                                     >
                                         Editar
                                     </Button>
-    
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        disableElevation
-                                        onClick={() => { handleDelete(row.id) }}
-                                    >
-                                        Deletar
-                                    </Button>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                                    ))}
                     </TableBody>
 
                     {totalElements === 0 && !isLoading && (
@@ -341,7 +329,7 @@ export const Filiais: React.FC = () => {
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
-                titulo="Adicionar Novo Usuário"
+                titulo="Adicionar Nova Filial"
             >
 
                 <VForm ref={formRef} onSubmit={handleSave}>
@@ -350,13 +338,12 @@ export const Filiais: React.FC = () => {
 
                         <Grid container direction="column" padding={2} spacing={2}>
 
-                            <Grid container item direction="row" spacing={2}>
+                            <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={12}>
-
+                                <Grid item md={6}>
                                     <VTextField
                                         name="name"
-                                        label="Nome Completo" 
+                                        label="Nome Filial" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -370,28 +357,13 @@ export const Filiais: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-
                                     <VTextField
-                                        name="email"
-                                        label="E-mail" 
+                                        name="cnpj"
+                                        label="CNPJ Filial" 
                                         variant="outlined"
-                                        type="email"
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-
-                                    <VTextField
-                                        name="password"
-                                        label="Senha" 
-                                        variant="outlined"
-                                        type="password"
+                                        type="text"
                                         sx={{
                                             "& input": {border: 'none', 
                                                         margin: 2, 
@@ -403,17 +375,140 @@ export const Filiais: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
+
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={1}>
+
+                                <Grid item md={6}>
+                                    <VTextField
+                                        name="phoneNumber"
+                                        label="Contato Telefone" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={6}>
+                                    <VInputMask
+                                        form={formRef.current}
+                                        name="cep"
+                                        label="CEP" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+
                             </Grid>
                             
                             <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="role" />
+                                  <VTextField
+                                        disabled
+                                        name="endereco"
+                                        label="Endereço" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
                                 </Grid>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} />
+                                  <VTextField
+                                        name="numero"
+                                        label="Número" 
+                                        type="number"
+                                        fullWidth
+                                    />
                                 </Grid>
+
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={2}>
+
+                                <Grid item md={3}>
+                                  <VTextField
+                                        disabled
+                                        name="cidade"
+                                        label="Cidade" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={3}>
+                                  <VTextField
+                                        disabled
+                                        name="estado"
+                                        label="Estado" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={6}>
+                                  <VTextField
+                                        name="complemento"
+                                        label="Complemento" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>
