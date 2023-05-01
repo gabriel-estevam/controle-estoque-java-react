@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
-import { FormHandles, useField } from '@unform/core';
-import { PublicService } from '../services/api/public/PublicService';
+import { useField } from '@unform/core';
+import { Mask } from './Masks';
 
 type TVTextField = TextFieldProps & {
     name: string,
     edit?: boolean,
-    form: FormHandles | null | undefined,
+    tipoMask: "CEP" | "CNPJ" | "TELEFONE";
 };
 
 
-export const VInputMask: React.FC<TVTextField> = ({name, edit, form, ...rest}) => {
+export const VInputMask: React.FC<TVTextField> = ({name, edit, tipoMask, ...rest}) => {
     const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 
     const [value, setValue] = useState(defaultValue);
-    const [erro, setErro] = useState(false);
 
     useEffect(()=> {
         registerField({
@@ -25,42 +24,32 @@ export const VInputMask: React.FC<TVTextField> = ({name, edit, form, ...rest}) =
     }, [registerField, fieldName, value]);
 
     const handleKeyUp = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        e.currentTarget.maxLength = 9;
-        let value : string;
-        value = e.currentTarget.value;
-        value = value.replace(/\D/g, "");
-        value = value.replace(/^(\d{5})(\d)/, "$1-$2");
-        setValue(value);
-    }
+        
+        if(tipoMask === "CEP") {
+            let valueMask : string;
+            valueMask = Mask.cep(e);
+            setValue(valueMask);
+        }
+        
+        if(tipoMask === "CNPJ") {
+            let valueMask : string;
+            valueMask = Mask.cnpj(e);
+            setValue(valueMask);
+        }
 
-    const consultaCEP = () => {
-        PublicService.searchCEP(value)
-        .then((result) => {
-            if(result instanceof Error) {
-                setErro(true);
-            }
-            else {
-                //@ts-ignore
-                form.setData({
-                    cep: value,
-                    endereco : result.street,
-                    cidade: result.city,
-                    estado: result.state,
-                })
-                setErro(false);
-            }
-        });
-    };
+        if(tipoMask === "TELEFONE") {
+            let valueMask : string;
+            valueMask = Mask.telefoneFixo(e);
+            setValue(valueMask);
+        }
+    }
 
     return (
         <TextField
             {...rest}
-            error={erro}
-            helperText={erro ? "CEP Inválido" : ""}
             value={value || ''}
-            onChange={e => { setValue(e.target.value); handleKeyUp(e); /*rest.onChange?.(e);*/ }}
+            onChange={e => { setValue(e.target.value); handleKeyUp(e); }}
             onKeyDown={(e) => { error && clearError(); rest.onKeyDown?.(e); }}
-            onBlur={(_) => consultaCEP()}
         />
     );
 };

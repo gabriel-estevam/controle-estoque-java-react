@@ -42,6 +42,7 @@ import { Close } from '@mui/icons-material';
 
 import { FilialService, IEndereco, IListagemFilial } from '../../services/api/filial/FilialService';
 import { VInputMask } from '../../forms/VInputMask';
+import { PublicService } from '../../services/api/public/PublicService';
 
 
 interface IFormData {
@@ -85,6 +86,7 @@ export const Filiais: React.FC = () => {
     
     const [dadoUsuario, setdadoUsuario] = useState<IDetalheUsuario>();
     
+    const [erroCEP, setErroCEP] = useState(false);
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
@@ -164,7 +166,28 @@ export const Filiais: React.FC = () => {
         });
     }, [busca, pagina, paginaAPI]);
 
+    const consultaCEP = (cep: string) => {
+        PublicService.searchCEP(cep)
+        .then((result) => {
+            if(result instanceof Error) {
+                setErroCEP(true);
+                formRef.current?.setFieldValue("cidade", cep);
+                formRef.current?.setFieldValue("endereco",'');
+                formRef.current?.setFieldValue("cidade", '');
+                formRef.current?.setFieldValue("cidade", '');
+            }
+            else {
+                setErroCEP(false);
+                formRef.current?.setFieldValue("cidade", cep);
+                formRef.current?.setFieldValue("endereco", result.street);
+                formRef.current?.setFieldValue("cidade", result.city);
+                formRef.current?.setFieldValue("estado", result.state);
+            }
+        });
+    };
+
     const handleSave = (dados: IFormData) => {
+        //console.log("Dados salvos ", dados);
         formValidationSchema
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
@@ -365,9 +388,10 @@ export const Filiais: React.FC = () => {
                                 </Grid>
 
                                 <Grid item md={6}>
-                                    <VTextField
+                                    <VInputMask
+                                        tipoMask="CNPJ"
                                         name="cnpj"
-                                        label="CNPJ Filial" 
+                                        label="CNPJ" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -379,7 +403,7 @@ export const Filiais: React.FC = () => {
                                             },
                                         }}
                                         fullWidth
-                                    />
+                                        />
                                 </Grid>
 
                             </Grid>
@@ -387,9 +411,10 @@ export const Filiais: React.FC = () => {
                             <Grid container item direction="row" spacing={1}>
 
                                 <Grid item md={6}>
-                                    <VTextField
+                                    <VInputMask
+                                        tipoMask="TELEFONE"
                                         name="phoneNumber"
-                                        label="Contato Telefone" 
+                                        label="Contato" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -406,7 +431,7 @@ export const Filiais: React.FC = () => {
 
                                 <Grid item md={6}>
                                     <VInputMask
-                                        form={formRef.current}
+                                        tipoMask="CEP"
                                         name="cep"
                                         label="CEP" 
                                         variant="outlined"
@@ -419,6 +444,10 @@ export const Filiais: React.FC = () => {
                                                         paddingRight: 0
                                             },
                                         }}
+                                       onBlur={(e) => { consultaCEP(e.currentTarget.value); console.log(e) }}
+                                        error={erroCEP}
+                                        helperText={erroCEP && "CEP Inválido"}
+                                        onKeyDown={(_) => setErroCEP(false)}
                                         fullWidth
                                     />
                                 </Grid>
