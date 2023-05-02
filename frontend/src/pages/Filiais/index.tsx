@@ -44,12 +44,11 @@ import { FilialService, IEndereco, IListagemFilial } from '../../services/api/fi
 import { VInputMask } from '../../forms/VInputMask';
 import { PublicService } from '../../services/api/public/PublicService';
 
-
 interface IFormData {
     name: string;
     cnpj: string;
     phoneNumber: string;
-    endereco: IEndereco;
+    Endereco: IEndereco;
     status: number;
     usuarioFK: number;
 }
@@ -57,18 +56,19 @@ interface IFormData {
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
     id: yup.number(),
     name: yup.string().required(),
-    cnpj: yup.string().required(),
+    cnpj: yup.string().required().min(14),
     phoneNumber: yup.string().required(),
     status: yup.number().required(),
     usuarioFK: yup.number().required(),
-    endereco: yup.object({
+
+    Endereco: yup.object({
         endereco: yup.string().required(),
         cep: yup.string().required(),
-        numero: yup.number().required(),
+        numero: yup.string().required(),
         cidade: yup.string().required(),
         estado: yup.string().required(),
-        complemento: yup.string(),
-    }),
+        complemento: yup.string().nullable(),
+    }).required(),
 });
 
 export const Filiais: React.FC = () => {
@@ -171,23 +171,23 @@ export const Filiais: React.FC = () => {
         .then((result) => {
             if(result instanceof Error) {
                 setErroCEP(true);
-                formRef.current?.setFieldValue("cidade", cep);
-                formRef.current?.setFieldValue("endereco",'');
-                formRef.current?.setFieldValue("cidade", '');
-                formRef.current?.setFieldValue("cidade", '');
+                formRef.current?.setFieldValue("Endereco.cidade", cep);
+                formRef.current?.setFieldValue("Endereco.endereco",'');
+                formRef.current?.setFieldValue("Endereco.cidade", '');
+                formRef.current?.setFieldValue("Endereco.cidade", '');
             }
             else {
                 setErroCEP(false);
-                formRef.current?.setFieldValue("cidade", cep);
-                formRef.current?.setFieldValue("endereco", result.street);
-                formRef.current?.setFieldValue("cidade", result.city);
-                formRef.current?.setFieldValue("estado", result.state);
+                formRef.current?.setFieldValue("Endereco.cidade", cep);
+                formRef.current?.setFieldValue("Endereco.endereco", result.street);
+                formRef.current?.setFieldValue("Endereco.cidade", result.city);
+                formRef.current?.setFieldValue("Endereco.estado", result.state);
             }
         });
     };
 
     const handleSave = (dados: IFormData) => {
-        //console.log("Dados salvos ", dados);
+        console.log("Dados salvos ", dados);
         formValidationSchema
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
@@ -206,7 +206,7 @@ export const Filiais: React.FC = () => {
                     setOpen(true);
                     setAlertMsg('Filial inserida com Sucesso!');
                     handleClose();
-                    window.location.reload();
+                   window.location.reload();
                 }
             });
            
@@ -407,144 +407,153 @@ export const Filiais: React.FC = () => {
                                 </Grid>
 
                             </Grid>
-
-                            <Grid container item direction="row" spacing={1}>
-
-                                <Grid item md={6}>
-                                    <VInputMask
-                                        tipoMask="TELEFONE"
-                                        name="phoneNumber"
-                                        label="Contato" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                    <VInputMask
-                                        tipoMask="CEP"
-                                        name="cep"
-                                        label="CEP" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                       onBlur={(e) => { consultaCEP(e.currentTarget.value); console.log(e) }}
-                                        error={erroCEP}
-                                        helperText={erroCEP && "CEP Inválido"}
-                                        onKeyDown={(_) => setErroCEP(false)}
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                            </Grid>
                             
-                            <Grid container item direction="row" spacing={2}>
+                                <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={6}>
-                                  <VTextField
-                                        disabled
-                                        name="endereco"
-                                        label="Endereço" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
+                                    <Grid item md={6}>
+                                        <VInputMask
+                                            tipoMask="TELEFONE"
+                                            name="phoneNumber"
+                                            label="Contato" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                        <VInputMask
+                                            tipoMask="CEP"
+                                            name="Endereco.cep"
+                                            label="CEP" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            onBlur={(e) => { consultaCEP(e.currentTarget.value); }}
+                                            error={erroCEP}
+                                            helperText={erroCEP && "CEP Inválido"}
+                                            onKeyDown={(_) => setErroCEP(false)}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                </Grid>
+                                
+                                <Grid container item direction="row" spacing={2}>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.endereco"
+                                            label="Endereço" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            name="Endereco.numero"
+                                            label="Número" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
                                 </Grid>
 
-                                <Grid item md={6}>
-                                  <VTextField
-                                        name="numero"
-                                        label="Número" 
-                                        type="number"
-                                        fullWidth
-                                    />
+                                <Grid container item direction="row" spacing={2}>
+
+                                    <Grid item md={3}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.cidade"
+                                            label="Cidade" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={3}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.estado"
+                                            label="Estado" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            name="Endereco.complemento"
+                                            label="Complemento" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
                                 </Grid>
-
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
-
-                                <Grid item md={3}>
-                                  <VTextField
-                                        disabled
-                                        name="cidade"
-                                        label="Cidade" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={3}>
-                                  <VTextField
-                                        disabled
-                                        name="estado"
-                                        label="Estado" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                  <VTextField
-                                        name="complemento"
-                                        label="Complemento" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                            </Grid>
 
                             <Grid container item direction="row" spacing={2}>
                                 <Grid item md={6}>

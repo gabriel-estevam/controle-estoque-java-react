@@ -4,8 +4,8 @@ import { Api } from "../axios-config";
 export interface IEndereco {
   endereco: string;
   cep: string;
-  numero: number;
-  complemento: string | undefined | null;
+  numero: string;
+  complemento: string | null | undefined;
   cidade: string
   estado: string
 }
@@ -27,7 +27,7 @@ export interface IDetalheFilial {
   cnpj: string;
   status: number;
   usuarioFK: number;
-  endereco: IEndereco;
+  Endereco: IEndereco;
 }
 
 type TFilialLista = {
@@ -58,8 +58,14 @@ const getAll = async (page = 0, filter?: string): Promise<TFilialLista | Error> 
 };
 
 const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
-  try {
+  try 
+  {
+    if (!dados.Endereco.complemento) {
+      dados.Endereco.complemento = "N/A";
+    }
+    
     const { data } = await Api.post<IDetalheFilial>('/filiais', dados);
+
     if(data) {
       return data.id;
     }

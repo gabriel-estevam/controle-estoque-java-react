@@ -47,6 +47,8 @@ export const VInputMask: React.FC<TVTextField> = ({name, edit, tipoMask, ...rest
     return (
         <TextField
             {...rest}
+            error={!!error}
+            helperText={error}
             value={value || ''}
             onChange={e => { setValue(e.target.value); handleKeyUp(e); }}
             onKeyDown={(e) => { error && clearError(); rest.onKeyDown?.(e); }}
