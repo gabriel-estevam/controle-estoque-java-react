@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<Usuario>> findByNameContaining(
                                                                 @RequestParam(name = "name", required = false) String name, 
-                                                                @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable
+                                                                @PageableDefault(sort = "idUsuario", direction = Direction.ASC) Pageable pageable
                                                             ) 
     {
         Page<Usuario> list = service.findByNameContaining(name, pageable);

@@ -53,7 +53,7 @@ interface IFormData {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    id: yup.number(),
+    idFilial: yup.number(),
     name: yup.string().required(),
     cnpj: yup.string().required().min(14),
     phoneNumber: yup.string().required(),
@@ -61,7 +61,7 @@ const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
     usuarioFK: yup.number().required(),
 
     Endereco: yup.object({
-        endereco: yup.string().required(),
+        logradouro: yup.string().required(),
         cep: yup.string().required(),
         numero: yup.string().required(),
         cidade: yup.string().required(),
@@ -115,11 +115,13 @@ export const Filiais: React.FC = () => {
                 alert(result.message);
             }
             else {
+                console.log(result)
                 setdadoFilial(result);
                 formRef.current?.setData({
                     name: result.name,
                     cnpj: result.cnpj,
                     phoneNumber: result.phoneNumber,
+
                     //@ts-ignore
                     Endereco: result.endereco,
 
@@ -172,14 +174,14 @@ export const Filiais: React.FC = () => {
             if(result instanceof Error) {
                 setErroCEP(true);
                 formRef.current?.setFieldValue("Endereco.cidade", cep);
-                formRef.current?.setFieldValue("Endereco.endereco",'');
+                formRef.current?.setFieldValue("Endereco.logradouro",'');
                 formRef.current?.setFieldValue("Endereco.cidade", '');
                 formRef.current?.setFieldValue("Endereco.cidade", '');
             }
             else {
                 setErroCEP(false);
                 formRef.current?.setFieldValue("Endereco.cidade", cep);
-                formRef.current?.setFieldValue("Endereco.endereco", result.street);
+                formRef.current?.setFieldValue("Endereco.logradouro", result.street);
                 formRef.current?.setFieldValue("Endereco.cidade", result.city);
                 formRef.current?.setFieldValue("Endereco.estado", result.state);
             }
@@ -230,7 +232,7 @@ export const Filiais: React.FC = () => {
         .then((dadosValidados) => {
             setIsLoading(true);
             //@ts-ignore
-            FilialService.updateById(dadoFilial.id, dadosValidados)
+            FilialService.updateById(dadoFilial?.idFilial, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
@@ -298,12 +300,12 @@ export const Filiais: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.id}>
-                                <TableCell>{row.id}</TableCell>
+                            <TableRow key={row.idFilial}>
+                                <TableCell>{row.idFilial}</TableCell>
                                 <TableCell>{row.cnpj}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.phoneNumber}</TableCell>
-                                <TableCell>{row.endereco.endereco}</TableCell>
+                                <TableCell>{row.endereco.logradouro}</TableCell>
                                 <TableCell>{row.endereco.cep}</TableCell>
                                 <TableCell>{row.endereco.numero}</TableCell>
                                 <TableCell>{row.endereco.complemento}</TableCell>
@@ -315,7 +317,7 @@ export const Filiais: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getFilialById(row.id); }}
+                                        onClick={() => { handleOpenEdit(); getFilialById(row.idFilial); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -361,6 +363,8 @@ export const Filiais: React.FC = () => {
                 handleClose={handleClose}
                 formSubmit={save}
                 titulo="Adicionar Nova Filial"
+                tituloButtonAdd="Adicionar Filial"
+                tituloButtonEdit="Salvar Filial"
             >
 
                 <VForm ref={formRef} onSubmit={handleSave}>
@@ -461,7 +465,7 @@ export const Filiais: React.FC = () => {
                                     <Grid item md={6}>
                                     <VTextField
                                             disabled
-                                            name="Endereco.endereco"
+                                            name="Endereco.logradouro"
                                             label="Endereço" 
                                             variant="outlined"
                                             type="text"
@@ -584,6 +588,8 @@ export const Filiais: React.FC = () => {
                 handleClose={handleCloseEdit}
                 formSubmit={save}
                 titulo="Editar Filial"
+                tituloButtonAdd="Adicionar Filial"
+                tituloButtonEdit="Salvar Filial"
                 edit={openModalEdit}
             >
 
@@ -684,7 +690,7 @@ export const Filiais: React.FC = () => {
                                     <Grid item md={6}>
                                     <VTextField
                                             disabled
-                                            name="Endereco.endereco"
+                                            name="Endereco.logradouro"
                                             label="Endereço" 
                                             variant="outlined"
                                             type="text"
@@ -787,7 +793,7 @@ export const Filiais: React.FC = () => {
                                     <Stack direction="row" spacing={1} alignItems="center">
 
                                         <Typography>Inativo</Typography>
-                                           <VSwitch name="status"/>
+                                        <VSwitch name="status" edit={true} />
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>
@@ -808,23 +814,23 @@ export const Filiais: React.FC = () => {
                 float: 'right',
                 
             }}>
-            <Collapse in={open}>
-            <Alert 
-                severity={AlertTipo ? "error" : "success"} 
-                color={AlertTipo ? "error" : "success"}
-                action={
-                    <IconButton
-                        onClick={() => { setOpen(false); } }
+                <Collapse in={open}>
+                    <Alert 
+                        severity={AlertTipo ? "error" : "success"} 
+                        color={AlertTipo ? "error" : "success"}
+                        action={
+                            <IconButton
+                                onClick={() => { setOpen(false); } }
+                            >
+                                <Close/>
+                            </IconButton>
+                        }
                     >
-                        <Close/>
-                    </IconButton>
-                }
-            >
-                <AlertTitle>{AlertTipo ? "Erro" : "Sucesso"}</AlertTitle>
-                    {AlertMsg}
-            </Alert>
-            </Collapse>
-        </Box>
+                        <AlertTitle>{AlertTipo ? "Erro" : "Sucesso"}</AlertTitle>
+                            {AlertMsg}
+                    </Alert>
+                </Collapse>
+            </Box>
           
         </LayoutBasePagina>
     );

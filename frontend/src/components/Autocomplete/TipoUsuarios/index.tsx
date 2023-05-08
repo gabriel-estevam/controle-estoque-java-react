@@ -3,7 +3,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import { useField } from '@unform/core';
 
 type TAutoCompleteOption = {
-    id: number;
+    idUsuario: number;
     label: string;
 }
 
@@ -12,7 +12,7 @@ type TAutoCompleteProps = {
 }
 
 export const AutoCompleteTipoUsuario: React.FC<TAutoCompleteProps> = ({ name }) => {
-    const opcoesValue = [{id: 1, name: 'Usuário'}, {id: 2, name: 'Administrador'}];
+    const opcoesValue = [{idUsuario: 1, name: 'Usuário'}, {idUsuario: 2, name: 'Administrador'}];
     
     const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 
@@ -30,13 +30,13 @@ export const AutoCompleteTipoUsuario: React.FC<TAutoCompleteProps> = ({ name }) 
     }, [registerField, fieldName, selectedId]);
 
     useEffect(() => {
-        setOpcoes(opcoesValue.map(opcao => ({id: opcao.id, label: opcao.name})));
+        setOpcoes(opcoesValue.map(opcao => ({idUsuario: opcao.idUsuario, label: opcao.name})));
     }, [busca]);
 
     const autoCompleteSelectedOption = useMemo(() => {
         if(!selectedId) return null;
 
-        const selectedOption = opcoes.find(opcao => opcao.id === selectedId);
+        const selectedOption = opcoes.find(opcao => opcao.idUsuario === selectedId);
         if(!selectedOption) return null;
 
         return selectedOption;
@@ -44,7 +44,7 @@ export const AutoCompleteTipoUsuario: React.FC<TAutoCompleteProps> = ({ name }) 
     return (
         <Autocomplete
             onInputChange={(_, newValue) => setBusca(newValue)}
-            onChange={(_, newValue) => { setSelectedId(newValue?.id); setBusca(''); clearError(); }}
+            onChange={(_, newValue) => { setSelectedId(newValue?.idUsuario); setBusca(''); clearError(); }}
             options={opcoes}
             value={autoCompleteSelectedOption}
             renderInput={(params) =>(

@@ -5,7 +5,7 @@ import { useDebounce } from '../../../hooks/UseDebounce';
 import { UsuarioService } from '../../../services/api/usuarios/UsuarioService';
 
 type TAutoCompleteOption = {
-    id: number;
+    idUsuario: number;
     label: string;
 }
 
@@ -44,7 +44,7 @@ export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name 
                     alert(result.message);
                 }
                 else {
-                    setOpcoes(result.content.map(usuario => ({ id: usuario.id, label: usuario.name })));
+                    setOpcoes(result.content.map(usuario => ({ idUsuario: usuario.idUsuario, label: usuario.name })));
                 }
             });
         });
@@ -54,7 +54,7 @@ export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name 
         //!selectedId é a mesma coisa de selectedId === undefined
         if (!selectedId) return null; 
 
-        const selectedOption = opcoes.find(opcao => opcao.id === selectedId);
+        const selectedOption = opcoes.find(opcao => opcao.idUsuario === selectedId);
         if (!selectedOption) return null;
 
         return selectedOption;
@@ -74,7 +74,7 @@ export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name 
             disabled={isExternalLoading}
             value={autoCompleteSelectedOption}
             onInputChange={(_, newValue) => setBusca(newValue)}
-            onChange={(_, newValue) => { setSelectedId(newValue?.id); setBusca(''); clearError(); }}
+            onChange={(_, newValue) => { setSelectedId(newValue?.idUsuario); setBusca(''); clearError(); }}
             popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
             renderInput={(params) => (
                 <TextField

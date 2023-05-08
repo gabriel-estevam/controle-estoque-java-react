@@ -43,7 +43,7 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
                     alert(result.message);
                 }
                 else {
-                    setOpcoes(result.content.map(filial => ({ id: filial.id, label: filial.name })));
+                    setOpcoes(result.content.map(filial => ({ id: filial.idFilial, label: filial.name })));
                 }
             });
         });

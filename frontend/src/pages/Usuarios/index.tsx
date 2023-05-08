@@ -50,7 +50,7 @@ interface IFormData {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    id: yup.number(),
+    idUsuario: yup.number(),
     name: yup.string().required(),
     email: yup.string().required().email(),
     password: yup.string().required().min(5),
@@ -194,7 +194,7 @@ export const Usuarios: React.FC = () => {
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
-            UsuarioService.updateById(dadoUsuario?.id, dadosValidados)
+            UsuarioService.updateById(dadoUsuario?.idUsuario, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
@@ -270,8 +270,8 @@ export const Usuarios: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.id}>
-                                <TableCell>{row.id}</TableCell>
+                            <TableRow key={row.idUsuario}>
+                                <TableCell>{row.idUsuario}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.email}</TableCell>
                                 <TableCell>{row.role}</TableCell>
@@ -282,7 +282,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
+                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.idUsuario); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -294,7 +294,7 @@ export const Usuarios: React.FC = () => {
                                         variant="contained"
                                         color="error"
                                         disableElevation
-                                        onClick={() => { handleDelete(row.id) }}
+                                        onClick={() => { handleDelete(row.idUsuario) }}
                                     >
                                         Deletar
                                     </Button>
@@ -337,6 +337,8 @@ export const Usuarios: React.FC = () => {
                 handleClose={handleClose}
                 formSubmit={save}
                 titulo="Adicionar Novo Usuário"
+                tituloButtonAdd="Adicionar Usuário"
+                tituloButtonEdit="Salvar Usuário"
             >
 
                 <VForm ref={formRef} onSubmit={handleSave}>
@@ -435,6 +437,8 @@ export const Usuarios: React.FC = () => {
                 handleClose={handleCloseEdit}
                 formSubmit={save}
                 titulo="Editar Usuário"
+                tituloButtonAdd="Adicionar Usuário"
+                tituloButtonEdit="Salvar Usuário"
                 edit={openModalEdit}
             >
 
@@ -520,7 +524,7 @@ export const Usuarios: React.FC = () => {
                                     <Stack direction="row" spacing={1} alignItems="center">
 
                                         <Typography>Inativo</Typography>
-                                           <VSwitch name="status" edit={true} />
+                                        <VSwitch name="status" edit={true} />
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>

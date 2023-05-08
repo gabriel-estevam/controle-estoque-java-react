@@ -2,7 +2,7 @@ import { Environment } from "../../../environment";
 import { Api } from "../axios-config";
 
 export interface IEndereco {
-  endereco: string;
+  logradouro: string;
   cep: string;
   numero: string;
   complemento: string | null | undefined;
@@ -11,7 +11,7 @@ export interface IEndereco {
 }
 
 export interface IListagemFilial {
-  id: number;
+  idFilial: number;
   name: string;
   phoneNumber: string;
   cnpj: string;
@@ -21,7 +21,7 @@ export interface IListagemFilial {
 }
 
 export interface IDetalheFilial {
-  id: number;
+  idFilial: number;
   name: string;
   phoneNumber: string;
   cnpj: string;
@@ -61,8 +61,9 @@ const getAll = async (page = 0, filter?: string): Promise<TFilialLista | Error> 
 const getById = async (id: number): Promise<IDetalheFilial | Error> => {
   try 
   {
-    const { data } = await Api.get<IDetalheFilial>(`/filiais/${id}`);
+    const { data } = await Api.get(`/filiais/${id}`);
     if(data) {
+      data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
       return data;
     }
 
@@ -74,7 +75,7 @@ const getById = async (id: number): Promise<IDetalheFilial | Error> => {
   }
 };
 
-const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
+const create = async (dados: Omit<IDetalheFilial, 'idFilial'>): Promise<number | Error> => {
   try 
   {
     if (!dados.Endereco.complemento) {
@@ -84,7 +85,7 @@ const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error
     const { data } = await Api.post<IDetalheFilial>('/filiais', dados);
 
     if(data) {
-      return data.id;
+      return data.idFilial;
     }
     return new Error('Erro ao criar registro.');
   } 
@@ -95,12 +96,12 @@ const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error
 };
 
 //@ts-ignore
-const updateById = async (id: number, dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
+const updateById = async (id: number, dados: IDetalheFilial): Promise<number | Error> => {
   try {      
     const { data } = await Api.put<IDetalheFilial>(`/filiais/${id}`, dados);
       
     if(data) {
-      return data.id;
+      return data.idFilial;
     }
   } 
   catch (error) {

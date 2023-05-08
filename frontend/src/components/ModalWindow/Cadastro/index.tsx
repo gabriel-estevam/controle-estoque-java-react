@@ -12,54 +12,65 @@ import CloseIcon from '@mui/icons-material/Close';
 interface IProps {
     children?: ReactNode;
     titulo: string;
+    tituloButtonAdd: string;
+    tituloButtonEdit: string;
     open: boolean;
     edit?: boolean;
     formSubmit: () => void;
     handleClose: () => void;
 };
 
-export const ModalCadastro: React.FC<IProps> = ({ open, handleClose, titulo, edit, children, formSubmit }) => {
+export const ModalCadastro: React.FC<IProps> = 
+({ open, 
+   handleClose, 
+   titulo, 
+   tituloButtonAdd, 
+   tituloButtonEdit, 
+   edit, 
+   children, 
+   formSubmit 
+}) => {
     return (
         <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", height: "500px"}}}>
-                <DialogTitle>
-                    {titulo} 
-                    <IconButton sx={{float: "right"}} onClick={handleClose}>
-                        <CloseIcon/>
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent  
-                    dividers 
-                    sx={{ 
-                        height: '500px', 
-                        width: '700px',
-                        paddingY: 0,
-                        paddingX: 0,
-                    }}>
-                    {children}
-                </DialogContent>
-                <DialogActions>
+            <DialogTitle>
+                {titulo} 
+                <IconButton sx={{float: "right"}} onClick={handleClose}>
+                    <CloseIcon/>
+                </IconButton>
+            </DialogTitle>
+            <DialogContent  
+                dividers 
+                sx={{ 
+                    height: '500px', 
+                    width: '700px',
+                    paddingY: 0,
+                    paddingX: 0,
+                }}>
+                {children}
+            </DialogContent>
+            <DialogActions>
+                <Button 
+                    onClick={handleClose} 
+                    variant="contained" 
+                    color="secondary"
+                    disableElevation
+                >Cancelar</Button>
+                { edit ? 
                     <Button 
-                        onClick={handleClose} 
-                        variant="contained" 
-                        color="secondary"
-                        disableElevation
-                    >Cancelar</Button>
-                    { edit ? 
-                        <Button 
-                        onClick={formSubmit}
-                        variant="contained" 
-                        color="warning"
-                        disableElevation
-                      > Salvar Usuário</Button>
-                        : 
-                        <Button 
-                        onClick={formSubmit}
-                        variant="contained" 
-                        color="primary"
-                        disableElevation
-                        > Adicionar Usuário</Button>                  
-                    }
-                </DialogActions>
+                    onClick={formSubmit}
+                    variant="contained" 
+                    color="warning"
+                    disableElevation
+                    >{tituloButtonEdit}</Button>
+                    : 
+                    <Button 
+                    onClick={formSubmit}
+                    variant="contained" 
+                    color="primary"
+                    disableElevation
+                    >{tituloButtonAdd}</Button>                  
+                }
+            </DialogActions>
 
         </Dialog>
     );

@@ -39,7 +39,7 @@ public class FilialController {
     @GetMapping
     public ResponseEntity<Page<Filial>> 
     findByNameContaining( @RequestParam(name = "name", required = false) String name, 
-                          @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable) {
+                          @PageableDefault(sort = "idFilial", direction = Direction.ASC) Pageable pageable) {
         Page<Filial> list = service.findByNameContaining(name, pageable);
         return ResponseEntity.ok().body(list);
     }

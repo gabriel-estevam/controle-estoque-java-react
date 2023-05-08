@@ -2,7 +2,7 @@ import { Environment } from './../../../environment/index';
 import { Api } from "../axios-config";
 
 export interface IListagemUsuario {
-    id: number;
+    idUsuario: number;
     name: string;
     email: string;
     role: string;
@@ -12,7 +12,7 @@ export interface IListagemUsuario {
 }
 
 export interface IDetalheUsuario {
-    id: number;
+    idUsuario: number;
     name: string;
     email: string;
     password: string;
@@ -22,7 +22,7 @@ export interface IDetalheUsuario {
    // filialName: string;
 }
 export interface IDetalheUsuarioEdit {
-    id?: number;
+    idUsuario?: number;
     name: string;
     email: string;
     password: string;
@@ -80,12 +80,12 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 
 };
 
-const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Error> => {
+const create = async (dados: Omit<IDetalheUsuario, 'idUsuario'>): Promise<number | Error> => {
     try {
         dados.role === 1 ? dados.role = 0 : dados.role = 1;
         const { data } = await Api.post<IDetalheUsuario>('/users', dados);
         if(data) {
-            return data.id;
+            return data.idUsuario;
         }
         
         return new Error('Erro ao criar registro.');
@@ -97,7 +97,7 @@ const create = async (dados: Omit<IDetalheUsuario, 'id'>): Promise<number | Erro
     }
 };
 
-const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password' & 'id'>): Promise<number | Error | undefined> => {
+const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password' & 'idUsuario'>): Promise<number | Error | undefined> => {
     try {
 
         //@ts-ignore
@@ -106,7 +106,7 @@ const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'passwo
         const { data } = await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
         
         if(data) {
-            return data.id;
+            return data.idUsuario;
         }
     } 
     catch (error) {
