@@ -57,6 +57,23 @@ const getAll = async (page = 0, filter?: string): Promise<TFilialLista | Error> 
   }  
 };
 
+//@ts-ignore
+const getById = async (id: number): Promise<IDetalheFilial | Error> => {
+  try 
+  {
+    const { data } = await Api.get<IDetalheFilial>(`/filiais/${id}`);
+    if(data) {
+      return data;
+    }
+
+    return new Error("Erro ao consultar Filial.");
+  } 
+  catch (error) {
+    console.error(error);
+    return new Error((error as { message: string}).message || 'Erro ao listar registro');
+  }
+};
+
 const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
   try 
   {
@@ -77,7 +94,24 @@ const create = async (dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error
   }
 };
 
+//@ts-ignore
+const updateById = async (id: number, dados: Omit<IDetalheFilial, 'id'>): Promise<number | Error> => {
+  try {      
+    const { data } = await Api.put<IDetalheFilial>(`/filiais/${id}`, dados);
+      
+    if(data) {
+      return data.id;
+    }
+  } 
+  catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao atulizar o registro.');
+  }
+};
+
 export const FilialService = {
   getAll,
+  getById,
   create,
+  updateById,
 };

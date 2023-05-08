@@ -42,7 +42,8 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        Optional<Filial> fOptional = filialRepository.findByusuario_id(id);
+        Usuario usuarioI = findById(id);
+        Optional<Filial> fOptional = filialRepository.findByUsuario(usuarioI); //Verifica se o usuário é ADMIN de alguma filial
         if(!fOptional.isEmpty()) {
             throw new DataBaseException("Não é possivel deletar Usuario[" + fOptional.get().getUsuario().getName()+ "] Pois o mesmo é ADMINISTRADOR da filial [" + fOptional.get().getName() + "]");
         }
@@ -82,15 +83,15 @@ public class UserService {
 
     private Usuario userExists(UserDTO objDto) {
         Optional<Usuario> userDTO;
-        if (objDto.getId() == null) {
+        if (objDto.getIdUsuario() == null) {
             // User
             userDTO = repository.findByEmail(objDto.getEmail());
         } else {
-            userDTO = repository.findByEmailAndIdNot(objDto.getEmail(), objDto.getId());
+            userDTO = repository.findByEmailAndIdUsuarioNot(objDto.getEmail(), objDto.getIdUsuario());
         }
         // User
         if (userDTO.isEmpty()) {
-            return new Usuario(objDto.getId(), 
+            return new Usuario(objDto.getIdUsuario(), 
                                objDto.getName(), 
                                objDto.getEmail(), 
                                objDto.getPassword(),

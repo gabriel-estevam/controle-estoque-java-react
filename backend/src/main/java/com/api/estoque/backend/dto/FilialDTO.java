@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FilialDTO {
     
-    private Long id;
+    private Long idFilial;
     private String name;
     private String phoneNumber;
     
@@ -28,7 +28,7 @@ public class FilialDTO {
     }
 
     public FilialDTO(Filial objFilial) {
-        id = objFilial.getId();
+        idFilial = objFilial.getIdFilial();
         name = objFilial.getName();
         cnpj = objFilial.getCnpj();
         phoneNumber = objFilial.getPhoneNumber();
@@ -36,12 +36,12 @@ public class FilialDTO {
         setStatus(objFilial.getStatus());
     }
 
-    public Long getId() {
-        return id;
+    public Long getIdFilial() {
+        return idFilial;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdFilial(Long idFilial) {
+        this.idFilial = idFilial;
     }
 
     public String getName() {

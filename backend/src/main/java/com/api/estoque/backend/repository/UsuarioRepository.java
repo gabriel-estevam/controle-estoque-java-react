@@ -12,7 +12,7 @@ import com.api.estoque.backend.model.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     public Optional<Usuario> findByEmail(String email);
 
-    public Optional<Usuario> findByEmailAndIdNot(String email, Long id);
+    public Optional<Usuario> findByEmailAndIdUsuarioNot(String email, Long idUsuario);
 
     public Page<Usuario> findByNameContaining(String name,  Pageable pageable);
 }

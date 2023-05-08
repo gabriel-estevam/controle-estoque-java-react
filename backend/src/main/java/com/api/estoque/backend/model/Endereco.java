@@ -21,9 +21,9 @@ public class Endereco implements Serializable {
     @Id
     @Column(name = "idEndereco")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idEndereco;
     
-    private String endereco;
+    private String logradouro;
     private String cep;
     private String numero;
     private String complemento;
@@ -38,9 +38,9 @@ public class Endereco implements Serializable {
 
     }
 
-    public Endereco(Long id, String endereco, String cep, String numero, String complemento, String cidade, String estado) {
-        this.id = id;
-        this.endereco = endereco;
+    public Endereco(Long idEndereco, String logradouro, String cep, String numero, String complemento, String cidade, String estado) {
+        this.idEndereco = idEndereco;
+        this.logradouro = logradouro;
         this.cep = cep;
         this.numero = numero;
         this.complemento = complemento;
@@ -49,20 +49,20 @@ public class Endereco implements Serializable {
     }
 
     //@JsonIgnore
-    public Long getId() {
-        return id;
+    public Long getIdEndereco() {
+        return idEndereco;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdEndereco(Long id) {
+        this.idEndereco = id;
     }
 
-    public String getEndereco() {
-        return endereco;
+    public String getLogradouro() {
+        return logradouro;
     }
 
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
     }
 
     public String getCep() {
@@ -105,14 +105,6 @@ public class Endereco implements Serializable {
         this.estado = estado;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
     @JsonIgnore
     public Filial getFilial() {
         return filial;
@@ -120,6 +112,14 @@ public class Endereco implements Serializable {
 
     public void setFilial(Filial filial) {
         this.filial = filial;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((idEndereco == null) ? 0 : idEndereco.hashCode());
+        return result;
     }
     
     @Override
@@ -131,10 +131,10 @@ public class Endereco implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         Endereco other = (Endereco) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (idEndereco == null) {
+            if (other.idEndereco != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!idEndereco.equals(other.idEndereco))
             return false;
         return true;
     }

@@ -68,7 +68,7 @@ public class UserController {
         usuario = service.insert(usuario);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                                              .path("/{id}")
-                                             .buildAndExpand(usuario.getId())
+                                             .buildAndExpand(usuario.getIdUsuario())
                                              .toUri(); /* ele insere um novo User e na sequencia reterna no header da resposta o caminho para 
                                              recuperar (select by id) dado inserido*/
         return ResponseEntity.created(uri).body(usuario); // ao inserir um dado no banco de dados, devemos usar o status 201 created
@@ -82,7 +82,7 @@ public class UserController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        userDTO.setId(id);
+        userDTO.setIdUsuario(id);
         //userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         Usuario usuario = service.fromDto(userDTO);
         Filial filialUpdate = filialService.findById(Long.parseLong(userDTO.getFilialFK()));

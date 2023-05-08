@@ -23,10 +23,13 @@ public class Filial implements Serializable {
     @Id
     @Column(name = "idFilial")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idFilial;
 
     private String name;
+
+    @Column(name = "phoneNumber")
     private String phoneNumber;
+    
     private String cnpj;
 
     
@@ -35,7 +38,7 @@ public class Filial implements Serializable {
     private Integer status;
     
     @OneToOne //(cascade = CascadeType.ALL)
-    @JoinColumn(name = "usuarioId")
+    @JoinColumn(name = "idUsuario")
     private Usuario usuario;
     
     @OneToOne
@@ -46,21 +49,22 @@ public class Filial implements Serializable {
 
     }
 
-    public Filial(Long id, String name, String phoneNumber, String cnpj, StatusOption status) {
-        this.id = id;
+    public Filial(Long idFilial, String name, String phoneNumber, String cnpj, StatusOption status, Endereco endereco) {
+        this.idFilial = idFilial;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.cnpj = cnpj;
+        this.endereco = endereco;
      //   this.usuario = usuario;
         setStatus(status);
     }
 
-    public Long getId() {
-        return id;
+    public Long getIdFilial() {
+        return idFilial;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdFilial(Long idFilial) {
+        this.idFilial = idFilial;
     }
 
     public String getName() {
@@ -103,7 +107,7 @@ public class Filial implements Serializable {
     }
 
     public Long getUsuarioFK() {
-        return usuario.getId();
+        return usuario.getIdUsuario();
     }
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
@@ -121,7 +125,7 @@ public class Filial implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((idFilial == null) ? 0 : idFilial.hashCode());
         return result;
     }
 
@@ -134,10 +138,10 @@ public class Filial implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         Filial other = (Filial) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (idFilial == null) {
+            if (other.idFilial != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!idFilial.equals(other.idFilial))
             return false;
         return true;
     }

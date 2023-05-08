@@ -11,7 +11,7 @@ import com.api.estoque.backend.model.enums.StatusOption;
 public class UserDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private Long IdUsuario;
     private String name;
     private String email;
     
@@ -31,7 +31,7 @@ public class UserDTO implements Serializable {
     }
 
     public UserDTO(Usuario objUsuario) {
-        id = objUsuario.getId();
+        IdUsuario = objUsuario.getIdUsuario();
         name = objUsuario.getName();
         email = objUsuario.getEmail();
         password = objUsuario.getPassword();
@@ -40,12 +40,12 @@ public class UserDTO implements Serializable {
         setStatus(objUsuario.getStatus());
     }
     
-    public Long getId() {
-        return id;
+    public Long getIdUsuario() {
+        return IdUsuario;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdUsuario(Long idUsuario) {
+        this.IdUsuario = idUsuario;
     }
 
     public String getName() {

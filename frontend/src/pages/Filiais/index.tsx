@@ -30,17 +30,16 @@ import { AutoCompleteUsuario, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
-import { IDetalheUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
+
 import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
 
 import "../../styles/index.css";
-import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 import '../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
 
-import { FilialService, IEndereco, IListagemFilial } from '../../services/api/filial/FilialService';
+import { FilialService, IDetalheFilial, IEndereco, IListagemFilial } from '../../services/api/filial/FilialService';
 import { VInputMask } from '../../forms/VInputMask';
 import { PublicService } from '../../services/api/public/PublicService';
 
@@ -84,7 +83,7 @@ export const Filiais: React.FC = () => {
     
     const [rows, setRows] = useState<IListagemFilial[]>([]);
     
-    const [dadoUsuario, setdadoUsuario] = useState<IDetalheUsuario>();
+    const [dadoFilial, setdadoFilial] = useState<IDetalheFilial>();
     
     const [erroCEP, setErroCEP] = useState(false);
 
@@ -109,23 +108,24 @@ export const Filiais: React.FC = () => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
     
-   const getUsuarioById = (pId : number) => {
-        UsuarioService.getById(pId)
+   const getFilialById = (pId : number) => {
+        FilialService.getById(pId)
         .then((result) => {
             if(result instanceof Error) {
                 alert(result.message);
             }
             else {
-                setdadoUsuario(result);
-                console.log(result);
+                setdadoFilial(result);
                 formRef.current?.setData({
                     name: result.name,
-                    email: result.email,
-                    role: result.role === 0 ? 1 : 2,
+                    cnpj: result.cnpj,
+                    phoneNumber: result.phoneNumber,
+                    //@ts-ignore
+                    Endereco: result.endereco,
+
                     status: result.status,
-                    filialFK: result.filialFK,
-                    password: 'VALUES',
-                })
+                    usuarioFK: result.usuarioFK,
+                });
             }
         });
    };
@@ -224,11 +224,13 @@ export const Filiais: React.FC = () => {
     };
 
     const handleUpdate = (dados: IFormData) => {
-     /*   formValidationSchema
+        console.log(dados)
+        formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
-            UsuarioService.updateById(dadoUsuario?.id, dadosValidados)
+            //@ts-ignore
+            FilialService.updateById(dadoFilial.id, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
@@ -240,7 +242,7 @@ export const Filiais: React.FC = () => {
                 else {
                     setAlertTipo(false);
                     setOpen(true);
-                    setAlertMsg('Usuário atualizado com Sucesso!');
+                    setAlertMsg('Filial atualizada com Sucesso!');
                     //alert(result);
                    handleCloseEdit();
                    window.location.reload();
@@ -256,7 +258,7 @@ export const Filiais: React.FC = () => {
             });
 
             formRef.current?.setErrors(validationErrors);
-        });*/
+        });
     };
 
     return (
@@ -313,7 +315,7 @@ export const Filiais: React.FC = () => {
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.id); }}
+                                        onClick={() => { handleOpenEdit(); getFilialById(row.id); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -581,24 +583,21 @@ export const Filiais: React.FC = () => {
                 open={openModalEdit}
                 handleClose={handleCloseEdit}
                 formSubmit={save}
-                titulo="Editar Usuário"
+                titulo="Editar Filial"
                 edit={openModalEdit}
             >
 
                 <VForm ref={formRef} onSubmit={handleUpdate}>
-
                     <Box margin={1} display="flex" flexDirection="column">
 
                         <Grid container direction="column" padding={2} spacing={2}>
 
-                            <Grid container item direction="row" spacing={2}>
+                            <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={12}>
-
+                                <Grid item md={6}>
                                     <VTextField
-                                        //edit={openModalEdit}
                                         name="name"
-                                        label="Nome Completo" 
+                                        label="Nome Filial" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -612,30 +611,14 @@ export const Filiais: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
 
                                 <Grid item md={6}>
-
-                                    <VTextField
-                                        //edit={openModalEdit}
-                                        name="email"
-                                        label="E-mail" 
+                                    <VInputMask
+                                        tipoMask="CNPJ"
+                                        name="cnpj"
+                                        label="CNPJ" 
                                         variant="outlined"
-                                        type="email"
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-
-                                    <VTextField
-                                        disabled
-                                        name="password"
-                                        label="Senha" 
-                                        variant="outlined"
-                                        type="password"
+                                        type="text"
                                         sx={{
                                             "& input": {border: 'none', 
                                                         margin: 2, 
@@ -645,37 +628,178 @@ export const Filiais: React.FC = () => {
                                             },
                                         }}
                                         fullWidth
-                                    />
+                                        />
                                 </Grid>
+
                             </Grid>
                             
-                            <Grid container item direction="row" spacing={2}>
+                                <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={6}>
-                                    <AutoCompleteUsuario name="role" />
+                                    <Grid item md={6}>
+                                        <VInputMask
+                                            tipoMask="TELEFONE"
+                                            name="phoneNumber"
+                                            label="Contato" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                        <VInputMask
+                                            tipoMask="CEP"
+                                            name="Endereco.cep"
+                                            label="CEP" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            onBlur={(e) => { consultaCEP(e.currentTarget.value); }}
+                                            error={erroCEP}
+                                            helperText={erroCEP && "CEP Inválido"}
+                                            onKeyDown={(_) => setErroCEP(false)}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                </Grid>
+                                
+                                <Grid container item direction="row" spacing={2}>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.endereco"
+                                            label="Endereço" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            name="Endereco.numero"
+                                            label="Número" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
                                 </Grid>
 
-                                <Grid item md={6}>
-                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} />
+                                <Grid container item direction="row" spacing={2}>
+
+                                    <Grid item md={3}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.cidade"
+                                            label="Cidade" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={3}>
+                                    <VTextField
+                                            disabled
+                                            name="Endereco.estado"
+                                            label="Estado" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    <Grid item md={6}>
+                                    <VTextField
+                                            name="Endereco.complemento"
+                                            label="Complemento" 
+                                            variant="outlined"
+                                            type="text"
+                                            sx={{
+                                                "& input": {border: 'none', 
+                                                            margin: 2, 
+                                                            padding: 1, 
+                                                            paddingY:0,
+                                                            paddingRight: 0
+                                                },
+                                            }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
                                 </Grid>
-                            </Grid>
 
                             <Grid container item direction="row" spacing={2}>
-
-                                <Grid item>
-                
+                                <Grid item md={6}>
                                     <InputLabel>Status</InputLabel>
                                     
                                     <Stack direction="row" spacing={1} alignItems="center">
 
                                         <Typography>Inativo</Typography>
-                                           <VSwitch name="status" edit={true} />
+                                           <VSwitch name="status"/>
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>
+
+                                <Grid item md={6}>
+                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading}/>
+                                </Grid>
+
                             </Grid>
                         </Grid>
                     </Box>
+
                 </VForm>
             </ModalCadastro>
 
