@@ -1,6 +1,7 @@
 package com.api.estoque.backend.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,9 +46,15 @@ public class UserController {
                                                                 @PageableDefault(sort = "idUsuario", direction = Direction.ASC) Pageable pageable
                                                             ) 
     {
-        Page<Usuario> list = service.findByNameContaining(name, pageable);
+        Page<Usuario> page = service.findByNameContaining(name, pageable);
         //List<Usuario> list = service.findByNameContaining(name);
        // List<UserDTO> listDto = list.stream().map(parseDto -> new UserDTO(parseDto)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Usuario>> findAll() {
+        List<Usuario> list = service.findAll();
         return ResponseEntity.ok().body(list);
     }
 

@@ -1,5 +1,6 @@
 package com.api.estoque.backend.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -31,6 +32,10 @@ public class FilialService {
 
     public Page<Filial> findByNameContaining(String name,  Pageable pageable) {
         return repository.findByNameContaining(name, pageable);
+    }
+
+    public List<Filial> findAll() {
+        return repository.findAll();
     }
     
     public Filial findById(Long id) {

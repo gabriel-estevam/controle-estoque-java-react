@@ -152,7 +152,7 @@ export const Filiais: React.FC = () => {
         debounce(()=> {
             setIsLoading(true);
 
-            FilialService.getAll(paginaAPI, busca)
+            FilialService.getAllContaing(paginaAPI, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -574,7 +574,7 @@ export const Filiais: React.FC = () => {
                                 </Grid>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading}/>
+                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading} isEdit={false} />
                                 </Grid>
 
                             </Grid>
@@ -799,7 +799,7 @@ export const Filiais: React.FC = () => {
                                 </Grid>
 
                                 <Grid item md={6}>
-                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading}/>
+                                    <AutoCompleteUsuario name="usuarioFK" isExternalLoading={isLoading} isEdit={true} />
                                 </Grid>
 
                             </Grid>

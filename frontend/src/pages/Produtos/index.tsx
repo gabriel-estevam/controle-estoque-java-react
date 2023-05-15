@@ -26,40 +26,36 @@ import * as yup from 'yup';
 
 import { IVFormErrors, VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
-import { AutoCompleteTipoUsuario, BarraFerramentas } from '../../components';
+import { AutoCompleteUnidadeMedida, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
-import { IDetalheUsuario, IListagemUsuario, UsuarioService } from '../../services/api/usuarios/UsuarioService';
+
 import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
 
 import "../../styles/index.css";
-import { AutoCompleteFilial } from '../../components/Autocomplete/Filial/index';
 
 import '../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
 
+import { IListagemProduto, ProdutoService, IDetalheProduto } from '../../services/api/produtos/ProdutoService';
+
 interface IFormData {
-    name: string;
-    email: string;
-    password: string;
-    role: number;
+    idProduto: number | undefined | null;
+    nome: string;
+    UnidadeMedidaFK: number;
     status: number;
-    filialFK: number;
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idUsuario: yup.number(),
-    name: yup.string().required(),
-    email: yup.string().required().email(),
-    password: yup.string().required().min(5),
-    role: yup.number().required(),
+    idProduto: yup.number().nullable(),
+    nome: yup.string().required(),
     status: yup.number().required(),
-    filialFK: yup.number().required(),
+    UnidadeMedidaFK: yup.number().required()
 });
 
-export const Usuarios: React.FC = () => {
+export const Produtos: React.FC = () => {
     const theme = useTheme();
     const { formRef, save } = useVForm();
     
@@ -70,11 +66,10 @@ export const Usuarios: React.FC = () => {
     
     const { debounce } = useDebounce(3000, true);
     
-    const [rows, setRows] = useState<IListagemUsuario[]>([]);
+    const [rows, setRows] = useState<IListagemProduto[]>([]);
     
-    const [dadoUsuario, setdadoUsuario] = useState<IDetalheUsuario>();
+    const [dadoProduto, setdadoProduto] = useState<IDetalheProduto>();
     
-
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
     const [totalElements, setTotalElements] = useState(0);
@@ -84,6 +79,7 @@ export const Usuarios: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [AlertTipo, setAlertTipo] = useState(false);
     const [AlertMsg, setAlertMsg] = useState('');
+
     const busca = useMemo(() => {
         return searchParams.get('busca') || '';
     },[searchParams]);
@@ -96,22 +92,20 @@ export const Usuarios: React.FC = () => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
     
-   const getUsuarioById = (pId : number) => {
-        UsuarioService.getById(pId)
+   const getProdutoById = (pId : number) => {
+        ProdutoService.getById(pId)
         .then((result) => {
             if(result instanceof Error) {
                 alert(result.message);
             }
             else {
-                setdadoUsuario(result);
+                console.log(result.UnidadeMedidaFK)
+                setdadoProduto(result);
                 formRef.current?.setData({
-                    name: result.name,
-                    email: result.email,
-                    role: result.role === 0 ? 1 : 2,
+                    nome: result.nome,
                     status: result.status,
-                    filialFK: result.filialFK,
-                    password: 'VALUES',
-                })
+                });
+                formRef.current?.setFieldValue("UnidadeMedidaFK", result.UnidadeMedidaFK);
             }
         });
    };
@@ -136,7 +130,7 @@ export const Usuarios: React.FC = () => {
         debounce(()=> {
             setIsLoading(true);
 
-            UsuarioService.getAllContaing(paginaAPI, busca)
+            ProdutoService.getAllContaing(paginaAPI, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -157,7 +151,7 @@ export const Usuarios: React.FC = () => {
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
             setIsLoading(true);
-            UsuarioService.create(dadosValidados)
+            ProdutoService.create(dadosValidados)
             .then((result) => {
                 setIsLoading(false);
 
@@ -169,9 +163,9 @@ export const Usuarios: React.FC = () => {
                 else {
                     setAlertTipo(false);
                     setOpen(true);
-                    setAlertMsg('Usuário inserido com Sucesso!');
+                    setAlertMsg('Produto inserido com Sucesso!');
                     handleClose();
-                    window.location.reload();
+                   window.location.reload();
                 }
             });
            
@@ -185,18 +179,21 @@ export const Usuarios: React.FC = () => {
 
             formRef.current?.setErrors(validationErrors);
         });
-        
+
     };
 
     const handleUpdate = (dados: IFormData) => {
-        formValidationSchema
+        console.log(dados)
+        /*formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
-            UsuarioService.updateById(dadoUsuario?.idUsuario, dadosValidados)
+            //@ts-ignore
+            FilialService.updateById(dadoProduto?.idFilial, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
+                    //alert(result.message);
                     setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
@@ -204,7 +201,8 @@ export const Usuarios: React.FC = () => {
                 else {
                     setAlertTipo(false);
                     setOpen(true);
-                    setAlertMsg('Usuário atualizado com Sucesso!');
+                    setAlertMsg('Filial atualizada com Sucesso!');
+                    //alert(result);
                    handleCloseEdit();
                    window.location.reload();
                 }
@@ -219,33 +217,18 @@ export const Usuarios: React.FC = () => {
             });
 
             formRef.current?.setErrors(validationErrors);
-        });
+        });**/
     };
-    const handleDelete = (id: number) => {
-        UsuarioService.deleteById(id)
-        .then((result) => {
-            if(result instanceof Error) {
-                alert(result.message);
-            }
-            else {
-                //alert("Usuário Deletado com sucesso!");
-                setAlertTipo(false);
-                setOpen(true);
-                setAlertMsg('Usuário deletado com Sucesso!');
-                handleCloseEdit();
-                window.location.reload();
-            }
-        });
-    };
+
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Cadastro de Usuários"
-            subTitulo="Gerenciamento de Usuários"
+            titulo="Cadastro de Produtos"
+            subTitulo="Gerenciamento de Produtos"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVO USUÁRIO"
+                    textoBotaoNovo="NOVO PRODUTO"
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
@@ -259,47 +242,34 @@ export const Usuarios: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
-                            <TableCell>Nome</TableCell>
-                            <TableCell>Login</TableCell>
-                            <TableCell>Tipo Usuário</TableCell>
+                            <TableCell>Produto</TableCell>
+                            <TableCell>Unidade de Medida</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Filial</TableCell>
                             <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.idUsuario}>
-                                <TableCell>{row.idUsuario}</TableCell>
-                                <TableCell>{row.name}</TableCell>
-                                <TableCell>{row.email}</TableCell>
-                                <TableCell>{row.role}</TableCell>
+                            <TableRow key={row.idProduto}>
+                                <TableCell>{row.idProduto}</TableCell>
+                                <TableCell>{row.nome}</TableCell>
+                                <TableCell>{row.unidadeMedida.unidadeMedida}</TableCell>
                                 <TableCell>{row.status}</TableCell>
-                                <TableCell>{row.filialName}</TableCell>
                                 <TableCell width={200}>
                                     <Button
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getUsuarioById(row.idUsuario); }}
+                                        onClick={() => { handleOpenEdit(); getProdutoById(row.idProduto); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
                                     >
                                         Editar
                                     </Button>
-    
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        disableElevation
-                                        onClick={() => { handleDelete(row.idUsuario) }}
-                                    >
-                                        Deletar
-                                    </Button>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                                    ))}
                     </TableBody>
 
                     {totalElements === 0 && !isLoading && (
@@ -335,8 +305,9 @@ export const Usuarios: React.FC = () => {
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
-                titulo="Adicionar Novo Usuário"
-                tituloButtonAdd="Adicionar Usuário"
+                titulo="Adicionar Novo Produto"
+                tituloButtonAdd="Adicionar Produto"
+                heightDialog="300px"
             >
 
                 <VForm ref={formRef} onSubmit={handleSave}>
@@ -345,13 +316,12 @@ export const Usuarios: React.FC = () => {
 
                         <Grid container direction="column" padding={2} spacing={2}>
 
-                            <Grid container item direction="row" spacing={2}>
+                            <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={12}>
-
+                                <Grid item md={6}>
                                     <VTextField
-                                        name="name"
-                                        label="Nome Completo" 
+                                        name="nome"
+                                        label="Produto" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -365,67 +335,26 @@ export const Usuarios: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
+                                <Grid item md={6}>
+                                    <AutoCompleteUnidadeMedida name="UnidadeMedidaFK" isExternalLoading={isLoading} isEdit={false} />
+                                </Grid>
+
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>
-
                                 <Grid item md={6}>
-
-                                    <VTextField
-                                        name="email"
-                                        label="E-mail" 
-                                        variant="outlined"
-                                        type="email"
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-
-                                    <VTextField
-                                        name="password"
-                                        label="Senha" 
-                                        variant="outlined"
-                                        type="password"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-                            </Grid>
-                            
-                            <Grid container item direction="row" spacing={2}>
-
-                                <Grid item md={6}>
-                                    <AutoCompleteTipoUsuario name="role" />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} isEdit={false} />
-                                </Grid>
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
-
-                                <Grid item>
-                
                                     <InputLabel>Status</InputLabel>
                                     
                                     <Stack direction="row" spacing={1} alignItems="center">
-
                                         <Typography>Inativo</Typography>
-                                           <VSwitch name="status"/>
+                                        <VSwitch name="status"/>
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>
                             </Grid>
+
                         </Grid>
+                        
                     </Box>
                 </VForm>
             </ModalCadastro>
@@ -434,24 +363,21 @@ export const Usuarios: React.FC = () => {
                 open={openModalEdit}
                 handleClose={handleCloseEdit}
                 formSubmit={save}
-                titulo="Editar Usuário"
-                tituloButtonEdit="Salvar Usuário"
+                titulo="Editar Produto"
+                tituloButtonEdit="Salvar Produto"
                 edit={openModalEdit}
             >
 
                 <VForm ref={formRef} onSubmit={handleUpdate}>
-
                     <Box margin={1} display="flex" flexDirection="column">
-
                         <Grid container direction="column" padding={2} spacing={2}>
 
-                            <Grid container item direction="row" spacing={2}>
+                            <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={12}>
-
+                                <Grid item md={6}>
                                     <VTextField
-                                        name="name"
-                                        label="Nome Completo" 
+                                        name="nome"
+                                        label="Produto" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -465,69 +391,32 @@ export const Usuarios: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
+                                <Grid item md={6}>
+                                    <AutoCompleteUnidadeMedida name="UnidadeMedidaFK" isExternalLoading={isLoading} isEdit={true} />
+                                </Grid>
+
+                                <Grid item md={6}>
+                                    <VTextField  type="number" name="UnidadeMedidaFK"/>
+                                </Grid>
+
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>
-
                                 <Grid item md={6}>
-
-                                    <VTextField
-                                        name="email"
-                                        label="E-mail" 
-                                        variant="outlined"
-                                        type="email"
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid item md={6}>
-
-                                    <VTextField
-                                        disabled
-                                        name="password"
-                                        label="Senha" 
-                                        variant="outlined"
-                                        type="password"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-                            </Grid>
-                            
-                            <Grid container item direction="row" spacing={2}>
-
-                                <Grid item md={6}>
-                                    <AutoCompleteTipoUsuario name="role" />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                    <AutoCompleteFilial name="filialFK" isExternalLoading={isLoading} isEdit={true} />
-                                </Grid>
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
-
-                                <Grid item>
-                
                                     <InputLabel>Status</InputLabel>
                                     
                                     <Stack direction="row" spacing={1} alignItems="center">
-
                                         <Typography>Inativo</Typography>
                                         <VSwitch name="status" edit={true} />
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>
                             </Grid>
+
                         </Grid>
+
                     </Box>
+
                 </VForm>
             </ModalCadastro>
 
@@ -536,21 +425,23 @@ export const Usuarios: React.FC = () => {
                 float: 'right',
                 
             }}>
-            <Collapse in={open}>
-            <Alert 
-                severity={AlertTipo ? "error" : "success"} 
-                color={AlertTipo ? "error" : "success"}
-                action={
-                    <IconButton onClick={() => { setOpen(false); } } >
-                        <Close/>
-                    </IconButton>
-                }
-            >
-                <AlertTitle>{AlertTipo ? "Erro" : "Sucesso"}</AlertTitle>
-                    {AlertMsg}
-            </Alert>
-            </Collapse>
-        </Box>
+                <Collapse in={open}>
+                    <Alert 
+                        severity={AlertTipo ? "error" : "success"} 
+                        color={AlertTipo ? "error" : "success"}
+                        action={
+                            <IconButton
+                                onClick={() => { setOpen(false); } }
+                            >
+                                <Close/>
+                            </IconButton>
+                        }
+                    >
+                        <AlertTitle>{AlertTipo ? "Erro" : "Sucesso"}</AlertTitle>
+                            {AlertMsg}
+                    </Alert>
+                </Collapse>
+            </Box>
           
         </LayoutBasePagina>
     );

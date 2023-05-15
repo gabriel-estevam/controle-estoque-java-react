@@ -12,8 +12,9 @@ type TAutoCompleteOption = {
 interface IAutoCompleteFilialProps {
     name: string;
     isExternalLoading?: boolean;
+    isEdit: boolean;
 }
-export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,isExternalLoading = false }) => {
+export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,isExternalLoading = false, isEdit }) => {
     const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
@@ -21,6 +22,7 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
     const [selectedId, setSelectedId] = useState<number | undefined>(defaultValue);
 
     const [opcoes, setOpcoes] = useState<TAutoCompleteOption[]>([]);
+
     const [isLoading, setIsLoading] = useState(false);
     const [busca, setBusca] = useState('');
 
@@ -35,8 +37,21 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
     useEffect(() => {
         setIsLoading(true);
 
+        if(isEdit) {
+            FilialService.getAll()
+            .then((result) => {
+                setIsLoading(false);
+                if(result instanceof Error) {
+                    alert(result.message);
+                 }
+                else {
+                    setOpcoes(result.map(filial => ({ id: filial.idFilial, label: filial.name })));
+                }
+            });
+        }
+
         debounce(() => {
-            FilialService.getAll(0, busca)
+            FilialService.getAllContaing(0, busca)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
@@ -47,7 +62,9 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
                 }
             });
         });
+        
     }, [busca]);
+        
 
     const autoCompleteSelectedOption = useMemo(() => {
         //!selectedId é a mesma coisa de selectedId === undefined
@@ -58,7 +75,6 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
 
         return selectedOption;
     }, [selectedId, opcoes]);
-
 
     return (
         <Autocomplete
@@ -74,7 +90,7 @@ export const AutoCompleteFilial: React.FC<IAutoCompleteFilialProps> = ({ name ,i
             disabled={isExternalLoading}
             value={autoCompleteSelectedOption}
             onInputChange={(_, newValue) => setBusca(newValue)}
-            onChange={(_, newValue) => { setSelectedId(newValue?.id); setBusca(''); clearError(); }}
+            onChange={(_, newValue) => { setSelectedId(newValue?.id); clearError(); }}
             popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
             renderInput={(params) => (
                 <TextField

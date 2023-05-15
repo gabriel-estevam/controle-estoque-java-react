@@ -39,7 +39,7 @@ type TUsuarioLista = {
     totalPages: number;
 }
 
-const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error> => {
+const getAllContaing = async (page = 0, filter : string): Promise<TUsuarioLista | Error> => {
     try {
         const urlRelativa = `/users?name=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
         const response = await Api.get(urlRelativa);
@@ -51,6 +51,23 @@ const getAll = async (page = 0, filter : string): Promise<TUsuarioLista | Error>
                 totalElements: Number(response.data.totalElements),
                 totalPages: Number(response.data.totalPages),
             };
+        }
+
+        return new Error('Erro ao listar os registros.');
+    } 
+    catch (error) {
+        console.error(error);
+        return new Error((error as { message: string}).message || 'Erro ao listar os registros');
+    }
+};
+
+const getAll = async (): Promise<IDetalheUsuario[] | Error> => {
+    try {
+        const urlRelativa = '/users/all';
+        const response = await Api.get(urlRelativa);
+
+        if(response) {
+            return response.data;
         }
 
         return new Error('Erro ao listar os registros.');
@@ -83,6 +100,7 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 const create = async (dados: Omit<IDetalheUsuario, 'idUsuario'>): Promise<number | Error> => {
     try {
         dados.role === 1 ? dados.role = 0 : dados.role = 1;
+        dados.email.toLowerCase();
         const { data } = await Api.post<IDetalheUsuario>('/users', dados);
         if(data) {
             return data.idUsuario;
@@ -102,7 +120,7 @@ const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'passwo
 
         //@ts-ignore
         dados.role === 1 ? dados.role = 0 : dados.role = 1;
-        
+        dados?.email.toLocaleLowerCase();
         const { data } = await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
         
         if(data) {
@@ -127,6 +145,7 @@ const deleteById = async (id: number): Promise<void | Error> => {
 
 export const UsuarioService = {
     getAll,
+    getAllContaing,
     getById,
     create,
     updateById,

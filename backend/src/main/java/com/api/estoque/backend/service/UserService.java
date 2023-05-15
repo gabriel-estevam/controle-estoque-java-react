@@ -1,5 +1,6 @@
 package com.api.estoque.backend.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -30,6 +31,10 @@ public class UserService {
 
     public Page<Usuario> findByNameContaining(String name, Pageable pageable) {
         return repository.findByNameContaining(name, pageable);
+    }
+
+    public List<Usuario> findAll() {
+        return repository.findAll();
     }
 
     public Usuario findById(Long id) {

@@ -12,8 +12,9 @@ import CloseIcon from '@mui/icons-material/Close';
 interface IProps {
     children?: ReactNode;
     titulo: string;
-    tituloButtonAdd: string;
-    tituloButtonEdit: string;
+    tituloButtonAdd?: string;
+    tituloButtonEdit?: string;
+    heightDialog?: string;
     open: boolean;
     edit?: boolean;
     formSubmit: () => void;
@@ -28,10 +29,11 @@ export const ModalCadastro: React.FC<IProps> =
    tituloButtonEdit, 
    edit, 
    children, 
-   formSubmit 
+   formSubmit,
+   heightDialog
 }) => {
     return (
-        <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", height: "500px"}}}>
+        <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", maxHeight: "500px"}}}>
             <DialogTitle>
                 {titulo} 
                 <IconButton sx={{float: "right"}} onClick={handleClose}>
@@ -41,7 +43,7 @@ export const ModalCadastro: React.FC<IProps> =
             <DialogContent  
                 dividers 
                 sx={{ 
-                    height: '500px', 
+                    height: heightDialog != null  ? heightDialog : '500px' , 
                     width: '700px',
                     paddingY: 0,
                     paddingX: 0,

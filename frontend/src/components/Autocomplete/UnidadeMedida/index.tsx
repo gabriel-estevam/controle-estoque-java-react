@@ -1,21 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
-import { useField } from '@unform/core';
 import { useDebounce } from '../../../hooks/UseDebounce';
-import { UsuarioService } from '../../../services/api/usuarios/UsuarioService';
+import { FilialService } from '../../../services/api/filial/FilialService';
+import { useField } from '@unform/core';
+import { UnidadeMedidaService } from '../../../services/api/UnidadeMedida/UnidadeMedidaService';
 
 type TAutoCompleteOption = {
-    idUsuario: number;
+    idUnidadeMedida: number;
     label: string;
 }
 
-interface IAutoCompleteUsuarioProps {
+interface IAutoCompleteUnidadeMedidaProps {
     name: string;
     isExternalLoading?: boolean;
     isEdit: boolean;
 }
-
-export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name ,isExternalLoading = false, isEdit }) => {
+export const AutoCompleteUnidadeMedida: React.FC<IAutoCompleteUnidadeMedidaProps> = ({ name ,isExternalLoading = false, isEdit }) => {
     const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
@@ -38,43 +38,44 @@ export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name 
         setIsLoading(true);
         
         if(isEdit) {
-            UsuarioService.getAll()
+            UnidadeMedidaService.getAll()
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
                     alert(result.message);
                 }
                 else {
-                    setOpcoes(result.map(usuario => ({ idUsuario: usuario.idUsuario, label: usuario.name })));
+                    console.log(result)
+                    setOpcoes(result.map(unidade => ({ idUnidadeMedida: unidade.idUnidadeMedida, label: unidade.unidadeMedida })));
                 }
-            });    
+            });
         }
 
         debounce(() => {
-            UsuarioService.getAllContaing(0, busca)
+            UnidadeMedidaService.getAllContaing(0, busca)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
                     alert(result.message);
                 }
                 else {
-                    setOpcoes(result.content.map(usuario => ({ idUsuario: usuario.idUsuario, label: usuario.name })));
+                    console.log(result)
+                    setOpcoes(result.content.map(unidade => ({ idUnidadeMedida: unidade.idUnidadeMedida, label: unidade.unidadeMedida })));
                 }
             });
-            
         });
-
     }, [busca]);
 
     const autoCompleteSelectedOption = useMemo(() => {
         //!selectedId é a mesma coisa de selectedId === undefined
         if (!selectedId) return null; 
 
-        const selectedOption = opcoes.find(opcao => opcao.idUsuario === selectedId);
+        const selectedOption = opcoes.find(opcao => opcao.idUnidadeMedida === selectedId);
         if (!selectedOption) return null;
 
         return selectedOption;
     }, [selectedId, opcoes]);
+
 
     return (
         <Autocomplete
@@ -90,12 +91,12 @@ export const AutoCompleteUsuario: React.FC<IAutoCompleteUsuarioProps> = ({ name 
             disabled={isExternalLoading}
             value={autoCompleteSelectedOption}
             onInputChange={(_, newValue) => setBusca(newValue)}
-            onChange={(_, newValue) => { setSelectedId(newValue?.idUsuario); setBusca(''); clearError(); }}
+            onChange={(_, newValue) => { setSelectedId(newValue?.idUnidadeMedida); clearError(); }}
             popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label="Usuário"
+                    label="Unidade"
                     error={!!error}
                     helperText={error}
                     sx={{

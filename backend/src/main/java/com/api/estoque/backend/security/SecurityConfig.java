@@ -67,11 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable() // desativamos essa configuração no ambiente de dev
             .authorizeRequests()
             .antMatchers(HttpMethod.POST,  "/api/auth/**").permitAll()
-                  /* .antMatchers("/api/users/**").permitAll()//.hasRole("ADMIN")
-                  .antMatchers("/api/filiais/**").permitAll()
-                  */
             .antMatchers("/api/users/**").hasRole("ADMIN")
             .antMatchers("/api/filiais/**").hasRole("ADMIN")
+            .antMatchers("/api/produtos/**").hasRole("ADMIN")
+            .antMatchers("/api/unidadeMedida/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

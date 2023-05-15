@@ -1,44 +1,34 @@
 import { Environment } from "../../../environment";
 import { Api } from "../axios-config";
 
-export interface IEndereco {
-  logradouro: string;
-  cep: string;
-  numero: string;
-  complemento: string | null | undefined;
-  cidade: string
-  estado: string
+export interface IUnidadeMedida {
+  idUnidadeMedida: number;
+  unidadeMedida: string;
 }
 
-export interface IListagemFilial {
-  idFilial: number;
-  name: string;
-  phoneNumber: string;
-  cnpj: string;
+export interface IListagemProduto {
+  idProduto: number;
+  nome: string;
   status: number;
-  usuarioFK: number;
-  endereco: IEndereco;
+  unidadeMedida: IUnidadeMedida;
 }
 
-export interface IDetalheFilial {
-  idFilial: number;
-  name: string;
-  phoneNumber: string;
-  cnpj: string;
+export interface IDetalheProduto {
+  idProduto: number | null | undefined;
+  nome: string;
   status: number;
-  usuarioFK: number;
-  Endereco: IEndereco;
+  UnidadeMedidaFK: number;
 }
 
-type TFilialLista = {
-    content: IListagemFilial[];
+type TProdutoLista = {
+    content: IListagemProduto[];
     totalElements: number;
     totalPages: number;
 }
 
-const getAllContaing = async (page = 0, filter?: string): Promise<TFilialLista | Error> => {
+const getAllContaing = async (page = 0, filter?: string): Promise<TProdutoLista | Error> => {
   try {
-    const urlRelativa = `/filiais?name=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
+    const urlRelativa = `/produtos?nome=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
     const response = await Api.get(urlRelativa);
 
     if(response) {
@@ -57,13 +47,13 @@ const getAllContaing = async (page = 0, filter?: string): Promise<TFilialLista |
   }  
 };
 
-const getAll = async (): Promise<IDetalheFilial[] | Error> => {
+const getAll = async (): Promise<IDetalheProduto[] | Error> => {
   try {
-    const urlRelativa = '/filiais/all';
+    const urlRelativa = '/produtos/all';
     const response = await Api.get(urlRelativa);
 
     if(response) {
-      return response.data
+      return response.data;
     }
 
     return new Error('Erro ao listar os registros.');
@@ -74,17 +64,18 @@ const getAll = async (): Promise<IDetalheFilial[] | Error> => {
   }  
 };
 
-//@ts-ignore
-const getById = async (id: number): Promise<IDetalheFilial | Error> => {
+const getById = async (id: number): Promise<IDetalheProduto | Error> => {
   try 
   {
-    const { data } = await Api.get(`/filiais/${id}`);
+    const { data } = await Api.get<IDetalheProduto>(`/produtos/${id}`);
     if(data) {
+      //@ts-ignore
       data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
+      console.log("DATAAA", data)
       return data;
     }
 
-    return new Error("Erro ao consultar Filial.");
+    return new Error("Erro ao consultar Produto.");
   } 
   catch (error) {
     console.error(error);
@@ -92,17 +83,16 @@ const getById = async (id: number): Promise<IDetalheFilial | Error> => {
   }
 };
 
-const create = async (dados: Omit<IDetalheFilial, 'idFilial'>): Promise<number | Error> => {
+
+const create = async (dados: IDetalheProduto): Promise<number | Error> => {
   try 
   {
-    if (!dados.Endereco.complemento) {
-      dados.Endereco.complemento = "N/A";
-    }
     
-    const { data } = await Api.post<IDetalheFilial>('/filiais', dados);
+    const { data } = await Api.post<IDetalheProduto>('/produtos', dados);
 
     if(data) {
-      return data.idFilial;
+      //@ts-ignore
+      return data.idProduto;
     }
     return new Error('Erro ao criar registro.');
   } 
@@ -111,11 +101,11 @@ const create = async (dados: Omit<IDetalheFilial, 'idFilial'>): Promise<number |
     return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
   }
 };
-
+/*
 //@ts-ignore
-const updateById = async (id: number, dados: IDetalheFilial): Promise<number | Error> => {
+const updateById = async (id: number, dados: IDetalheProduto): Promise<number | Error> => {
   try {      
-    const { data } = await Api.put<IDetalheFilial>(`/filiais/${id}`, dados);
+    const { data } = await Api.put<IDetalheProduto>(`/filiais/${id}`, dados);
       
     if(data) {
       return data.idFilial;
@@ -126,11 +116,11 @@ const updateById = async (id: number, dados: IDetalheFilial): Promise<number | E
     return new Error((error as { message: string }).message || 'Erro ao atulizar o registro.');
   }
 };
-
-export const FilialService = {
+*/
+export const ProdutoService = {
   getAll,
   getAllContaing,
   getById,
   create,
-  updateById,
+ // updateById,
 };

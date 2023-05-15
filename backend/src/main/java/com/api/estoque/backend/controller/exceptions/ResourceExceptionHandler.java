@@ -42,7 +42,7 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(ModelException.class)
-    public ResponseEntity<StandardError> usuarioCadastrado(ModelException e, HttpServletRequest req) {
+    public ResponseEntity<StandardError> modelError(ModelException e, HttpServletRequest req) {
         String error = "Erro ao cadastrar!";
         HttpStatus status = HttpStatus.BAD_REQUEST;
 

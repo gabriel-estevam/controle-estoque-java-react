@@ -1,6 +1,7 @@
 package com.api.estoque.backend.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,13 @@ public class FilialController {
     public ResponseEntity<Page<Filial>> 
     findByNameContaining( @RequestParam(name = "name", required = false) String name, 
                           @PageableDefault(sort = "idFilial", direction = Direction.ASC) Pageable pageable) {
-        Page<Filial> list = service.findByNameContaining(name, pageable);
+        Page<Filial> page = service.findByNameContaining(name, pageable);
+        return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Filial>> findAll() {
+        List<Filial> list = service.findAll();
         return ResponseEntity.ok().body(list);
     }
     
