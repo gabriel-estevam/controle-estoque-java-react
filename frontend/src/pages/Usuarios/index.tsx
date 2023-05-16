@@ -201,12 +201,13 @@ export const Usuarios: React.FC = () => {
                     setAlertTipo(true);
                     setAlertMsg(result.message);
                 }
-                else {
+                else 
+                {
                     setAlertTipo(false);
                     setOpen(true);
                     setAlertMsg('Usuário atualizado com Sucesso!');
-                   handleCloseEdit();
-                   window.location.reload();
+                    handleCloseEdit();
+                    window.location.reload();
                 }
      
             });
@@ -228,7 +229,6 @@ export const Usuarios: React.FC = () => {
                 alert(result.message);
             }
             else {
-                //alert("Usuário Deletado com sucesso!");
                 setAlertTipo(false);
                 setOpen(true);
                 setAlertMsg('Usuário deletado com Sucesso!');
@@ -258,7 +258,6 @@ export const Usuarios: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>Nome</TableCell>
                             <TableCell>Login</TableCell>
                             <TableCell>Tipo Usuário</TableCell>

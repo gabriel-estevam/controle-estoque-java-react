@@ -99,13 +99,12 @@ export const Produtos: React.FC = () => {
                 alert(result.message);
             }
             else {
-                console.log(result.UnidadeMedidaFK)
                 setdadoProduto(result);
                 formRef.current?.setData({
                     nome: result.nome,
                     status: result.status,
                 });
-                formRef.current?.setFieldValue("UnidadeMedidaFK", result.UnidadeMedidaFK);
+                formRef.current?.setFieldValue("UnidadeMedidaFK", result.unidadeMedida?.idUnidadeMedida);
             }
         });
    };
@@ -183,28 +182,28 @@ export const Produtos: React.FC = () => {
     };
 
     const handleUpdate = (dados: IFormData) => {
-        console.log(dados)
-        /*formValidationSchema
+        console.log(dados);
+        formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
             //@ts-ignore
-            FilialService.updateById(dadoProduto?.idFilial, dadosValidados)
+            ProdutoService.updateById(dadoProduto?.idProduto, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
-                if(result instanceof Error) {
-                    //alert(result.message);
+                if(result instanceof Error) 
+                {
                     setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
                 }
-                else {
+                else 
+                {
                     setAlertTipo(false);
                     setOpen(true);
-                    setAlertMsg('Filial atualizada com Sucesso!');
-                    //alert(result);
-                   handleCloseEdit();
-                   window.location.reload();
+                    setAlertMsg('Produto atualizado com Sucesso!');
+                    handleCloseEdit();
+                    window.location.reload();
                 }
      
             });
@@ -217,7 +216,7 @@ export const Produtos: React.FC = () => {
             });
 
             formRef.current?.setErrors(validationErrors);
-        });**/
+        });
     };
 
     return (
@@ -241,7 +240,6 @@ export const Produtos: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>Produto</TableCell>
                             <TableCell>Unidade de Medida</TableCell>
                             <TableCell>Status</TableCell>
@@ -391,14 +389,10 @@ export const Produtos: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
+
                                 <Grid item md={6}>
                                     <AutoCompleteUnidadeMedida name="UnidadeMedidaFK" isExternalLoading={isLoading} isEdit={true} />
                                 </Grid>
-
-                                <Grid item md={6}>
-                                    <VTextField  type="number" name="UnidadeMedidaFK"/>
-                                </Grid>
-
                             </Grid>
 
                             <Grid container item direction="row" spacing={2}>

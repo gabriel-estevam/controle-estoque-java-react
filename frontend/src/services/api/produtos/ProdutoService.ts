@@ -18,12 +18,13 @@ export interface IDetalheProduto {
   nome: string;
   status: number;
   UnidadeMedidaFK: number;
+  unidadeMedida?: IUnidadeMedida;
 }
 
 type TProdutoLista = {
-    content: IListagemProduto[];
-    totalElements: number;
-    totalPages: number;
+  content: IListagemProduto[];
+  totalElements: number;
+  totalPages: number;
 }
 
 const getAllContaing = async (page = 0, filter?: string): Promise<TProdutoLista | Error> => {
@@ -71,7 +72,7 @@ const getById = async (id: number): Promise<IDetalheProduto | Error> => {
     if(data) {
       //@ts-ignore
       data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
-      console.log("DATAAA", data)
+      
       return data;
     }
 
@@ -84,7 +85,7 @@ const getById = async (id: number): Promise<IDetalheProduto | Error> => {
 };
 
 
-const create = async (dados: IDetalheProduto): Promise<number | Error> => {
+const create = async (dados: IDetalheProduto): Promise<number | Error | undefined | null> => {
   try 
   {
     
@@ -101,26 +102,29 @@ const create = async (dados: IDetalheProduto): Promise<number | Error> => {
     return new Error((error as { message: string }).message || 'Erro ao criar o registro.');
   }
 };
-/*
-//@ts-ignore
-const updateById = async (id: number, dados: IDetalheProduto): Promise<number | Error> => {
-  try {      
-    const { data } = await Api.put<IDetalheProduto>(`/filiais/${id}`, dados);
+
+
+const updateById = async (id: number, dados: IDetalheProduto): Promise<number | Error | undefined | null> => {
+  try 
+  {      
+    const { data } = await Api.put<IDetalheProduto>(`/produtos/${id}`, dados);
       
     if(data) {
-      return data.idFilial;
+      return data.idProduto;
     }
   } 
+
   catch (error) {
     console.error(error);
     return new Error((error as { message: string }).message || 'Erro ao atulizar o registro.');
   }
+
 };
-*/
+
 export const ProdutoService = {
   getAll,
   getAllContaing,
   getById,
   create,
- // updateById,
+  updateById,
 };

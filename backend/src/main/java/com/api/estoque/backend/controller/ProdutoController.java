@@ -58,9 +58,8 @@ public class ProdutoController {
 
     @PostMapping
     public ResponseEntity<Produto> insert(@RequestBody ProdutoDTO produtoDTO) {
-        
         produtoDTO.setUnidadeMedida(UnidadeMedidaRep.findById(produtoDTO.getUnidadeMedidaFK()).get());
-
+        
         Produto produto = service.fromDto(produtoDTO);
         produto = service.insert(produto);
 
@@ -79,9 +78,10 @@ public class ProdutoController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Produto> update(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
-        
-        produtoDTO.setIdProduto(id);
 
+        produtoDTO.setIdProduto(id);
+        produtoDTO.setUnidadeMedida(UnidadeMedidaRep.findById(produtoDTO.getUnidadeMedidaFK()).get());
+        
         Produto produto = service.fromDto(produtoDTO);
 
         produto = service.update(id, produto);

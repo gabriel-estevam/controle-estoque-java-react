@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useDebounce } from '../../../hooks/UseDebounce';
-import { FilialService } from '../../../services/api/filial/FilialService';
 import { useField } from '@unform/core';
 import { UnidadeMedidaService } from '../../../services/api/UnidadeMedida/UnidadeMedidaService';
 
@@ -45,7 +44,7 @@ export const AutoCompleteUnidadeMedida: React.FC<IAutoCompleteUnidadeMedidaProps
                     alert(result.message);
                 }
                 else {
-                    console.log(result)
+
                     setOpcoes(result.map(unidade => ({ idUnidadeMedida: unidade.idUnidadeMedida, label: unidade.unidadeMedida })));
                 }
             });
@@ -59,7 +58,6 @@ export const AutoCompleteUnidadeMedida: React.FC<IAutoCompleteUnidadeMedidaProps
                     alert(result.message);
                 }
                 else {
-                    console.log(result)
                     setOpcoes(result.content.map(unidade => ({ idUnidadeMedida: unidade.idUnidadeMedida, label: unidade.unidadeMedida })));
                 }
             });
@@ -71,6 +69,7 @@ export const AutoCompleteUnidadeMedida: React.FC<IAutoCompleteUnidadeMedidaProps
         if (!selectedId) return null; 
 
         const selectedOption = opcoes.find(opcao => opcao.idUnidadeMedida === selectedId);
+
         if (!selectedOption) return null;
 
         return selectedOption;
@@ -90,7 +89,7 @@ export const AutoCompleteUnidadeMedida: React.FC<IAutoCompleteUnidadeMedidaProps
             loading={isLoading}
             disabled={isExternalLoading}
             value={autoCompleteSelectedOption}
-            onInputChange={(_, newValue) => setBusca(newValue)}
+            onInputChange={(_, newValue) => setBusca(newValue.toUpperCase())}
             onChange={(_, newValue) => { setSelectedId(newValue?.idUnidadeMedida); clearError(); }}
             popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
             renderInput={(params) => (

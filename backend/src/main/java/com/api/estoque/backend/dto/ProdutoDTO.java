@@ -62,7 +62,7 @@ public class ProdutoDTO {
     }
 
     public Long getUnidadeMedidaFK() {
-        return unidadeMedida.getIdUnidadeMedida();
+        return this.unidadeMedidaFK;
     }
 
     public void setUnidadeMedidaFK(Long unidadeMedidaFK) {

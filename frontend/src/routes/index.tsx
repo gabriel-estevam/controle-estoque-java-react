@@ -7,7 +7,6 @@ import { FaHome, FaUsers, FaBuilding, FaTags } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
     const isAuthenticated = localStorage.getItem("token") !== null;
-    console.log("isAuth: ", isAuthenticated);
     return isAuthenticated ? <Home>{children}</Home>  : <Navigate to={redirectTo} />;
   };
 

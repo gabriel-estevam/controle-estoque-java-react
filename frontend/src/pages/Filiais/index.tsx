@@ -189,7 +189,6 @@ export const Filiais: React.FC = () => {
     };
 
     const handleSave = (dados: IFormData) => {
-        console.log("Dados salvos ", dados);
         formValidationSchema
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
@@ -226,7 +225,6 @@ export const Filiais: React.FC = () => {
     };
 
     const handleUpdate = (dados: IFormData) => {
-        console.log(dados)
         formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
@@ -235,19 +233,19 @@ export const Filiais: React.FC = () => {
             FilialService.updateById(dadoFilial?.idFilial, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
-                if(result instanceof Error) {
-                    //alert(result.message);
+                if(result instanceof Error) 
+                {
                     setOpen(true);
                     setAlertTipo(true);
                     setAlertMsg(result.message);
                 }
-                else {
+                else 
+                {
                     setAlertTipo(false);
                     setOpen(true);
                     setAlertMsg('Filial atualizada com Sucesso!');
-                    //alert(result);
-                   handleCloseEdit();
-                   window.location.reload();
+                    handleCloseEdit();
+                    window.location.reload();
                 }
      
             });
@@ -284,7 +282,6 @@ export const Filiais: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>CNPJ</TableCell>
                             <TableCell>Nome</TableCell>
                             <TableCell>Contato</TableCell>
