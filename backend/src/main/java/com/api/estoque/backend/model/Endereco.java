@@ -2,6 +2,7 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,10 @@ public class Endereco implements Serializable {
     @OneToOne 
    @JoinColumn(name = "idFilial")
     private Filial filial;
+
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+   @JoinColumn(name = "idFornecedor", insertable = true, updatable = true)
+    private Fornecedor fornecedor;
 
     public Endereco() {
 
@@ -113,6 +118,16 @@ public class Endereco implements Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
+
+    @JsonIgnore
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
+    }
+
 
     @Override
     public int hashCode() {

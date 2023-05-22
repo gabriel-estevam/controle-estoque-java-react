@@ -249,7 +249,6 @@ export const Produtos: React.FC = () => {
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.idProduto}>
-                                <TableCell>{row.idProduto}</TableCell>
                                 <TableCell>{row.nome}</TableCell>
                                 <TableCell>{row.unidadeMedida.unidadeMedida}</TableCell>
                                 <TableCell>{row.status}</TableCell>

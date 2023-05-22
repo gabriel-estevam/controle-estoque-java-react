@@ -45,15 +45,17 @@ public class FilialService {
 
     public Filial insert(Filial filial) {
         Filial newFilial;
+        
         Endereco endereco = enderecoRepository.save(filial.getEndereco());
-        //return repository.save(filial);
+
         newFilial = repository.save(filial);
         updateEnderecoAfterSave(endereco,newFilial);
         return newFilial;
     }
     
     private void updateEnderecoAfterSave(Endereco entity, Filial filialEntity) {
-        try {
+        try 
+        {
             Endereco enderecoEntity = enderecoRepository.getReferenceById(entity.getIdEndereco());
             enderecoEntity.setLogradouro(entity.getLogradouro());
             enderecoEntity.setCep(entity.getCep());
@@ -64,7 +66,8 @@ public class FilialService {
             enderecoEntity.setFilial(filialEntity);
             enderecoRepository.save(enderecoEntity);
         }
-        catch (EntityNotFoundException e) {
+        catch (EntityNotFoundException e) 
+        {
             throw new ResourceNotFoundException(entity.getIdEndereco());
         }
         
@@ -114,13 +117,16 @@ public class FilialService {
         }
 
         if(filial.isEmpty()) {
-            return new Filial(objDto.getIdFilial(), 
-                              objDto.getName(), 
-                              objDto.getPhoneNumber(), 
-                              objDto.getCnpj(), 
-                              objDto.getStatus(),
-                              objDto.getEndereco());
-        } else {
+            return new Filial(
+                objDto.getIdFilial(), 
+                objDto.getName(), 
+                objDto.getPhoneNumber(), 
+                objDto.getCnpj(), 
+                objDto.getStatus(),
+                objDto.getEndereco()
+            );
+        } 
+        else {
             throw new ModelException("Filial com CNPJ ["+objDto.getCnpj()+"] já cadastrado!");
         }
     }
@@ -128,32 +134,41 @@ public class FilialService {
    public Endereco enderecoFilialExists(Filial objFilial) {
         Optional<Endereco> enderecoOpt;
         if(objFilial.getIdFilial() == null) {
-            enderecoOpt = enderecoRepository.findByCepAndEstadoAndLogradouroAndNumeroAndComplemento(objFilial.getEndereco().getCep(), 
-                                                                                    objFilial.getEndereco().getEstado(), 
-                                                                                    objFilial.getEndereco().getLogradouro(), 
-                                                                                    objFilial.getEndereco().getNumero(),
-                                                                                    objFilial.getEndereco().getComplemento());
+            enderecoOpt = enderecoRepository
+            .findByCepAndEstadoAndLogradouroAndNumeroAndComplementoAndCidade
+            (                
+                objFilial.getEndereco().getCep(), 
+                objFilial.getEndereco().getEstado(), 
+                objFilial.getEndereco().getLogradouro(), 
+                objFilial.getEndereco().getNumero(),
+                objFilial.getEndereco().getComplemento(),
+                objFilial.getEndereco().getCidade()
+            );
         }
         else {
             enderecoOpt = enderecoRepository
-            .findByCepAndEstadoAndLogradouroAndNumeroAndComplementoAndFilialNot
+            .findByCepAndEstadoAndLogradouroAndNumeroAndComplementoAndCidadeAndFilialNot
             (   objFilial.getEndereco().getCep(), 
                 objFilial.getEndereco().getEstado(), 
                 objFilial.getEndereco().getLogradouro(),
                 objFilial.getEndereco().getNumero(),
                 objFilial.getEndereco().getComplemento(),
+                objFilial.getEndereco().getCidade(),
                 objFilial
             );
         }
         if(enderecoOpt.isEmpty()) {
-            return new Endereco(null, 
-                                objFilial.getEndereco().getLogradouro(), 
-                                objFilial.getEndereco().getCep(), 
-                                objFilial.getEndereco().getNumero(), 
-                                objFilial.getEndereco().getComplemento(), 
-                                objFilial.getEndereco().getCidade(), 
-                                objFilial.getEndereco().getEstado());
-        } else {
+            return new Endereco(
+                null, 
+                objFilial.getEndereco().getLogradouro(), 
+                objFilial.getEndereco().getCep(), 
+                objFilial.getEndereco().getNumero(), 
+                objFilial.getEndereco().getComplemento(), 
+                objFilial.getEndereco().getCidade(), 
+                objFilial.getEndereco().getEstado()
+            );
+        } 
+        else {
             throw new ModelException("Endereço já cadastrado em outro Filial!");
         }
     }

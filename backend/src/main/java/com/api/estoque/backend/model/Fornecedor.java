@@ -2,6 +2,7 @@ package com.api.estoque.backend.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,58 +13,49 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.StatusOption;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "filial")
-public class Filial implements Serializable {
-
+@Table(name = "fornecedor")
+public class Fornecedor  implements Serializable {
     private static final long serialVersionUID = 1L;
-    
     @Id
-    @Column(name = "idFilial")
+    @Column(name = "idFornecedor")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idFilial;
+    private Long idFornecedor;
 
     private String name;
+    private String cnpj;
+    private String email;
 
     @Column(name = "phoneNumber")
     private String phoneNumber;
-    
-    private String cnpj;
 
-    
-    
-    @Column(name = "status")
     private Integer status;
-    
-    @OneToOne
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario;
-    
-    @OneToOne
-    @JoinColumn(name = "idEndereco")
+
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @JoinColumn(name = "idEndereco", insertable = true, updatable = true)
     private Endereco endereco;
 
-    public Filial() {
+    public Fornecedor() {
 
     }
 
-    public Filial(Long idFilial, String name, String phoneNumber, String cnpj, StatusOption status, Endereco endereco) {
-        this.idFilial = idFilial;
+    public Fornecedor(Long idFornecedor, String name, String cnpj, String email, String phoneNumber, StatusOption status, Endereco endereco) {
+        this.idFornecedor = idFornecedor;
         this.name = name;
-        this.phoneNumber = phoneNumber;
         this.cnpj = cnpj;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.endereco = endereco;
         setStatus(status);
     }
 
-    public Long getIdFilial() {
-        return idFilial;
+    public Long getIdFornecedor() {
+        return idFornecedor;
     }
 
-    public void setIdFilial(Long idFilial) {
-        this.idFilial = idFilial;
+    public void setIdFornecedor(Long idFornecedor) {
+        this.idFornecedor = idFornecedor;
     }
 
     public String getName() {
@@ -74,20 +66,28 @@ public class Filial implements Serializable {
         this.name = name;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public String getCnpj() {
         return cnpj;
     }
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public StatusOption getStatus() {
@@ -99,19 +99,6 @@ public class Filial implements Serializable {
             this.status = status.getCode();
         }
     }
-    
-    @JsonIgnore
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public Long getUsuarioFK() {
-        return usuario.getIdUsuario();
-    }
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public Endereco getEndereco() {
         return endereco;
     }
@@ -124,7 +111,7 @@ public class Filial implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((idFilial == null) ? 0 : idFilial.hashCode());
+        result = prime * result + ((idFornecedor == null) ? 0 : idFornecedor.hashCode());
         return result;
     }
 
@@ -136,13 +123,13 @@ public class Filial implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Filial other = (Filial) obj;
-        if (idFilial == null) {
-            if (other.idFilial != null)
+        Fornecedor other = (Fornecedor) obj;
+        if (idFornecedor == null) {
+            if (other.idFornecedor != null)
                 return false;
-        } else if (!idFilial.equals(other.idFilial))
+        } else if (!idFornecedor.equals(other.idFornecedor))
             return false;
         return true;
     }
-        
+    
 }

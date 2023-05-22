@@ -269,7 +269,6 @@ export const Usuarios: React.FC = () => {
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.idUsuario}>
-                                <TableCell>{row.idUsuario}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.email}</TableCell>
                                 <TableCell>{row.role}</TableCell>

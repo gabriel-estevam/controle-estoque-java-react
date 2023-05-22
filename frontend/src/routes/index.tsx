@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Home, Produtos, Usuarios } from '../pages';
-import { FaHome, FaUsers, FaBuilding, FaTags } from 'react-icons/fa';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios } from '../pages';
+import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
     const isAuthenticated = localStorage.getItem("token") !== null;
@@ -47,6 +47,11 @@ export const AppRoutes = () => {
           label: 'Produtos',
           icon: <FaTags color='#b7b9bb'/>
         },
+        {
+          path: '/fornecedor',
+          label: 'Fornecedores',
+          icon: <FaHandshake color='#b7b9bb'/>
+        },
       ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -74,6 +79,12 @@ export const AppRoutes = () => {
             <Route path="/produto" 
                   element={<PrivateRoute redirectTo="/">
                               <Produtos/>
+                           </PrivateRoute>
+                  } 
+            />
+            <Route path="/fornecedor" 
+                  element={<PrivateRoute redirectTo="/">
+                              <Fornecedores/>
                            </PrivateRoute>
                   } 
             />

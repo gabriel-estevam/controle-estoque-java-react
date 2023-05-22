@@ -298,7 +298,6 @@ export const Filiais: React.FC = () => {
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.idFilial}>
-                                <TableCell>{row.idFilial}</TableCell>
                                 <TableCell>{row.cnpj}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.phoneNumber}</TableCell>
