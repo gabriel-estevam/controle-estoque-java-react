@@ -15,8 +15,9 @@ import com.api.estoque.backend.model.UnidadeMedida;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     public Page<Produto> findByNomeContaining(String name,  Pageable pageable);
 
-    public Optional<Produto> findByNomeAndUnidadeMedida(String nome, UnidadeMedida unidadeMedida);
+    //public Optional<Produto> findByNomeAndUnidadeMedida(String nome);
 
     public Optional<Produto> findByNomeAndUnidadeMedidaAndIdProdutoNot(String nome, UnidadeMedida unidadeMedida, Long idProduto);
 
+    public Optional<Produto> findByNome(String nome);
 }

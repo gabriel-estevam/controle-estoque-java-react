@@ -604,7 +604,7 @@ export const Fornecedores: React.FC = () => {
                                     
                                     <Stack direction="row" spacing={1} alignItems="center">
                                         <Typography>Inativo</Typography>
-                                        <VSwitch name="status" edit={true} />
+                                        <VSwitch name="status" />
                                         <Typography>Ativo</Typography>
                                     </Stack>
                                 </Grid>

@@ -33,12 +33,12 @@ public class ProdutoService {
         return repository.findAll();
     }
     public Produto findById(Long id) {
-        Optional<Produto> filial = repository.findById(id);
-        return filial.orElseThrow(() -> new ResourceNotFoundException(id));
+        Optional<Produto> produto = repository.findById(id);
+        return produto.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public Produto insert(Produto filial) {
-        return repository.save(filial);
+    public Produto insert(Produto produto) {
+        return repository.save(produto);
     }
 
     public void delete(Long id) {
@@ -75,7 +75,7 @@ public class ProdutoService {
     public Produto produtoExists(ProdutoDTO objDto) {
         Optional<Produto> produto;
         if(objDto.getIdProduto() == null) {
-            produto = repository.findByNomeAndUnidadeMedida(objDto.getNome(), objDto.getUnidadeMedida());
+            produto = repository.findByNome(objDto.getNome());
         } else {
            produto = repository.findByNomeAndUnidadeMedidaAndIdProdutoNot(objDto.getNome(), objDto.getUnidadeMedida(), objDto.getIdProduto());
         }
@@ -83,8 +83,12 @@ public class ProdutoService {
         if(produto.isEmpty()) {
             return new Produto(objDto.getIdProduto(),objDto.getNome(), objDto.getStatus(),objDto.getUnidadeMedida());
         } else {
-            throw new ModelException("Produto [Nome: "+objDto.getNome()+" Unidade de Medida: "+objDto.getUnidadeMedida().getUnidadeMedida()+"] já cadastrado!");
+            throw new ModelException("Produto [Nome: "+objDto.getNome()+"] já cadastrado!");
         }
     }
 
+    public Produto findByNome(String nome) {
+        Optional<Produto> produto = repository.findByNome(nome);
+        return produto.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado!"));
+    }
 }

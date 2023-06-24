@@ -115,7 +115,6 @@ export const Filiais: React.FC = () => {
                 alert(result.message);
             }
             else {
-                console.log(result)
                 setdadoFilial(result);
                 formRef.current?.setData({
                     name: result.name,

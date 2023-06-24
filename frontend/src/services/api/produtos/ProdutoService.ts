@@ -4,6 +4,7 @@ import { Api } from "../axios-config";
 export interface IUnidadeMedida {
   idUnidadeMedida: number;
   unidadeMedida: string;
+  sigla: string;
 }
 
 export interface IListagemProduto {
@@ -20,6 +21,15 @@ export interface IDetalheProduto {
   UnidadeMedidaFK: number;
   unidadeMedida?: IUnidadeMedida;
 }
+
+export interface IProdutos {
+  idProduto: number;
+  nome: string;
+  status: number;
+  UnidadeMedidaFK: number;
+  unidadeMedida: IUnidadeMedida;
+}
+
 
 type TProdutoLista = {
   content: IListagemProduto[];
@@ -48,7 +58,7 @@ const getAllContaing = async (page = 0, filter?: string): Promise<TProdutoLista 
   }  
 };
 
-const getAll = async (): Promise<IDetalheProduto[] | Error> => {
+const getAll = async (): Promise<IProdutos[] | Error> => {
   try {
     const urlRelativa = '/produtos/all';
     const response = await Api.get(urlRelativa);

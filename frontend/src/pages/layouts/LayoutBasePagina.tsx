@@ -59,7 +59,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> =
                     textOverflow="ellipses"
                     //variant={smDown ? 'h6' : mdDown ? 'h4' : 'h3'}
                     variant='h4'
-                    marginLeft="2px"
+                    marginLeft="25px"
                 >
                     {titulo}
                 </Typography>

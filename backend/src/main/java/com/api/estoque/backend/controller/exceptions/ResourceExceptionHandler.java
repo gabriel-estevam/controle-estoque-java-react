@@ -2,6 +2,7 @@ package com.api.estoque.backend.controller.exceptions;
 
 import java.time.Instant;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,18 @@ public class ResourceExceptionHandler {
     public ResponseEntity<StandardError> modelError(ModelException e, HttpServletRequest req) {
         String error = "Erro ao cadastrar!";
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
+                req.getRequestURI());
+
+        return ResponseEntity.status(status).body(sError);
+   
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<StandardError> modelError(EntityNotFoundException e, HttpServletRequest req) {
+        String error = "Erro ao buscar registro!";
+        HttpStatus status = HttpStatus.NOT_FOUND;
 
         StandardError sError = new StandardError(Instant.now(), status.value(), error, e.getMessage(),
                 req.getRequestURI());

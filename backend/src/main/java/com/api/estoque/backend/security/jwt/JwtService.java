@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,10 @@ public class JwtService {
     public String gerarToken(Usuario usuario) {
     //metodo par gerar um token JWT
 
-        /*HashMap<String, Object> claims = new HashMap<>();
-        claims.put("email usuario:","gabriel@email.com");
-        claims.put("roles", "admin");
-        */
+        HashMap<String, Object> claims = new HashMap<>();
+        
+        claims.put("usuario", usuario);
+
         long expString = Long.valueOf(expiracao); 
         // expira em 30 minutos
         LocalDateTime dataHoraExpiracao = LocalDateTime.now().plusMinutes(expString); // pega data hora atual e soma mais 30 minutos
@@ -38,8 +39,9 @@ public class JwtService {
         Date data = Date.from(instant);
         return Jwts.builder()
                    .setSubject(usuario.getEmail()) // identifica o usuario no payload
+                   .addClaims(claims)
+                   //.setClaims(claims) //customiza a informação do payload
                    .setExpiration(data)
-                  // .setClaims(claims) customiza a informação do payload
                    .signWith(SignatureAlgorithm.HS512, chaveAssinatura) // aqui ele faz a chave de assinatura do token;
                    .compact();
 

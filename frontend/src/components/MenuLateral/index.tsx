@@ -116,7 +116,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
             <Drawer open={isDrawerOpen} 
                     variant={ smDown ? 'temporary' : 'permanent' } 
                     onClose={toggleDrawerOpen} >
-                <Box width={theme.spacing(28)} 
+                <Box width={theme.spacing(30)} 
                      display="flex" 
                      flexDirection="column" 
                      bgcolor="#343a40" 

@@ -22,20 +22,24 @@ public class AuthUserService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private UserService usuarioService;
+
     public TokenDTO autenticar(CredencialsDTO credenciais) {
         try 
         {
-            /*Usuario usuario = Usuario.builder()
-                                     .login(credenciais.getLogin())
-                                     .senha(credenciais.getSenha())
-                                     .build();*/
-            Usuario usuario = 
-            new Usuario(null, 
-                        null, 
-                        credenciais.getEmail(), 
-                        credenciais.getPassword(), 
-                        null, 
-                        null);
+            Usuario usuarioS = usuarioService.findByEmail(credenciais.getEmail());
+            Usuario usuario =  new Usuario(
+                usuarioS.getIdUsuario(), 
+                usuarioS.getName(), 
+                credenciais.getEmail(), 
+                credenciais.getPassword(), 
+                usuarioS.getRole(), 
+                usuarioS.getStatus()
+            );
+            
+            usuario.setFilial(usuarioS.getFilial());
+            usuario.getEmail();
             UserDetails usuarioAutenticado = usuarioServiceImpl.autenticar(usuario);
             String token = jwtService.gerarToken(usuario);
             boolean statusUser = usuarioAutenticado.isAccountNonLocked();

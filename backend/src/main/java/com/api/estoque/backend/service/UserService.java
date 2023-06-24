@@ -41,6 +41,10 @@ public class UserService {
         Optional<Usuario> user = repository.findById(id);
         return user.orElseThrow(() -> new ResourceNotFoundException(id));
     }
+    public Usuario findByEmail(String email) {
+        Optional<Usuario> usuario = repository.findByEmail(email);
+        return usuario.orElseThrow(() -> new ModelException("Usuário não encontrado!"));
+    }
 
     public Usuario insert(Usuario User) {
         return repository.save(User);

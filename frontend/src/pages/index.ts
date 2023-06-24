@@ -4,4 +4,5 @@ export * from './Login/index';
 export * from './Usuarios/index';
 export * from './Filiais/index';
 export * from './Fornecedores/index';
+export * from './Estoque/WareHouse/index';
 export * from './Produtos/index';
