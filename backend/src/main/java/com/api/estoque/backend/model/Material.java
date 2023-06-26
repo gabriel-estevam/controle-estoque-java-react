@@ -1,8 +1,6 @@
 package com.api.estoque.backend.model;
 
 import java.io.Serializable;
-import java.time.Instant;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,21 +11,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.enums.StatusOption;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "warehouse")
-public class WareHouse implements Serializable {
+@Table(name = "material")
+public class Material implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @Column(name = "idWareHouse")
+    @Column(name = "idMaterial")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idWareHouse;
+    private Long idMaterial;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-    private Instant dataEntrada;
-    
     private Integer status;
     
     private Integer quantidadeMinima;
@@ -47,14 +41,13 @@ public class WareHouse implements Serializable {
     @JoinColumn(name = "idProduto")
     private Produto produto;
 
-    public WareHouse() {
+    public Material() {
         
     }
 
-    public WareHouse(
-        Long idWareHouse, 
+    public Material(
+        Long idMaterial, 
         StatusOption status, 
-        Instant dataEntrada, 
         Fornecedor fornecedor, 
         Usuario usuario,
         Produto produto,
@@ -64,8 +57,7 @@ public class WareHouse implements Serializable {
         Integer quantidadeAtual
     ) 
     {
-        this.idWareHouse = idWareHouse;
-        this.dataEntrada = dataEntrada;
+        this.idMaterial = idMaterial;
         this.quantidadeMinima = quantidadeMinima;
         this.quantidadeMaxima = quantidadeMaxima;
         this.quantidadeIdeal = quantidadeIdeal;
@@ -76,12 +68,12 @@ public class WareHouse implements Serializable {
         setStatus(status);
     }
 
-    public Long getIdWareHouse() {
-        return idWareHouse;
+    public Long getIdMaterial() {
+        return idMaterial;
     }
 
-    public void setIdWareHouse(Long idWareHouse) {
-        this.idWareHouse = idWareHouse;
+    public void setIdMaterial(Long idMaterial) {
+        this.idMaterial = idMaterial;
     }
 
     public StatusOption getStatus() {
@@ -92,15 +84,6 @@ public class WareHouse implements Serializable {
         if(status != null) {
             this.status = status.getCode();
         }
-    }
-
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT")
-    public Instant getDataEntrada() {
-        return dataEntrada;
-    }
-
-    public void setDataEntrada(Instant dataEntrada) {
-        this.dataEntrada = dataEntrada;
     }
 
     public Fornecedor getFornecedor() {
@@ -163,7 +146,7 @@ public class WareHouse implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((idWareHouse == null) ? 0 : idWareHouse.hashCode());
+        result = prime * result + ((idMaterial == null) ? 0 : idMaterial.hashCode());
         return result;
     }
 
@@ -175,11 +158,11 @@ public class WareHouse implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        WareHouse other = (WareHouse) obj;
-        if (idWareHouse == null) {
-            if (other.idWareHouse != null)
+        Material other = (Material) obj;
+        if (idMaterial == null) {
+            if (other.idMaterial != null)
                 return false;
-        } else if (!idWareHouse.equals(other.idWareHouse))
+        } else if (!idMaterial.equals(other.idMaterial))
             return false;
         return true;
     }

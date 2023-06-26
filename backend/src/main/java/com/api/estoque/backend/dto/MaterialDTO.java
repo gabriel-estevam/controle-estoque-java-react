@@ -1,23 +1,15 @@
 package com.api.estoque.backend.dto;
 
-import java.time.Instant;
-
 import com.api.estoque.backend.model.Fornecedor;
 import com.api.estoque.backend.model.Produto;
 import com.api.estoque.backend.model.Usuario;
-import com.api.estoque.backend.model.WareHouse;
+import com.api.estoque.backend.model.Material;
 import com.api.estoque.backend.model.enums.StatusOption;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WareHouseDTO {
+public class MaterialDTO {
 
-    private Long idWareHouse;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-    private Instant dataEntrada;
+    private Long idMaterial;
 
     private Fornecedor fornecedor;
     
@@ -40,38 +32,27 @@ public class WareHouseDTO {
     private Integer quantidadeIdeal;
     private Integer quantidadeAtual;
 
-    public WareHouseDTO() {
+    public MaterialDTO() {
     }
 
-    public WareHouseDTO(WareHouse objWareHouse) {
-        idWareHouse = objWareHouse.getIdWareHouse();
-        dataEntrada = objWareHouse.getDataEntrada();
-        quantidadeAtual = objWareHouse.getQuantidadeAtual();
-        quantidadeIdeal = objWareHouse.getQuantidadeIdeal();
-        quantidadeMaxima = objWareHouse.getQuantidadeMaxima();
-        quantidadeMinima = objWareHouse.getQuantidadeMinima();
-        fornecedor = objWareHouse.getFornecedor();
-        produto = objWareHouse.getProduto();
-        usuario = objWareHouse.getUsuario();
-        setStatus(objWareHouse.getStatus());
+    public MaterialDTO(Material objMaterial) {
+        idMaterial = objMaterial.getIdMaterial();
+        quantidadeAtual = objMaterial.getQuantidadeAtual();
+        quantidadeIdeal = objMaterial.getQuantidadeIdeal();
+        quantidadeMaxima = objMaterial.getQuantidadeMaxima();
+        quantidadeMinima = objMaterial.getQuantidadeMinima();
+        fornecedor = objMaterial.getFornecedor();
+        produto = objMaterial.getProduto();
+        usuario = objMaterial.getUsuario();
+        setStatus(objMaterial.getStatus());
     }
 
-    public Long getIdWareHouse() {
-        return idWareHouse;
+    public Long getIdMaterial() {
+        return idMaterial;
     }
 
-    public void setIdWareHouse(Long idWareHouse) {
-        this.idWareHouse = idWareHouse;
-    }
-
-  //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT")
-    public Instant getDataEntrada() {
-        return dataEntrada;
-    }
-
-    @JsonIgnore
-    public void setDataEntrada(Instant dataEntrada) {
-        this.dataEntrada = dataEntrada;
+    public void setIdMaterial(Long idMaterial) {
+        this.idMaterial = idMaterial;
     }
 
     public Fornecedor getFornecedor() {

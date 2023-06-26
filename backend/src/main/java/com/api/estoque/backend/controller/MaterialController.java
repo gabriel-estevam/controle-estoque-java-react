@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.api.estoque.backend.dto.WareHouseDTO;
-import com.api.estoque.backend.model.WareHouse;
+import com.api.estoque.backend.dto.MaterialDTO;
+import com.api.estoque.backend.model.Material;
 import com.api.estoque.backend.service.FornecedorService;
 import com.api.estoque.backend.service.ProdutoService;
 import com.api.estoque.backend.service.UserService;
-import com.api.estoque.backend.service.WareHouseService;
+import com.api.estoque.backend.service.MaterialService;
 
 @RestController
-@RequestMapping(value = "api/wareHouse")
-public class WareHouseController {
+@RequestMapping(value = "api/materiais")
+public class MaterialController {
 
     @Autowired
-    private WareHouseService service;
+    private MaterialService service;
 
     @Autowired
     private FornecedorService serviceFornecedor;
@@ -45,50 +45,50 @@ public class WareHouseController {
     private UserService serviceUsuario;
 
     @GetMapping
-    public ResponseEntity<Page<WareHouse>>
+    public ResponseEntity<Page<Material>>
     findByProdutoContaining(
         @RequestParam(name = "produto", required = false) String produto, 
-        @PageableDefault(sort = "id_ware_house", direction = Direction.ASC) Pageable pageable
+        @PageableDefault(sort = "id_material", direction = Direction.ASC) Pageable pageable
     ) 
     {
 
-        Page<WareHouse> page = service.findByNameContaining(produto, pageable);
+        Page<Material> page = service.findByNameContaining(produto, pageable);
         return ResponseEntity.ok().body(page);
     }
     
     @GetMapping("/all")
-    public ResponseEntity<List<WareHouseDTO>> findAll() {
-        List<WareHouse> list = service.findAll();
-        List<WareHouseDTO> listDto = list.stream().map(x -> new WareHouseDTO(x)).collect(Collectors.toList());
+    public ResponseEntity<List<MaterialDTO>> findAll() {
+        List<Material> list = service.findAll();
+        List<MaterialDTO> listDto = list.stream().map(x -> new MaterialDTO(x)).collect(Collectors.toList());
         return ResponseEntity.ok().body(listDto);
     }
     
     @GetMapping(value = "/{id}")
-    public ResponseEntity<WareHouseDTO> findByid(@PathVariable Long id) {
-        WareHouse wareHouse = service.findById(id);
+    public ResponseEntity<MaterialDTO> findByid(@PathVariable Long id) {
+        Material wareHouse = service.findById(id);
         
-        WareHouseDTO wareHouseDTO = new WareHouseDTO(wareHouse);
-        wareHouseDTO.setFornecedorFK(wareHouse.getFornecedor().getIdFornecedor());
-        wareHouseDTO.setProdutoFK(wareHouse.getProduto().getIdProduto());
-        wareHouseDTO.setUsuarioFK(wareHouse.getUsuario().getIdUsuario());
+        MaterialDTO materialDTO = new MaterialDTO(wareHouse);
+        materialDTO.setFornecedorFK(wareHouse.getFornecedor().getIdFornecedor());
+        materialDTO.setProdutoFK(wareHouse.getProduto().getIdProduto());
+        materialDTO.setUsuarioFK(wareHouse.getUsuario().getIdUsuario());
 
-        return ResponseEntity.ok().body(wareHouseDTO);
+        return ResponseEntity.ok().body(materialDTO);
     }
 
     @PostMapping
-    public ResponseEntity<Void> insert(@RequestBody WareHouseDTO wareHouseDTO) {
+    public ResponseEntity<Void> insert(@RequestBody MaterialDTO materialDTO) {
 
-        wareHouseDTO.setFornecedor(serviceFornecedor.findById(wareHouseDTO.getFornecedorFK()));
-        wareHouseDTO.setProduto(serviceProduto.findById(wareHouseDTO.getProdutoFK()));
-        wareHouseDTO.setUsuario(serviceUsuario.findById(wareHouseDTO.getUsuarioFK()));
+        materialDTO.setFornecedor(serviceFornecedor.findById(materialDTO.getFornecedorFK()));
+        materialDTO.setProduto(serviceProduto.findById(materialDTO.getProdutoFK()));
+        materialDTO.setUsuario(serviceUsuario.findById(materialDTO.getUsuarioFK()));
         
-        WareHouse wareHouse = service.fromDto(wareHouseDTO);
+        Material wareHouse = service.fromDto(materialDTO);
         wareHouse = service.insert(wareHouse);
 
         URI uri = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")
-            .buildAndExpand(wareHouse.getIdWareHouse())
+            .buildAndExpand(wareHouse.getIdMaterial())
             .toUri();
 
         return ResponseEntity.created(uri).build();
@@ -101,14 +101,14 @@ public class WareHouseController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody WareHouseDTO wareHouseDTO) {
-        wareHouseDTO.setIdWareHouse(id);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody MaterialDTO materialDTO) {
+        materialDTO.setIdMaterial(id);
         
-        wareHouseDTO.setFornecedor(serviceFornecedor.findById(wareHouseDTO.getFornecedorFK()));
-        wareHouseDTO.setProduto(serviceProduto.findById(wareHouseDTO.getProdutoFK()));
-        wareHouseDTO.setUsuario(serviceUsuario.findById(wareHouseDTO.getUsuarioFK()));
+        materialDTO.setFornecedor(serviceFornecedor.findById(materialDTO.getFornecedorFK()));
+        materialDTO.setProduto(serviceProduto.findById(materialDTO.getProdutoFK()));
+        materialDTO.setUsuario(serviceUsuario.findById(materialDTO.getUsuarioFK()));
 
-        WareHouse wareHouse = service.fromDto(wareHouseDTO);
+        Material wareHouse = service.fromDto(materialDTO);
         wareHouse = service.update(id, wareHouse);
 
         return ResponseEntity.ok().build();

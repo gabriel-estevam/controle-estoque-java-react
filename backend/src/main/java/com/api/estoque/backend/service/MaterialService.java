@@ -12,33 +12,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.api.estoque.backend.dto.WareHouseDTO;
-import com.api.estoque.backend.model.WareHouse;
-import com.api.estoque.backend.repository.WareHouseRepository;
+import com.api.estoque.backend.dto.MaterialDTO;
+import com.api.estoque.backend.model.Material;
+import com.api.estoque.backend.repository.MaterialRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ModelException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 
 @Service
-public class WareHouseService {
+public class MaterialService {
     
     @Autowired
-    private WareHouseRepository repository;
+    private MaterialRepository repository;
 
-    public Page<WareHouse> findByNameContaining(String produto,  Pageable pageable) {
+    public Page<Material> findByNameContaining(String produto,  Pageable pageable) {
         return repository.findByProdutoContaining(produto, pageable);
     }
 
-    public List<WareHouse> findAll() {
+    public List<Material> findAll() {
         return repository.findAll();
     }
     
-    public WareHouse findById(Long id) {
-        Optional<WareHouse> WareHouse = repository.findById(id);
-        return WareHouse.orElseThrow(() -> new ResourceNotFoundException(id));
+    public Material findById(Long id) {
+        Optional<Material> material = repository.findById(id);
+        return material.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public WareHouse insert(WareHouse wareHouse) {
+    public Material insert(Material wareHouse) {
         return repository.save(wareHouse);
     }
 
@@ -52,10 +52,10 @@ public class WareHouseService {
         }
     }
 
-    public WareHouse update(Long id, WareHouse WareHouse) {
+    public Material update(Long id, Material material) {
         try {
-            WareHouse entity = repository.getReferenceById(id);
-            updateData(entity, WareHouse);
+            Material entity = repository.getReferenceById(id);
+            updateData(entity, material);
             return repository.save(entity);
         } 
         catch (EntityNotFoundException e) {
@@ -63,39 +63,38 @@ public class WareHouseService {
         }
     }
 
-    public void updateData(WareHouse entity, WareHouse WareHouse) {
-        entity.setQuantidadeAtual(WareHouse.getQuantidadeAtual());
-        entity.setQuantidadeIdeal(WareHouse.getQuantidadeIdeal());
-        entity.setQuantidadeMinima(WareHouse.getQuantidadeMinima());
-        entity.setQuantidadeMaxima(WareHouse.getQuantidadeMaxima());
-        entity.setProduto(WareHouse.getProduto());
-        entity.setFornecedor(WareHouse.getFornecedor());
-        entity.setStatus(WareHouse.getStatus());
-        entity.setUsuario(WareHouse.getUsuario());
+    public void updateData(Material entity, Material material) {
+        entity.setQuantidadeAtual(material.getQuantidadeAtual());
+        entity.setQuantidadeIdeal(material.getQuantidadeIdeal());
+        entity.setQuantidadeMinima(material.getQuantidadeMinima());
+        entity.setQuantidadeMaxima(material.getQuantidadeMaxima());
+        entity.setProduto(material.getProduto());
+        entity.setFornecedor(material.getFornecedor());
+        entity.setStatus(material.getStatus());
+        entity.setUsuario(material.getUsuario());
     }
 
-    public WareHouse fromDto(WareHouseDTO objDto) {
+    public Material fromDto(MaterialDTO objDto) {
         return wareHouseExists(objDto);
     }
 
-    public WareHouse wareHouseExists(WareHouseDTO objDto) {
-        Optional<WareHouse> wareHouse;
+    public Material wareHouseExists(MaterialDTO objDto) {
+        Optional<Material> wareHouse;
 
-        if(objDto.getIdWareHouse() == null) 
+        if(objDto.getIdMaterial() == null) 
         {
             wareHouse = repository.findByProduto(objDto.getProduto());
         } 
         else 
         {
-            wareHouse = repository.findByProdutoAndFornecedorAndIdWareHouseNot(objDto.getProduto(), objDto.getFornecedor() ,objDto.getIdWareHouse());
+            wareHouse = repository.findByProdutoAndFornecedorAndIdMaterialNot(objDto.getProduto(), objDto.getFornecedor() ,objDto.getIdMaterial());
         }
 
         if(wareHouse.isEmpty()) 
         {   
-            return new WareHouse(
-                objDto.getIdWareHouse(),
+            return new Material(
+                objDto.getIdMaterial(),
                 objDto.getStatus(),
-                objDto.getDataEntrada(),
                 objDto.getFornecedor(),
                 objDto.getUsuario(),
                 objDto.getProduto(),
@@ -108,7 +107,7 @@ public class WareHouseService {
         else 
         {
             throw new ModelException(
-                "Produto ["+objDto.getProduto().getNome()+"] já cadastrado!"
+                "Material ["+objDto.getProduto().getNome()+"] já cadastrado!"
             );
         }
     }

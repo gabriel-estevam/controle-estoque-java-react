@@ -1,12 +1,11 @@
-import { Environment } from "../../../../environment";
-import { Api } from "../../axios-config";
-import { IListagemFornecedor } from "../../fornecedores/FornecedorService";
-import { IListagemProduto } from "../../produtos/ProdutoService";
-import { IListagemUsuario } from "../../usuarios/UsuarioService";
+import { Environment } from "../../../environment";
+import { Api } from "../axios-config";
+import { IListagemFornecedor } from "../fornecedores/FornecedorService";
+import { IListagemProduto } from "../produtos/ProdutoService";
+import { IListagemUsuario } from "../usuarios/UsuarioService";
 
-export interface IListagemWareHouse {
-  idWareHouse: number;
-  dataEntrada: Date;
+export interface IListagemMaterial {
+  idMaterial: number;
   quantidadeMinima: number;
   quantidadeMaxima: number;
   quantidadeIdeal: number;
@@ -17,9 +16,8 @@ export interface IListagemWareHouse {
   produto: IListagemProduto;
 }
 
-export interface IDetalheWareHouse {
-  idWareHouse: number;
-  dataEntrada: Date;
+export interface IDetalheMaterial {
+  idMaterial: number;
   quantidadeMinima: number;
   quantidadeMaxima: number;
   quantidadeIdeal: number;
@@ -33,15 +31,15 @@ export interface IDetalheWareHouse {
   ProdutoFK: number;
 }
 
-type TWareHouseLista = {
-  content: IListagemWareHouse[];
+type TMaterialLista = {
+  content: IListagemMaterial[];
   totalElements: number;
   totalPages: number;
 }
 
-const getAllContaing = async (page = 0, filter?: string): Promise<TWareHouseLista | Error> => {
+const getAllContaing = async (page = 0, filter?: string): Promise<TMaterialLista | Error> => {
   try {
-    const urlRelativa = `/wareHouse?produto=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
+    const urlRelativa = `/materiais?produto=${filter}&page=${page}&size=${Environment.LIMITE_DE_LINHAS}`;
     const response = await Api.get(urlRelativa);
 
     if(response) {
@@ -60,9 +58,9 @@ const getAllContaing = async (page = 0, filter?: string): Promise<TWareHouseList
   }  
 };
 
-const getAll = async (): Promise<IDetalheWareHouse[] | Error> => {
+const getAll = async (): Promise<IDetalheMaterial[] | Error> => {
   try {
-    const urlRelativa = '/wareHouse/all';
+    const urlRelativa = '/materiais/all';
     const response = await Api.get(urlRelativa);
 
     if(response) {
@@ -78,10 +76,10 @@ const getAll = async (): Promise<IDetalheWareHouse[] | Error> => {
 };
 
 
-const getById = async (id: number): Promise<IDetalheWareHouse | Error> => {
+const getById = async (id: number): Promise<IDetalheMaterial | Error> => {
   try 
   {
-    const { data } = await Api.get(`/wareHouse/${id}`);
+    const { data } = await Api.get(`/materiais/${id}`);
     if(data) {
       data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
       return data;
@@ -95,10 +93,10 @@ const getById = async (id: number): Promise<IDetalheWareHouse | Error> => {
   }
 };
 
-const create = async (dados: Omit<IDetalheWareHouse, 'idWareHouse'>): Promise<void | Error> => {
+const create = async (dados: Omit<IDetalheMaterial, 'idMaterial'>): Promise<void | Error> => {
   try 
   { 
-    await Api.post<IDetalheWareHouse>('/wareHouse', dados);
+    await Api.post<IDetalheMaterial>('/materiais', dados);
 
   } 
   catch (error) {
@@ -108,9 +106,9 @@ const create = async (dados: Omit<IDetalheWareHouse, 'idWareHouse'>): Promise<vo
 };
 
 
-const updateById = async (id: number, dados: IDetalheWareHouse): Promise<void | Error> => {
+const updateById = async (id: number, dados: IDetalheMaterial): Promise<void | Error> => {
   try {      
-    await Api.put<IDetalheWareHouse>(`/wareHouse/${id}`, dados);
+    await Api.put<IDetalheMaterial>(`/materiais/${id}`, dados);
   } 
   catch (error) {
     console.error(error);
@@ -120,7 +118,7 @@ const updateById = async (id: number, dados: IDetalheWareHouse): Promise<void | 
 
 const deleteById = async (id: number): Promise<void | Error> => {
   try {
-    await Api.delete(`/wareHouse/${id}`);
+    await Api.delete(`/materiais/${id}`);
   } 
   catch (error) {
     console.error(error);
@@ -128,7 +126,7 @@ const deleteById = async (id: number): Promise<void | Error> => {
   }
 
 };
-export const WareHouseService = {
+export const MaterialService = {
   getAll,
   getAllContaing,
   getById,

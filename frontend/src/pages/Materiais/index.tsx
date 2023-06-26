@@ -25,27 +25,25 @@ from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
 
-import { IVFormErrors, VDateTimeField, VForm, VSwitch, VTextField, useVForm } from '../../../forms';
+import { IVFormErrors, VForm, VSwitch, VTextField, useVForm } from '../../forms';
 
-import { AutoCompleteFornecedor, AutoCompleteProduto, BarraFerramentas } from '../../../components';
+import { AutoCompleteFornecedor, AutoCompleteProduto, BarraFerramentas } from '../../components';
 
-import { LayoutBasePagina } from '../../layouts';
-import { Environment } from '../../../environment/index';
+import { LayoutBasePagina } from '../layouts';
+import { Environment } from '../../environment/index';
 
-import { useDebounce } from '../../../hooks';
-import { ModalCadastro } from '../../../components';
+import { useDebounce } from '../../hooks';
+import { ModalCadastro } from '../../components';
 
-import '../../../forms/TraducoesYup';
+import '../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
 
-import { FornecedorService } from '../../../services/api/fornecedores/FornecedorService';
 
-import { IDetalheWareHouse, IListagemWareHouse, WareHouseService } from '../../../services/api/estoque/warehouse/WareHouseService';
-import { DecodeTokenJWT } from '../../../services/api/auth/decode/DecodeTokenJWT';
+import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
+import { IListagemMaterial, IDetalheMaterial, MaterialService } from '../../services/api/materiais/MaterialService';
 
 interface IFormData {
-    idWareHouse: number| undefined | null;
-    dataEntrada: Date;
+    idMaterial: number| undefined | null;
     quantidadeMinima: number;
     quantidadeMaxima: number;
     quantidadeIdeal: number;
@@ -63,23 +61,18 @@ interface IDialogHandle {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idWareHouse: yup.number().nullable(),
-    dataEntrada: yup.date().required(),
-    
+    idMaterial: yup.number().nullable(),
     quantidadeMinima: yup.number().required(),
     quantidadeMaxima: yup.number().required(),
     quantidadeIdeal: yup.number().required(),
     quantidadeAtual: yup.number().required(),
-    
     status: yup.number().required(),
-    
     ProdutoFK: yup.number().required(),
     FornecedorFK: yup.number().required(),
     UsuarioFK: yup.number().required(),
-
 });
 
-export const WareHouse: React.FC = () => {
+export const Materiais: React.FC = () => {
     const theme = useTheme();
 
     const { formRef, save } = useVForm();
@@ -94,9 +87,9 @@ export const WareHouse: React.FC = () => {
     
     const { debounce } = useDebounce(3000, true);
     
-    const [rows, setRows] = useState<IListagemWareHouse[]>([]);
+    const [rows, setRows] = useState<IListagemMaterial[]>([]);
     
-    const [dadoWareHouse, setDadoWareHouse] = useState<IDetalheWareHouse>();
+    const [dadosMateriais, setDadosMateriais] = useState<IDetalheMaterial>();
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
@@ -120,19 +113,18 @@ export const WareHouse: React.FC = () => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
     
-   const getWareHouseById = (pId : number) => {
-        WareHouseService.getById(pId)
+   const getMaterialById = (pId : number) => {
+        MaterialService.getById(pId)
         .then((result) => {
             if(result instanceof Error) {
                 alert(result.message);
             }
             else {
-                setDadoWareHouse(result);
+                setDadosMateriais(result);
                 formRef.current?.setData({
                     ProdutoFK: result.ProdutoFK,
                     FornecedorFK: result.FornecedorFK,
                     UsuarioFK: result.usuario?.name,
-                    dataEntrada: new Date(result.dataEntrada).toLocaleString().replace(/,/,''),
                     quantidadeMinima: result.quantidadeMinima,
                     quantidadeMaxima: result.quantidadeMaxima,
                     quantidadeAtual: result.quantidadeAtual,
@@ -162,7 +154,7 @@ export const WareHouse: React.FC = () => {
     const handleDelete = (id: number) => {
         const deletar = window.confirm("Deseja realmente deletar esse item?");
         if(deletar) {
-            WareHouseService.deleteById(id)
+            MaterialService.deleteById(id)
             .then((result) => {
                 if(result instanceof Error) {
                     handleDialog({ action: 'U', type: 'ERRO', message: result.message })
@@ -178,7 +170,7 @@ export const WareHouse: React.FC = () => {
         debounce(()=> {
             setIsLoading(true);
 
-            WareHouseService.getAllContaing(paginaAPI, busca)
+            MaterialService.getAllContaing(paginaAPI, busca)
             .then((result) => {
                 setIsLoading(false);
     
@@ -219,7 +211,7 @@ export const WareHouse: React.FC = () => {
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
             setIsLoading(true);
-            WareHouseService.create(dadosValidados)
+            MaterialService.create(dadosValidados)
             .then((result) => {
                 setIsLoading(false);
 
@@ -248,16 +240,13 @@ export const WareHouse: React.FC = () => {
         const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token"));
         
         dados.UsuarioFK = usuarioToken.usuario.idUsuario;
-        
-        //@ts-ignore
-        dados.dataEntrada = dadoWareHouse?.dataEntrada;
-        
+
         formValidationSchema
         .validate(dados, {abortEarly: false })
         .then((dadosValidados) => {
             setIsLoading(true);
             //@ts-ignore
-            WareHouseService.updateById(dadoWareHouse?.idWareHouse, dadosValidados)
+            MaterialService.updateById(dadosMateriais?.idMaterial, dadosValidados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) 
@@ -285,8 +274,8 @@ export const WareHouse: React.FC = () => {
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Administração de Materiais WareHouse"
-            subTitulo="Gerenciamento de Produtos"
+            titulo="Administração de Materiais"
+            subTitulo="Gerenciamento de Materiais"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
@@ -309,28 +298,26 @@ export const WareHouse: React.FC = () => {
                             <TableCell>Quantidade Ideal</TableCell>
                             <TableCell>Quantidade Minima</TableCell>
                             <TableCell>Quantidade Máxima</TableCell>
-                            <TableCell>Data de Entrada</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.idWareHouse}>
+                            <TableRow key={row.idMaterial}>
                                 <TableCell>{row.produto.nome}</TableCell>
                                 <TableCell>{row.produto.unidadeMedida.unidadeMedida}</TableCell>
                                 <TableCell>{row.quantidadeAtual}</TableCell>
                                 <TableCell>{row.quantidadeIdeal}</TableCell>
                                 <TableCell>{row.quantidadeMinima}</TableCell>
                                 <TableCell>{row.quantidadeMaxima}</TableCell>
-                                <TableCell>{new Date(row.dataEntrada).toLocaleString().replace(/,/,'')}</TableCell>
                                 <TableCell>{row.status}</TableCell>
                                 <TableCell width={200}>
                                     <Button
                                         variant="contained"
                                         color="warning"
                                         disableElevation
-                                        onClick={() => { handleOpenEdit(); getWareHouseById(row.idWareHouse); }}
+                                        onClick={() => { handleOpenEdit(); getMaterialById(row.idMaterial); }}
                                         sx={{
                                             marginRight: theme.spacing(1),
                                         }}
@@ -341,7 +328,7 @@ export const WareHouse: React.FC = () => {
                                         variant="contained"
                                         color="error"
                                         disableElevation
-                                        onClick={() => { handleDelete(row.idWareHouse) }}
+                                        onClick={() => { handleDelete(row.idMaterial) }}
                                     >
                                         Deletar
                                     </Button>
@@ -393,48 +380,6 @@ export const WareHouse: React.FC = () => {
                     <Grid container direction="column" padding={2} spacing={2}>
 
                         <Grid container item direction="row" spacing={1}>
-
-                            <Grid item md={5}>
-                                <VDateTimeField 
-                                    disabled
-                                    name="dataEntrada" 
-                                    label="Data de Entrada" 
-                                    variant="outlined"
-                                    type="text"
-                                    sx={{
-                                        "& input": {border: 'none', 
-                                                    margin: 2, 
-                                                    padding: 1, 
-                                                    paddingY:0,
-                                                    paddingRight: 0
-                                        },
-                                        marginTop: 1,
-                                    }}
-                                    fullWidth
-                                />
-                            </Grid>
-                            
-                            <Grid item md={7}>
-                                <TextField
-                                    disabled
-                                    value={usuarioToken}
-                                    name="UsuarioFK"
-                                    label="Usuario" 
-                                    variant="outlined"
-                                    type="text"
-                                    sx={{
-                                        "& input": {border: 'none', 
-                                                    margin: 2, 
-                                                    padding: 1, 
-                                                    paddingY:0,
-                                                    paddingRight: 0
-                                        },
-                                        marginTop: 1,
-                                    }}
-                                    fullWidth
-                                />
-                            </Grid>
-
                             <Grid item md={12}>
                                 <AutoCompleteProduto name="ProdutoFK" isExternalLoading={isLoading} isEdit={false} />
                             </Grid>
@@ -477,13 +422,32 @@ export const WareHouse: React.FC = () => {
 
                         </Grid>
 
-                        <Grid container item direction="row" spacing={2}>
+                        <Grid container item direction="row" spacing={3}>
                             <Grid item md={6}>
                                 <AutoCompleteFornecedor name="FornecedorFK" isExternalLoading={isLoading} isEdit={false} />
                             </Grid>
                             <Grid item md={6}>
+                                <TextField
+                                    disabled
+                                    value={usuarioToken}
+                                    name="UsuarioFK"
+                                    label="Usuario" 
+                                    variant="outlined"
+                                    type="text"
+                                    sx={{
+                                        "& input": {border: 'none', 
+                                                    margin: 2, 
+                                                    padding: 1, 
+                                                    paddingY:0,
+                                                    paddingRight: 0
+                                        },
+                                    }}
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid item md={6}>
                                 <InputLabel >Status</InputLabel>
-                                
                                 <Stack direction="row" spacing={1} alignItems="center">
                                     <Typography>Inativo</Typography>
                                     <VSwitch name="status" />
@@ -512,47 +476,6 @@ export const WareHouse: React.FC = () => {
                         <Grid container direction="column" padding={2} spacing={2}>
 
                             <Grid container item direction="row" spacing={1}>
-
-                                <Grid item md={5}>
-                                    <VTextField
-                                        disabled
-                                        name="UsuarioFK"
-                                        label="Usuario" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                            marginTop: 1,
-                                        }}
-                                        fullWidth
-                                        />
-                                </Grid>
-                                
-                                <Grid item md={7}>
-                                    <VTextField
-                                        disabled
-                                        name="dataEntrada"
-                                        label="Data de Entrada" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                            marginTop: 1,
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-
                                 <Grid item md={12}>
                                     <AutoCompleteProduto name="ProdutoFK" isExternalLoading={isLoading} isEdit={true} />
                                 </Grid>
@@ -599,6 +522,26 @@ export const WareHouse: React.FC = () => {
                                 <Grid item md={6}>
                                     <AutoCompleteFornecedor name="FornecedorFK" isExternalLoading={isLoading} isEdit={true} />
                                 </Grid>
+
+                                <Grid item md={6}>
+                                    <VTextField
+                                        disabled
+                                        name="UsuarioFK"
+                                        label="Usuario" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        fullWidth
+                                        />
+                                </Grid>
+
                                 <Grid item md={6}>
                                     <InputLabel >Status</InputLabel>
                                     
@@ -609,7 +552,6 @@ export const WareHouse: React.FC = () => {
                                     </Stack>
                                 </Grid>
                             </Grid>
-
                         </Grid>
 
                     </Box>
