@@ -12,33 +12,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.api.estoque.backend.dto.WareHouseDTO;
-import com.api.estoque.backend.model.WareHouse;
-import com.api.estoque.backend.repository.WareHouseRepository;
+import com.api.estoque.backend.dto.EstoqueDTO;
+import com.api.estoque.backend.model.Estoque;
+import com.api.estoque.backend.repository.EstoqueRepository;
 import com.api.estoque.backend.service.exceptions.DataBaseException;
 import com.api.estoque.backend.service.exceptions.ModelException;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 
 @Service
-public class WareHouseService {
+public class EstoqueService {
     
     @Autowired
-    private WareHouseRepository repository;
+    private EstoqueRepository repository;
 
-    public Page<WareHouse> findByNameContaining(String produto,  Pageable pageable) {
+    public Page<Estoque> findByNameContaining(String produto,  Pageable pageable) {
         return repository.findByProdutoContaining(produto, pageable);
     }
 
-    public List<WareHouse> findAll() {
+    public List<Estoque> findAll() {
         return repository.findAll();
     }
     
-    public WareHouse findById(Long id) {
-        Optional<WareHouse> WareHouse = repository.findById(id);
+    public Estoque findById(Long id) {
+        Optional<Estoque> WareHouse = repository.findById(id);
         return WareHouse.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public WareHouse insert(WareHouse wareHouse) {
+    public Estoque insert(Estoque wareHouse) {
         return repository.save(wareHouse);
     }
 
@@ -52,9 +52,9 @@ public class WareHouseService {
         }
     }
 
-    public WareHouse update(Long id, WareHouse WareHouse) {
+    public Estoque update(Long id, Estoque WareHouse) {
         try {
-            WareHouse entity = repository.getReferenceById(id);
+            Estoque entity = repository.getReferenceById(id);
             updateData(entity, WareHouse);
             return repository.save(entity);
         } 
@@ -63,23 +63,17 @@ public class WareHouseService {
         }
     }
 
-    public void updateData(WareHouse entity, WareHouse WareHouse) {
-        entity.setQuantidadeAtual(WareHouse.getQuantidadeAtual());
-        entity.setQuantidadeIdeal(WareHouse.getQuantidadeIdeal());
-        entity.setQuantidadeMinima(WareHouse.getQuantidadeMinima());
-        entity.setQuantidadeMaxima(WareHouse.getQuantidadeMaxima());
-        entity.setProduto(WareHouse.getProduto());
-        entity.setFornecedor(WareHouse.getFornecedor());
-        entity.setStatus(WareHouse.getStatus());
+    public void updateData(Estoque entity, Estoque WareHouse) {
+
         entity.setUsuario(WareHouse.getUsuario());
     }
 
-    public WareHouse fromDto(WareHouseDTO objDto) {
+  /*  public Estoque fromDto(EstoqueDTO objDto) {
         return wareHouseExists(objDto);
     }
-
-    public WareHouse wareHouseExists(WareHouseDTO objDto) {
-        Optional<WareHouse> wareHouse;
+*/
+    /*public Estoque wareHouseExists(EstoqueDTO objDto) {
+        Optional<Estoque> wareHouse;
 
         if(objDto.getIdWareHouse() == null) 
         {
@@ -92,7 +86,7 @@ public class WareHouseService {
 
         if(wareHouse.isEmpty()) 
         {   
-            return new WareHouse(
+            return new Estoque(
                 objDto.getIdWareHouse(),
                 objDto.getStatus(),
                 objDto.getDataEntrada(),
@@ -112,5 +106,5 @@ public class WareHouseService {
             );
         }
     }
-    
+    */
 }

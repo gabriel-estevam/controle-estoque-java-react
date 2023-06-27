@@ -5,13 +5,13 @@ import java.time.Instant;
 import com.api.estoque.backend.model.Fornecedor;
 import com.api.estoque.backend.model.Produto;
 import com.api.estoque.backend.model.Usuario;
-import com.api.estoque.backend.model.WareHouse;
+import com.api.estoque.backend.model.Estoque;
 import com.api.estoque.backend.model.enums.StatusOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WareHouseDTO {
+public class EstoqueDTO {
 
     private Long idWareHouse;
 
@@ -40,20 +40,12 @@ public class WareHouseDTO {
     private Integer quantidadeIdeal;
     private Integer quantidadeAtual;
 
-    public WareHouseDTO() {
+    public EstoqueDTO() {
     }
 
-    public WareHouseDTO(WareHouse objWareHouse) {
-        idWareHouse = objWareHouse.getIdWareHouse();
+    public EstoqueDTO(Estoque objWareHouse) {
+        idWareHouse = objWareHouse.getIdEstoque();
         dataEntrada = objWareHouse.getDataEntrada();
-        quantidadeAtual = objWareHouse.getQuantidadeAtual();
-        quantidadeIdeal = objWareHouse.getQuantidadeIdeal();
-        quantidadeMaxima = objWareHouse.getQuantidadeMaxima();
-        quantidadeMinima = objWareHouse.getQuantidadeMinima();
-        fornecedor = objWareHouse.getFornecedor();
-        produto = objWareHouse.getProduto();
-        usuario = objWareHouse.getUsuario();
-        setStatus(objWareHouse.getStatus());
     }
 
     public Long getIdWareHouse() {
