@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios, WareHouse } from '../pages';
-import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaWarehouse } from 'react-icons/fa';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios, Materiais } from '../pages';
+import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
     const isAuthenticated = localStorage.getItem("token") !== null;
     return isAuthenticated ? <Home>{children}</Home>  : <Navigate to={redirectTo} />;
   };
 
-export const AppRoutes = () => {
+export const AppRoutes: React.FC = () => {
     
     const { setDrawerOptions, setDrawerOptionsNestedList } = useDrawerContext();
     useEffect(() => {
@@ -19,11 +19,6 @@ export const AppRoutes = () => {
           path: '/home',
           label: 'Home',
           icon: <FaHome color='#b7b9bb'/>,
-        },
-        {
-          path: '/warehouse',
-          label: 'Estoque WareHouse',
-          icon: <FaWarehouse color='#b7b9bb'/>,
         },
       ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,6 +47,11 @@ export const AppRoutes = () => {
           label: 'Fornecedores',
           icon: <FaHandshake color='#b7b9bb'/>
         },
+        {
+          path: '/material',
+          label: 'Materiais',
+          icon: <FaBoxes color='#b7b9bb'/>,
+        },
       ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -64,9 +64,9 @@ export const AppRoutes = () => {
                            </PrivateRoute>
                   } 
             />
-            <Route path="/warehouse" 
+            <Route path="/material" 
                   element={<PrivateRoute redirectTo="/">
-                              <WareHouse/>  
+                              <Materiais/>  
                            </PrivateRoute>
                   } 
             />
