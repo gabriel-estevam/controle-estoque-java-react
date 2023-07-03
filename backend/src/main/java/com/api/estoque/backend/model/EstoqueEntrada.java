@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,8 +19,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "estoque")
-public class Estoque implements Serializable {
+@Table(name = "estoque_entrada")
+public class EstoqueEntrada implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
@@ -34,25 +35,16 @@ public class Estoque implements Serializable {
     @JoinColumn(name = "idUsuario")
     private Usuario usuario;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+    @OneToMany(mappedBy = "id.estoque", cascade = CascadeType.ALL)
+    private Set<ItemEstoqueEntrada> itensEstoque = new HashSet<>();
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    @OneToMany(mappedBy = "id.estoque")
-    private Set<ItemEstoque> itensEstoque = new HashSet<>();
-
-    public Estoque() {
+    public EstoqueEntrada() {
         
     }
 
-    public Estoque(
+    public EstoqueEntrada(
         Long idEstoque, 
-        Instant dataEntrada, 
-        Fornecedor fornecedor, 
+        Instant dataEntrada,
         Usuario usuario
     ) 
     {
@@ -78,8 +70,20 @@ public class Estoque implements Serializable {
         this.dataEntrada = dataEntrada;
     }
 
-    public Set<ItemEstoque> getItenEstoque() {
+    public Set<ItemEstoqueEntrada> getItemEstoque() {
         return itensEstoque;
+    }
+
+    public void AddItensEstoque(Set<ItemEstoqueEntrada> itensEstoque) {
+        this.itensEstoque.addAll(itensEstoque);
+    }
+    
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override
@@ -98,7 +102,7 @@ public class Estoque implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Estoque other = (Estoque) obj;
+        EstoqueEntrada other = (EstoqueEntrada) obj;
         if (idEstoque == null) {
             if (other.idEstoque != null)
                 return false;
@@ -106,5 +110,5 @@ public class Estoque implements Serializable {
             return false;
         return true;
     }
-    
+
 }

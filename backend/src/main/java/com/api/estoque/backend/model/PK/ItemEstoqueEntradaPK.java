@@ -2,26 +2,25 @@ package com.api.estoque.backend.model.PK;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.api.estoque.backend.model.Produto;
-import com.api.estoque.backend.model.Estoque;
+import com.api.estoque.backend.model.EstoqueEntrada;
 
 @Embeddable
-public class ItemEstoquePK implements Serializable {
+public class ItemEstoqueEntradaPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //@JoinColumn(name = "id_produto")
     @ManyToOne
     @JoinColumn(name = "idProduto")
     private Produto produto;
 
-    //@JoinColumn(name = "id_estoque")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idEstoque")
-    private Estoque estoque;
+    private EstoqueEntrada estoque;
 
     public Produto getProduto() {
         return produto;
@@ -31,11 +30,11 @@ public class ItemEstoquePK implements Serializable {
         this.produto = produto;
     }
 
-    public Estoque getEstoque() {
+    public EstoqueEntrada getEstoque() {
         return estoque;
     }
 
-    public void setEstoque(Estoque estoque) {
+    public void setEstoque(EstoqueEntrada estoque) {
         this.estoque = estoque;
     }
 
@@ -56,7 +55,7 @@ public class ItemEstoquePK implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ItemEstoquePK other = (ItemEstoquePK) obj;
+        ItemEstoqueEntradaPK other = (ItemEstoqueEntradaPK) obj;
         if (produto == null) {
             if (other.produto != null)
                 return false;
