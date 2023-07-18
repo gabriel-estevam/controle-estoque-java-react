@@ -19,7 +19,7 @@ export interface IDetalheUsuario {
     role: number;
     status: number;
     filialFK: number;
-   // filialName: string;
+    filialName?: string;
 }
 export interface IDetalheUsuarioEdit {
     idUsuario?: number;

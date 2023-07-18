@@ -9,13 +9,9 @@ import {
     TableCell, 
     TableFooter, 
     TableHead, 
-    TableRow, 
-    useTheme,
+    TableRow,
     Box, 
     Grid, 
-    InputLabel,
-    Typography, 
-    Stack, 
     Alert,
     AlertTitle,
     Collapse,
@@ -25,7 +21,7 @@ from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
 
-import { IVFormErrors, VForm, VSwitch, VTextField, useVForm } from '../../forms';
+import { IVFormErrors, VDateTimeField, VForm, VTextField, useVForm } from '../../forms';
 
 import { AutoCompleteFornecedor, AutoCompleteProduto, BarraFerramentas } from '../../components';
 
@@ -40,56 +36,64 @@ import { Close } from '@mui/icons-material';
 
 
 import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
-import { IListagemMaterial, IDetalheMaterial, MaterialService } from '../../services/api/materiais/MaterialService';
+import { EstoqueEntradaService, IListagemEstoqueEntrada } from '../../services/api/estoque/EstoqueEntrada';
 
+interface IItemEstoque {
+    fornecedorFK: number | undefined;
+    produtoFK: number | undefined;
+    quantidadeAtual: number | undefined;
+    quantidadeIdeal: number | undefined;
+    quantidadeMinima: number | undefined;
+    quantidadeMaxima: number | undefined;
+}
 interface IFormData {
-    idMaterial: number| undefined | null;
-    quantidadeMinima: number;
-    quantidadeMaxima: number;
-    quantidadeIdeal: number;
-    quantidadeAtual: number;
-    status: number;
-    ProdutoFK: number;
-    FornecedorFK: number;
-    UsuarioFK: number;
+    idEstoque: number | null | undefined;
+    dataEntrada: string;
+    itensEstoque: IItemEstoque[];
+    usuarioFK: number;
+    filialFK: number;
 }
 
 interface IDialogHandle {
-    action: "I" | "U";
+    action: "I" | "D";
     type: "ERRO" | "SUCESSO";
     message: string;
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idMaterial: yup.number().nullable(),
-    quantidadeMinima: yup.number().required(),
-    quantidadeMaxima: yup.number().required(),
-    quantidadeIdeal: yup.number().required(),
-    quantidadeAtual: yup.number().required(),
-    status: yup.number().required(),
-    ProdutoFK: yup.number().required(),
-    FornecedorFK: yup.number().required(),
-    UsuarioFK: yup.number().required(),
+    idEstoque: yup.number().nullable(),
+    dataEntrada: yup.string().required(),
+    filialFK: yup.number().required(),
+    usuarioFK: yup.number().required(),
+    itensEstoque: yup.array(
+        yup.object({
+        quantidadeAtual: yup.number(),
+        quantidadeIdeal: yup.number(),
+        quantidadeMinima: yup.number(),
+        quantidadeMaxima: yup.number(),
+        fornecedorFK: yup.number(),
+        produtoFK: yup.number(),
+    })),
+
 });
 
-export const Materiais: React.FC = () => {
-    const theme = useTheme();
+export const EstoqueEntrada: React.FC = () => {
 
     const { formRef, save } = useVForm();
     
     //@ts-ignore
-    const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.name;
+    const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario;
+
+    //@ts-ignore
+    const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
 
     const [openModal, setOpenModal] = useState(false);
-    const [openModalEdit, setOpenModalEdit] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
     
     const { debounce } = useDebounce(3000, true);
     
-    const [rows, setRows] = useState<IListagemMaterial[]>([]);
-    
-    const [dadosMateriais, setDadosMateriais] = useState<IDetalheMaterial>();
+    const [rows, setRows] = useState<IListagemEstoqueEntrada[]>([]);
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
@@ -112,55 +116,27 @@ export const Materiais: React.FC = () => {
     const paginaAPI = useMemo(() => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
-    
-   const getMaterialById = (pId : number) => {
-        MaterialService.getById(pId)
-        .then((result) => {
-            if(result instanceof Error) {
-                alert(result.message);
-            }
-            else {
-                setDadosMateriais(result);
-                formRef.current?.setData({
-                    ProdutoFK: result.ProdutoFK,
-                    FornecedorFK: result.FornecedorFK,
-                    UsuarioFK: result.usuario?.name,
-                    quantidadeMinima: result.quantidadeMinima,
-                    quantidadeMaxima: result.quantidadeMaxima,
-                    quantidadeAtual: result.quantidadeAtual,
-                    quantidadeIdeal: result.quantidadeIdeal,
-                    status: result.status,
-                })
-            }
-        });
-   };
+
 
     const handleOpen = () => {
         setOpenModal(true);
     };
 
-    const handleOpenEdit = () => {
-        setOpenModalEdit(true);
-    };
 
     const handleClose = () => {
         setOpenModal(false);
     };
 
-    const handleCloseEdit = () => {
-        setOpenModalEdit(false);
-    };
-
     const handleDelete = (id: number) => {
         const deletar = window.confirm("Deseja realmente deletar esse item?");
         if(deletar) {
-            MaterialService.deleteById(id)
+            EstoqueEntradaService.deleteById(id)
             .then((result) => {
                 if(result instanceof Error) {
-                    handleDialog({ action: 'U', type: 'ERRO', message: result.message })
+                    handleDialog({ action: 'D', type: 'ERRO', message: result.message })
                 }
                 else {
-                    handleDialog({ action: 'U', type: 'SUCESSO', message: 'Material deletado com sucesso!' });
+                    handleDialog({ action: 'D', type: 'SUCESSO', message: 'Material deletado com sucesso!' });
                 }
             });
         }
@@ -170,7 +146,7 @@ export const Materiais: React.FC = () => {
         debounce(()=> {
             setIsLoading(true);
 
-            MaterialService.getAllContaing(paginaAPI, busca)
+            EstoqueEntradaService.getAllContaing(paginaAPI, busca, filialToken)
             .then((result) => {
                 setIsLoading(false);
     
@@ -196,22 +172,22 @@ export const Materiais: React.FC = () => {
         else {
             setAlertTipo(values.type === 'ERRO' ? true : false);
             setAlertMsg(values.message);
-            handleCloseEdit();
         }
     }
-    
 
     const handleSave = (dados: IFormData) => {
-        //@ts-ignore
-        const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token"));
-        
-        dados.UsuarioFK = usuarioToken.usuario.idUsuario;
+        dados.usuarioFK = usuarioToken.idUsuario;
+        dados.filialFK = filialToken;
+
+        const dataHora = new Date(dados.dataEntrada).toISOString();
+        dados.dataEntrada = dataHora.slice(0,19)+"Z";
         
        formValidationSchema
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
             setIsLoading(true);
-            MaterialService.create(dadosValidados)
+            //@ts-ignore
+            EstoqueEntradaService.create(dadosValidados)
             .then((result) => {
                 setIsLoading(false);
 
@@ -223,42 +199,6 @@ export const Materiais: React.FC = () => {
                 }
             });
            
-        })
-        .catch((errors: yup.ValidationError) => {
-            const validationErrors: IVFormErrors = {};
-            errors.inner.forEach(error => {
-                if(!error.path) return; //se path undefined não executa que esta abaixo
-                validationErrors[error.path] = error.message;
-            });
-
-            formRef.current?.setErrors(validationErrors);
-        });
-    };
-
-    const handleUpdate = (dados: IFormData) => {
-        //@ts-ignore
-        const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token"));
-        
-        dados.UsuarioFK = usuarioToken.usuario.idUsuario;
-
-        formValidationSchema
-        .validate(dados, {abortEarly: false })
-        .then((dadosValidados) => {
-            setIsLoading(true);
-            //@ts-ignore
-            MaterialService.updateById(dadosMateriais?.idMaterial, dadosValidados)
-            .then((result) => {
-                setIsLoading(false);
-                if(result instanceof Error) 
-                {
-                    handleDialog({ action: 'U', type: 'ERRO', message: result.message });
-                }
-                else 
-                {
-                    handleDialog({ action: 'U', type: 'SUCESSO', message: 'Material atualizado com sucesso!' });
-                }
-     
-            });
         })
         .catch((errors: yup.ValidationError) => {
             const validationErrors: IVFormErrors = {};
@@ -292,49 +232,39 @@ export const Materiais: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>Data de Entrada</TableCell>
                             <TableCell>Produto</TableCell>
                             <TableCell>Unidade de Medida</TableCell>
                             <TableCell>Quantidade Atual</TableCell>
                             <TableCell>Quantidade Ideal</TableCell>
                             <TableCell>Quantidade Minima</TableCell>
                             <TableCell>Quantidade Máxima</TableCell>
-                            <TableCell>Status</TableCell>
                             <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.idMaterial}>
-                                <TableCell>{row.produto.nome}</TableCell>
-                                <TableCell>{row.produto.unidadeMedida.unidadeMedida}</TableCell>
-                                <TableCell>{row.quantidadeAtual}</TableCell>
-                                <TableCell>{row.quantidadeIdeal}</TableCell>
-                                <TableCell>{row.quantidadeMinima}</TableCell>
-                                <TableCell>{row.quantidadeMaxima}</TableCell>
-                                <TableCell>{row.status}</TableCell>
+                            <TableRow key={row.idEstoque}>
+                               <TableCell>{new Date(row.dataEntrada).toLocaleString().replace(/,/,'')}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.produto.nome)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.quantidadeAtual)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.quantidadeIdeal)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMinima)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
+                            
                                 <TableCell width={200}>
-                                    <Button
-                                        variant="contained"
-                                        color="warning"
-                                        disableElevation
-                                        onClick={() => { handleOpenEdit(); getMaterialById(row.idMaterial); }}
-                                        sx={{
-                                            marginRight: theme.spacing(1),
-                                        }}
-                                    >
-                                        Editar
-                                    </Button>
                                     <Button
                                         variant="contained"
                                         color="error"
                                         disableElevation
-                                        onClick={() => { handleDelete(row.idMaterial) }}
+                                        onClick={() => { handleDelete(row.idEstoque) }}
                                     >
                                         Deletar
                                     </Button>
                                 </TableCell>
                             </TableRow>
-                                    ))}
+                        ))}
                     </TableBody>
 
                     {totalElements === 0 && !isLoading && (
@@ -356,7 +286,13 @@ export const Materiais: React.FC = () => {
                                     <Pagination
                                         page={pagina}
                                         count={totalPages}
-                                        onChange={(_, newPage) => setSearchParams({ busca, pagina: (newPage).toString(), paginaAPI: (newPage = newPage - 1).toString() }, { replace: true })
+                                        onChange={
+                                            (_, newPage) => 
+                                            setSearchParams({ 
+                                                busca, pagina: (newPage).toString(), 
+                                                paginaAPI: (newPage = newPage - 1).toString()}, 
+                                            { replace: true }
+                                            )
                                         }
                                     />
                                 </TableCell>
@@ -370,7 +306,7 @@ export const Materiais: React.FC = () => {
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
-                titulo="Adicionar Novo Material"
+                titulo="Adicionar novo Material ao Estoque"
                 tituloButtonAdd="Adicionar Material"
                 heightDialog="300px"
             >
@@ -378,15 +314,32 @@ export const Materiais: React.FC = () => {
                 <VForm ref={formRef} onSubmit={handleSave}>
                 <Box margin={1} display="flex" flexDirection="column">
                     <Grid container direction="column" padding={2} spacing={2}>
-
                         <Grid container item direction="row" spacing={1}>
-                            <Grid item md={12}>
-                                <AutoCompleteProduto name="ProdutoFK" isExternalLoading={isLoading} isEdit={false} />
+                        <Grid item md={4}>
+                            <VDateTimeField 
+                                disabled
+                                name="dataEntrada" 
+                                label="Data de Entrada" 
+                                variant="outlined"
+                                type="text"
+                                sx={{
+                                    "& input": {border: 'none', 
+                                                margin: 2, 
+                                                padding: 1, 
+                                                paddingY:0,
+                                                paddingRight: 0
+                                    },
+                                }}
+                                fullWidth
+                            />
+                            </Grid>
+                            <Grid item md={6}>
+                                <AutoCompleteProduto name="itensEstoque[0].produtoFK" isExternalLoading={isLoading} isEdit={false} />
                             </Grid>
 
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="quantidadeAtual"
+                                    name="itensEstoque[0].quantidadeAtual"
                                     label="Qtde.Atual" 
                                     variant="outlined"
                                     type="number"
@@ -395,7 +348,7 @@ export const Materiais: React.FC = () => {
 
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="quantidadeMinima"
+                                    name="itensEstoque[0].quantidadeMinima"
                                     label="Qtde.Minima" 
                                     variant="outlined"
                                     type="number"
@@ -404,7 +357,7 @@ export const Materiais: React.FC = () => {
 
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="quantidadeMaxima"
+                                    name="itensEstoque[0].quantidadeMaxima"
                                     label="Qtde.Maxima" 
                                     variant="outlined"
                                     type="number"
@@ -413,7 +366,7 @@ export const Materiais: React.FC = () => {
 
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="quantidadeIdeal"
+                                    name="itensEstoque[0].quantidadeIdeal"
                                     label="Qtde.Ideal" 
                                     variant="outlined"
                                     type="number"
@@ -424,12 +377,12 @@ export const Materiais: React.FC = () => {
 
                         <Grid container item direction="row" spacing={3}>
                             <Grid item md={6}>
-                                <AutoCompleteFornecedor name="FornecedorFK" isExternalLoading={isLoading} isEdit={false} />
+                                <AutoCompleteFornecedor name="itensEstoque[0].fornecedorFK" isExternalLoading={isLoading} isEdit={false} />
                             </Grid>
                             <Grid item md={6}>
                                 <TextField
                                     disabled
-                                    value={usuarioToken}
+                                    value={usuarioToken.name}
                                     name="UsuarioFK"
                                     label="Usuario" 
                                     variant="outlined"
@@ -445,116 +398,11 @@ export const Materiais: React.FC = () => {
                                     fullWidth
                                 />
                             </Grid>
-
-                            <Grid item md={6}>
-                                <InputLabel >Status</InputLabel>
-                                <Stack direction="row" spacing={1} alignItems="center">
-                                    <Typography>Inativo</Typography>
-                                    <VSwitch name="status" />
-                                    <Typography>Ativo</Typography>
-                                </Stack>
-                            </Grid>
                         </Grid>
 
                     </Grid>
 
                 </Box>
-                </VForm>
-            </ModalCadastro>
-
-            <ModalCadastro 
-                open={openModalEdit}
-                handleClose={handleCloseEdit}
-                formSubmit={save}
-                titulo="Editar Material"
-                tituloButtonEdit="Salvar Material"
-                edit={openModalEdit}
-            >
-
-                <VForm ref={formRef} onSubmit={handleUpdate}>
-                    <Box margin={1} display="flex" flexDirection="column">
-                        <Grid container direction="column" padding={2} spacing={2}>
-
-                            <Grid container item direction="row" spacing={1}>
-                                <Grid item md={12}>
-                                    <AutoCompleteProduto name="ProdutoFK" isExternalLoading={isLoading} isEdit={true} />
-                                </Grid>
-
-                                <Grid item md={3}>
-                                    <VTextField 
-                                        name="quantidadeAtual"
-                                        label="Qtde.Atual" 
-                                        variant="outlined"
-                                        type="number"
-                                    />
-                                </Grid>
-
-                                <Grid item md={3}>
-                                    <VTextField 
-                                        name="quantidadeMinima"
-                                        label="Qtde.Minima" 
-                                        variant="outlined"
-                                        type="number"
-                                    />
-                                </Grid>
-
-                                <Grid item md={3}>
-                                    <VTextField 
-                                        name="quantidadeMaxima"
-                                        label="Qtde.Maxima" 
-                                        variant="outlined"
-                                        type="number"
-                                    />
-                                </Grid>
-
-                                <Grid item md={3}>
-                                    <VTextField 
-                                        name="quantidadeIdeal"
-                                        label="Qtde.Ideal" 
-                                        variant="outlined"
-                                        type="number"
-                                    />
-                                </Grid>
-
-                            </Grid>
-
-                            <Grid container item direction="row" spacing={2}>
-                                <Grid item md={6}>
-                                    <AutoCompleteFornecedor name="FornecedorFK" isExternalLoading={isLoading} isEdit={true} />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                    <VTextField
-                                        disabled
-                                        name="UsuarioFK"
-                                        label="Usuario" 
-                                        variant="outlined"
-                                        type="text"
-                                        sx={{
-                                            "& input": {border: 'none', 
-                                                        margin: 2, 
-                                                        padding: 1, 
-                                                        paddingY:0,
-                                                        paddingRight: 0
-                                            },
-                                        }}
-                                        fullWidth
-                                        />
-                                </Grid>
-
-                                <Grid item md={6}>
-                                    <InputLabel >Status</InputLabel>
-                                    
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                        <Typography>Inativo</Typography>
-                                        <VSwitch name="status" edit={true} />
-                                        <Typography>Ativo</Typography>
-                                    </Stack>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-
-                    </Box>
                 </VForm>
             </ModalCadastro>
 

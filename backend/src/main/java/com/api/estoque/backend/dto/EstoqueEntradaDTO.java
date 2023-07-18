@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import com.api.estoque.backend.model.EstoqueEntrada;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EstoqueEntradaDTO {
@@ -14,8 +15,15 @@ public class EstoqueEntradaDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant dataEntrada;
 
+    
     @JsonProperty("usuario")
-    private UserDTO userDTO;
+    private UserDTO usuario;
+
+    @JsonProperty("usuarioFK")
+    private Long usuarioFK;
+
+    @JsonProperty("filialFK")
+    private Long filialFK;
 
     private Set<ItemEstoqueEntradaDTO> itensEstoque = new HashSet<>();
 
@@ -28,6 +36,7 @@ public class EstoqueEntradaDTO {
         dataEntrada = estoqueEntrada.getDataEntrada();
         UserDTO userDTO = new UserDTO(estoqueEntrada.getUsuario());
         setUserDTO(userDTO);
+        filialFK = estoqueEntrada.getFilial().getIdFilial();
         itensEstoque = estoqueEntrada.getItemEstoque()
             .stream()
             .map(x -> new ItemEstoqueEntradaDTO(x))
@@ -41,21 +50,23 @@ public class EstoqueEntradaDTO {
     public void setIdEstoque(Long idEstoque) {
         this.idEstoque = idEstoque;
     }
-
+    
     public Instant getDataEntrada() {
         return dataEntrada;
     }
-
+    
     public void setDataEntrada(Instant dataEntrada) {
         this.dataEntrada = dataEntrada;
     }
 
+    @JsonIgnore
     public UserDTO getUserDTO() {
-        return userDTO;
+        return usuario;
     }
 
+    @JsonIgnore
     public void setUserDTO(UserDTO userDTO) {
-        this.userDTO = userDTO;
+        this.usuario = userDTO;
     }
 
     public Set<ItemEstoqueEntradaDTO> getItensEstoque() {
@@ -64,6 +75,22 @@ public class EstoqueEntradaDTO {
 
     public void setItensEstoque(Set<ItemEstoqueEntradaDTO> itensEstoque) {
         this.itensEstoque = itensEstoque;
+    }
+
+    public Long getUsuarioFK() {
+        return usuarioFK;
+    }
+
+    public void setUsuarioFK(Long usuarioFK) {
+        this.usuarioFK = usuarioFK;
+    }
+
+     public Long getFilialFK() {
+        return filialFK;
+    }
+
+    public void setFilialFK(Long filialFK) {
+        this.filialFK = filialFK;
     }
 
 }

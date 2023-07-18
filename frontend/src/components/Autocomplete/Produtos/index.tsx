@@ -114,6 +114,8 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                                     paddingY: 0,
                                     paddingRight: 0,
                                 },
+                                width: '260px',
+                                marginLeft: 1,
                             }}
                         />
                     )}
@@ -137,7 +139,7 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                                     paddingY:0,
                                     paddingRight: 0
                         },
-                       // width: '120px',
+                        width: '150px'
                     }}
                     fullWidth
                 />

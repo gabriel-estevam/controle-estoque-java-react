@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,8 +33,11 @@ public class EstoqueEntradaService {
     @Autowired
     private ItemEstoqueEntradaRepository itemEstoqueEntradaRepository;
 
-    public Page<EstoqueEntrada> findByitensEstoqueProdutoNomeContaining(String nome, Pageable pageable) {
-        return repository.findByItensEstoque_id_produto_nomeContaining(nome, pageable);
+    @Autowired
+    private FilialService filialService;
+
+    public Page<EstoqueEntrada> findByitensEstoqueProdutoNomeContaining(Long filial,String nome, Pageable pageable) {
+        return repository.findByFilial_idFilialAndItensEstoque_id_produto_nomeContaining(filial, nome, pageable);
     }
     
     public EstoqueEntrada findById(Long id) {
@@ -68,44 +69,19 @@ public class EstoqueEntradaService {
         return estoqueEntradaSave;
     }
 
-    public EstoqueEntrada update(Long id, EstoqueEntrada estoque) {
-        try {
-            EstoqueEntrada entity = repository.getReferenceById(id);
-            List<ItemEstoqueEntrada> itens = estoque.getItemEstoque().stream().collect(Collectors.toList());
-            updateData(entity, estoque);
-            itemEstoqueEntradaRepository.saveAll(itens);
-            return repository.save(entity);
-        } 
-        catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(id);
-        }
-    }
-
-    private void updateData(EstoqueEntrada entity, EstoqueEntrada estoque) {
-        entity.setDataEntrada(estoque.getDataEntrada());
-        entity.setUsuario(estoque.getUsuario());
-        entity.AddItensEstoque(estoque.getItemEstoque());
-    }
-
     public EstoqueEntrada fromDto(EstoqueEntradaDTO dto) {
         return EstoqueExists(dto);
     }
 
     private EstoqueEntrada EstoqueExists(EstoqueEntradaDTO dto) {
-        Optional<EstoqueEntrada> estoqueEntrada;
+        Optional<EstoqueEntrada> estoqueEntrada = null;
         Produto produto = findProdutoFromItem(dto);
         Fornecedor fornecedor = findFornecedorFromItem(dto);
         if(dto.getIdEstoque() == null) {
-            estoqueEntrada = repository.findByItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(
-                produto.getIdProduto(),
-                fornecedor.getIdFornecedor()
-            );
-        }
-        else {
-            estoqueEntrada = repository.findByItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedorAndIdEstoqueNot(
+            estoqueEntrada = repository.findByFilial_idFilialAndItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(
                 produto.getIdProduto(),
                 fornecedor.getIdFornecedor(),
-                dto.getIdEstoque()
+                dto.getFilialFK()
             );
         }
 
@@ -139,7 +115,8 @@ public class EstoqueEntradaService {
             }).collect(Collectors.toList());
 
             estoqueEntradaObj.AddItensEstoque(itens.stream().collect(Collectors.toSet()));
-
+            estoqueEntradaObj.setFilial(filialService.findById(dto.getFilialFK()));
+            
             return estoqueEntradaObj;
         }
         else 

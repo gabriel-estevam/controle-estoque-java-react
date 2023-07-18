@@ -3,6 +3,7 @@ package com.api.estoque.backend.dto;
 import com.api.estoque.backend.model.Fornecedor;
 import com.api.estoque.backend.model.ItemEstoqueEntrada;
 import com.api.estoque.backend.model.Produto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ItemEstoqueEntradaDTO {
 
@@ -11,7 +12,14 @@ public class ItemEstoqueEntradaDTO {
     private Double quantidadeMinima;
     private Double quantidadeMaxima;
     private Fornecedor fornecedor;
+    
+    @JsonProperty("fornecedorFK")
+    private Long fornecedorFK;
+    
     private Produto produto;
+
+    @JsonProperty("produtoFK")
+    private Long produtoFK;
 
     public ItemEstoqueEntradaDTO() {
 
@@ -73,4 +81,21 @@ public class ItemEstoqueEntradaDTO {
     public void setProduto(Produto produto) {
         this.produto = produto;
     }
+
+    public Long getFornecedorFK() {
+        return fornecedorFK;
+    }
+
+    public void setFornecedorFK(Long fornecedorFK) {
+        this.fornecedorFK = fornecedorFK;
+    }
+
+    public Long getProdutoFK() {
+        return produtoFK;
+    }
+
+    public void setProdutoFK(Long produtoFK) {
+        this.produtoFK = produtoFK;
+    }
+    
 }

@@ -17,6 +17,7 @@ import { FaListAlt } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';
 import { useNavigate, useResolvedPath, useMatch } from 'react-router-dom';
+import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
 //tipagem da propriedade children, com isso conseguimos pegar os children dentro desse componente
 //sem essa tipagem o TypeScript não reconhece que o menuLateral pode pegar childrens
 type Props = {
@@ -105,6 +106,11 @@ const NestedListHeader: React.FC<Props> = ({ children })  => {
 
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
+    //@ts-ignore
+    const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario;
+
+    //@ts-ignore
+    const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialName;
 
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
@@ -145,7 +151,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                     marginTop="5px" 
                                     marginLeft="10px"
                                     color="#b7b9bb" >
-                            Nome Do usuario
+                            Olá, {usuarioToken.name}
                         </Typography>
                     </Box>
                     
@@ -161,7 +167,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                      marginBottom="8px"
                                      marginLeft="10px"
                                      color="#b7b9bb" >
-                            Nome da Filial
+                            Filial: {filialToken}
                         </Typography>
                     
                     </Box>

@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +34,11 @@ public class EstoqueEntrada implements Serializable {
     @JoinColumn(name = "idUsuario")
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "id.estoque", cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "idFilial")
+    private Filial filial;
+
+    @OneToMany(mappedBy = "id.estoque",  orphanRemoval = true)
     private Set<ItemEstoqueEntrada> itensEstoque = new HashSet<>();
 
     public EstoqueEntrada() {
@@ -45,12 +48,14 @@ public class EstoqueEntrada implements Serializable {
     public EstoqueEntrada(
         Long idEstoque, 
         Instant dataEntrada,
-        Usuario usuario
+        Usuario usuario,
+        Filial filial
     ) 
     {
         this.idEstoque = idEstoque;
         this.dataEntrada = dataEntrada;
         this.usuario = usuario;
+        this.filial = filial;
     }
 
     public Long getIdEstoque() {
@@ -61,7 +66,6 @@ public class EstoqueEntrada implements Serializable {
         this.idEstoque = idEstoque;
     }
 
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT")
     public Instant getDataEntrada() {
         return dataEntrada;
     }
@@ -84,6 +88,14 @@ public class EstoqueEntrada implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Filial getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Filial filial) {
+        this.filial = filial;
     }
 
     @Override

@@ -10,10 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.api.estoque.backend.model.EstoqueEntrada;
 @Repository
 public interface EstoqueEntradaRepository extends JpaRepository<EstoqueEntrada, Long> {
-    public Page<EstoqueEntrada> findByItensEstoque_id_produto_nomeContaining(String nome, Pageable pageable);
-    //public Optional<EstoqueEntrada> findByItensEstoque_id_produtoAndItensEstoque_fornecedor(Long produto, Long fornecedor);
-    public Optional<EstoqueEntrada> findByItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(Long produto, Long fornecedor);
-    //public Optional<EstoqueEntrada> findByItensEstoque_id_produtoAndItensEstoque_fornecedorAndIdEstoqueNot(Long produto, Long fornecedor, Long estoque);
-    public Optional<EstoqueEntrada> findByItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedorAndIdEstoqueNot(Long produto, Long fornecedor, Long estoque);
-    
+    public Page<EstoqueEntrada> findByFilial_idFilialAndItensEstoque_id_produto_nomeContaining(Long filial, String nome, Pageable pageable);
+    public Optional<EstoqueEntrada> findByFilial_idFilialAndItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(Long filial, Long produto, Long fornecedor);    
 }

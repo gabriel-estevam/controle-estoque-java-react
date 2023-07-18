@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios, Materiais } from '../pages';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada } from '../pages';
 import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes } from 'react-icons/fa';
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -19,6 +19,11 @@ export const AppRoutes: React.FC = () => {
           path: '/home',
           label: 'Home',
           icon: <FaHome color='#b7b9bb'/>,
+        },
+        {
+          path: '/estoque/entrada',
+          label: 'Estoque Materiais',
+          icon: <FaBoxes color='#b7b9bb'/>,
         },
       ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,11 +52,6 @@ export const AppRoutes: React.FC = () => {
           label: 'Fornecedores',
           icon: <FaHandshake color='#b7b9bb'/>
         },
-        {
-          path: '/material',
-          label: 'Materiais',
-          icon: <FaBoxes color='#b7b9bb'/>,
-        },
       ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -64,9 +64,9 @@ export const AppRoutes: React.FC = () => {
                            </PrivateRoute>
                   } 
             />
-            <Route path="/material" 
+            <Route path="/estoque/entrada" 
                   element={<PrivateRoute redirectTo="/">
-                              <Materiais/>  
+                              <EstoqueEntrada/>  
                            </PrivateRoute>
                   } 
             />
