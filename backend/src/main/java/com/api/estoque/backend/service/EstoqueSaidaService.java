@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.EstoqueSaidaDTO;
@@ -114,8 +116,8 @@ public class EstoqueSaidaService {
         entity.setUsuario(estoqueSaida.getUsuario());
         entity.setQuantidade((estoqueSaida.getQuantidade() + entity.getQuantidade()));
     }
-    /*public EstoqueSaida findByIdEstoqueEntrada(Long id) {
-        Optional<EstoqueSaida> estoque = repository.findByEstoque_idEstoque(id);
-        return estoque.orElseThrow(() -> new ResourceNotFoundException(id));
-    }*/
+
+    public Page<EstoqueSaida> findByIdFilialAndProdutoContaning(Long filial, String produto, Pageable pageable) {
+        return repository.findByFilial_idFilialAndEstoque_ItensEstoque_id_produto_nomeContaining(filial, produto, pageable);
+    }
 }

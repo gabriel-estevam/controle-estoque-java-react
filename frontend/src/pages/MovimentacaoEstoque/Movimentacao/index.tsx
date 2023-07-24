@@ -37,6 +37,7 @@ import { Close } from '@mui/icons-material';
 
 import { DecodeTokenJWT } from '../../../services/api/auth/decode/DecodeTokenJWT';
 import { EstoqueEntradaService, IDetalheEstoqueEntrada, IListagemEstoqueEntrada } from '../../../services/api/estoque/EstoqueEntrada';
+import { EstoqueSaidaService } from '../../../services/api/estoque/EstoqueSaida';
 
 interface IItemEstoque {
     fornecedorFK: number | undefined;
@@ -47,11 +48,13 @@ interface IItemEstoque {
     quantidadeMaxima: number | undefined;
 }
 interface IFormData {
-    idEstoque: number | null | undefined;
-    dataEntrada: string;
-    itensEstoque: IItemEstoque[];
+    estoqueFK: number;
     usuarioFK: number;
     filialFK: number;
+    produtoFK: number;
+    fornecedorFK: number;
+    data: string;
+    quantidade: number;
 }
 
 interface IDialogHandle {
@@ -61,19 +64,13 @@ interface IDialogHandle {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idEstoque: yup.number().nullable(),
-    dataEntrada: yup.string().required(),
+    estoqueFK: yup.number().required(),
+    data: yup.string().required(),
+    quantidade: yup.number().min(1).required(),
     filialFK: yup.number().required(),
     usuarioFK: yup.number().required(),
-    itensEstoque: yup.array(
-        yup.object({
-        quantidadeAtual: yup.number(),
-        quantidadeIdeal: yup.number(),
-        quantidadeMinima: yup.number(),
-        quantidadeMaxima: yup.number(),
-        fornecedorFK: yup.number(),
-        produtoFK: yup.number(),
-    })),
+    produtoFK: yup.number().required(),
+    fornecedorFK: yup.number().required(),
 
 });
 
@@ -137,21 +134,6 @@ export const MovimentacaoEstoque: React.FC = () => {
         });
    };
 
-    const handleDelete = (id: number) => {
-        const deletar = window.confirm("Deseja realmente deletar esse item?");
-        if(deletar) {
-            EstoqueEntradaService.deleteById(id)
-            .then((result) => {
-                if(result instanceof Error) {
-                    handleDialog({ action: 'D', type: 'ERRO', message: result.message })
-                }
-                else {
-                    handleDialog({ action: 'D', type: 'SUCESSO', message: 'Material deletado com sucesso!' });
-                }
-            });
-        }
-    };
-
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
@@ -189,15 +171,23 @@ export const MovimentacaoEstoque: React.FC = () => {
         dados.usuarioFK = usuarioToken.idUsuario;
         dados.filialFK = filialToken;
 
-        const dataHora = new Date(dados.dataEntrada).toISOString();
-        dados.dataEntrada = dataHora.slice(0,19)+"Z";
+        //@ts-ignore
+        dados.estoqueFK = dadoEstoque?.idEstoque;
+
+        const dataHora = new Date(dados.data).toISOString();
+        dados.data = dataHora.slice(0,19)+"Z";
+
+        //@ts-ignore
+        dados.produtoFK = dadoEstoque?.itensEstoque[0].produtoFK;
+        //@ts-ignore
+        dados.fornecedorFK = dadoEstoque?.itensEstoque[0].fornecedorFK;
+        console.log(dados)
         
        formValidationSchema
         .validate(dados, {abortEarly: false})
         .then((dadosValidados) => {
             setIsLoading(true);
-            //@ts-ignore
-            EstoqueEntradaService.create(dadosValidados)
+            EstoqueSaidaService.create(dadosValidados)
             .then((result) => {
                 setIsLoading(false);
 
@@ -319,7 +309,7 @@ export const MovimentacaoEstoque: React.FC = () => {
                         <Grid container item direction="row" spacing={1}>
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="quantiade"
+                                    name="quantidade"
                                     label="Qtde.Atual" 
                                     variant="outlined"
                                     type="number"
