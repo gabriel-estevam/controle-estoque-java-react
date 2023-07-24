@@ -21,22 +21,22 @@ from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
 
-import { IVFormErrors, VDateTimeField, VForm, VTextField, useVForm } from '../../forms';
+import { IVFormErrors, VDateTimeField, VForm, VTextField, useVForm } from '../../../forms';
 
-import { AutoCompleteFornecedor, AutoCompleteProduto, BarraFerramentas } from '../../components';
+import { AutoCompleteFornecedor, AutoCompleteProduto, BarraFerramentas } from '../../../components';
 
-import { LayoutBasePagina } from '../layouts';
-import { Environment } from '../../environment/index';
+import { LayoutBasePagina } from '../../layouts';
+import { Environment } from '../../../environment/index';
 
-import { useDebounce } from '../../hooks';
-import { ModalCadastro } from '../../components';
+import { useDebounce } from '../../../hooks';
+import { ModalCadastro } from '../../../components';
 
-import '../../forms/TraducoesYup';
+import '../../../forms/TraducoesYup';
 import { Close } from '@mui/icons-material';
 
 
-import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
-import { EstoqueEntradaService, IListagemEstoqueEntrada } from '../../services/api/estoque/EstoqueEntrada';
+import { DecodeTokenJWT } from '../../../services/api/auth/decode/DecodeTokenJWT';
+import { EstoqueEntradaService, IDetalheEstoqueEntrada, IListagemEstoqueEntrada } from '../../../services/api/estoque/EstoqueEntrada';
 
 interface IItemEstoque {
     fornecedorFK: number | undefined;
@@ -77,7 +77,7 @@ const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
 
 });
 
-export const EstoqueEntrada: React.FC = () => {
+export const MovimentacaoEstoque: React.FC = () => {
 
     const { formRef, save } = useVForm();
     
@@ -94,13 +94,10 @@ export const EstoqueEntrada: React.FC = () => {
     const { debounce } = useDebounce(3000, true);
     
     const [rows, setRows] = useState<IListagemEstoqueEntrada[]>([]);
-
+    const [dadoEstoque, setDadoEstoque] = useState<IDetalheEstoqueEntrada>();
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
-    
     const [totalElements, setTotalElements] = useState(0);
-    
     const [totalPages, setTotalPages] = useState(0);
-
     const [open, setOpen] = useState(false);
     const [AlertTipo, setAlertTipo] = useState(false);
     const [AlertMsg, setAlertMsg] = useState('');
@@ -117,15 +114,28 @@ export const EstoqueEntrada: React.FC = () => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
 
-
     const handleOpen = () => {
         setOpenModal(true);
     };
 
-
     const handleClose = () => {
         setOpenModal(false);
     };
+
+    const getEstoqueById = (pId : number) => {
+        EstoqueEntradaService.getById(pId)
+        .then((result) => {
+            if(result instanceof Error) {
+                alert(result.message);
+            }
+            else {
+                setDadoEstoque(result);
+                formRef.current?.setData({
+                    itensEstoque: result.itensEstoque,
+                });
+            }
+        });
+   };
 
     const handleDelete = (id: number) => {
         const deletar = window.confirm("Deseja realmente deletar esse item?");
@@ -214,16 +224,14 @@ export const EstoqueEntrada: React.FC = () => {
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Administração de Materiais"
-            subTitulo="Gerenciamento de Materiais"
+            titulo="Movimentação de Estoque"
+            subTitulo="Materiais em Estoque"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVO MATERIAL"
                     mostrarInputBusca
-                    mostrarBotaoNovo
+                    mostrarBotaoNovo={false}
                     textoDaBusca={busca}
-                    aoClicarEmNovo={handleOpen}
                     aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1', paginaAPI: '0' }, { replace: true })}
                 />
             }
@@ -232,35 +240,29 @@ export const EstoqueEntrada: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Data de Entrada</TableCell>
                             <TableCell>Produto</TableCell>
                             <TableCell>Unidade de Medida</TableCell>
+                            <TableCell>Fornecedor</TableCell>
                             <TableCell>Quantidade Atual</TableCell>
-                            <TableCell>Quantidade Ideal</TableCell>
-                            <TableCell>Quantidade Minima</TableCell>
-                            <TableCell>Quantidade Máxima</TableCell>
                             <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.idEstoque}>
-                               <TableCell>{new Date(row.dataEntrada).toLocaleString().replace(/,/,'')}</TableCell>
                                 <TableCell>{row.itemEstoque.map(item => item.produto.nome)}</TableCell>
                                 <TableCell>{row.itemEstoque.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.fornecedor.name)}</TableCell>
                                 <TableCell>{row.itemEstoque.map(item => item.quantidadeAtual)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeIdeal)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMinima)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
                             
                                 <TableCell width={200}>
                                     <Button
                                         variant="contained"
-                                        color="error"
+                                        color="primary"
                                         disableElevation
-                                        onClick={() => { handleDelete(row.idEstoque) }}
+                                        onClick={() => { handleOpen() ;getEstoqueById(row.idEstoque) }}
                                     >
-                                        Deletar
+                                        Movimentar Item
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -306,8 +308,8 @@ export const EstoqueEntrada: React.FC = () => {
                 open={openModal}
                 handleClose={handleClose}
                 formSubmit={save}
-                titulo="Adicionar novo Material ao Estoque"
-                tituloButtonAdd="Adicionar Material"
+                titulo="Movimentação de Estoque"
+                tituloButtonAdd="Movimentar Estoque"
                 heightDialog="300px"
             >
 
@@ -315,76 +317,32 @@ export const EstoqueEntrada: React.FC = () => {
                 <Box margin={1} display="flex" flexDirection="column">
                     <Grid container direction="column" padding={2} spacing={2}>
                         <Grid container item direction="row" spacing={1}>
-                        <Grid item md={4}>
-                            <VDateTimeField 
-                                disabled
-                                name="dataEntrada" 
-                                label="Data de Entrada" 
-                                variant="outlined"
-                                type="text"
-                                sx={{
-                                    "& input": {border: 'none', 
-                                                margin: 2, 
-                                                padding: 1, 
-                                                paddingY:0,
-                                                paddingRight: 0
-                                    },
-                                }}
-                                fullWidth
-                            />
-                            </Grid>
-                            <Grid item md={6}>
-                                <AutoCompleteProduto name="itensEstoque[0].produtoFK" isExternalLoading={isLoading} isEdit={false} />
-                            </Grid>
-
                             <Grid item md={3}>
                                 <VTextField 
-                                    name="itensEstoque[0].quantidadeAtual"
+                                    name="quantiade"
                                     label="Qtde.Atual" 
                                     variant="outlined"
                                     type="number"
                                 />
                             </Grid>
-
-                            <Grid item md={3}>
-                                <VTextField 
-                                    name="itensEstoque[0].quantidadeMinima"
-                                    label="Qtde.Minima" 
-                                    variant="outlined"
-                                    type="number"
-                                />
+                       
+                            <Grid item md={6}>
+                                <AutoCompleteProduto name="itensEstoque[0].produtoFK" isExternalLoading={isLoading} isEdit={true} isMovimentoEstoque={true} />
                             </Grid>
 
-                            <Grid item md={3}>
-                                <VTextField 
-                                    name="itensEstoque[0].quantidadeMaxima"
-                                    label="Qtde.Maxima" 
-                                    variant="outlined"
-                                    type="number"
-                                />
-                            </Grid>
-
-                            <Grid item md={3}>
-                                <VTextField 
-                                    name="itensEstoque[0].quantidadeIdeal"
-                                    label="Qtde.Ideal" 
-                                    variant="outlined"
-                                    type="number"
-                                />
-                            </Grid>
 
                         </Grid>
 
                         <Grid container item direction="row" spacing={3}>
                             <Grid item md={6}>
-                                <AutoCompleteFornecedor name="itensEstoque[0].fornecedorFK" isExternalLoading={isLoading} isEdit={false} />
+                                <AutoCompleteFornecedor name="itensEstoque[0].fornecedorFK" isExternalLoading={isLoading} isEdit={false} isMovimentoEstoque={true} />
                             </Grid>
+                            
                             <Grid item md={6}>
-                                <TextField
+                                <VDateTimeField 
                                     disabled
-                                    value={usuarioToken.name}
-                                    name="UsuarioFK"
-                                    label="Usuario" 
+                                    name="data" 
+                                    label="Data de Movimentação" 
                                     variant="outlined"
                                     type="text"
                                     sx={{

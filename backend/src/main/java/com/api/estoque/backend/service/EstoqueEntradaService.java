@@ -146,4 +146,12 @@ public class EstoqueEntradaService {
         fornecedor = list.iterator().next().getFornecedor();
         return fornecedor;
     }
+
+    public Double movimentaEstoque(EstoqueEntrada estoqueAtual, Double quantidadeMovimentada) {
+        Double qtdAtual = 0.0;
+        Double movimento = 0.0;
+        qtdAtual = estoqueAtual.getItemEstoque().iterator().next().getQuantidadeAtual();
+        movimento = (qtdAtual - quantidadeMovimentada);
+        return movimento;
+    }
 }

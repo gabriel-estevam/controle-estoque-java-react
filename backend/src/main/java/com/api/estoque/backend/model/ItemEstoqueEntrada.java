@@ -12,7 +12,7 @@ import com.api.estoque.backend.model.PK.ItemEstoqueEntradaPK;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "item_EstoqueEntrada")
+@Table(name = "item_estoque_entrada")
 public class ItemEstoqueEntrada implements Serializable {
     private static final long serialVersionUID = 1L;
 

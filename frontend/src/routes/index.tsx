@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada } from '../pages';
-import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes } from 'react-icons/fa';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque } from '../pages';
+import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes, FaBoxOpen } from 'react-icons/fa';
+
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
     const isAuthenticated = localStorage.getItem("token") !== null;
@@ -12,90 +13,118 @@ const PrivateRoute = ({ children, redirectTo }) => {
 
 export const AppRoutes: React.FC = () => {
     
-    const { setDrawerOptions, setDrawerOptionsNestedList } = useDrawerContext();
-    useEffect(() => {
-      setDrawerOptions([
-        {
-          path: '/home',
-          label: 'Home',
-          icon: <FaHome color='#b7b9bb'/>,
-        },
-        {
-          path: '/estoque/entrada',
-          label: 'Estoque Materiais',
-          icon: <FaBoxes color='#b7b9bb'/>,
-        },
-      ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  const { setDrawerOptions, setDrawerOptionsNestedList } = useDrawerContext();
+  useEffect(() => {
+    setDrawerOptions([
+      {
+        path: '/home',
+        label: 'Home',
+        icon: <FaHome color='#b7b9bb'/>,
+      },
+      {
+        path: '/estoque/entrada',
+        label: 'Estoque Materiais',
+        icon: <FaBoxes color='#b7b9bb'/>,
+      },
+
+      {
+        path: '/estoque/movimentacao',
+        label: 'Movimentação de Estoque',
+        icon: <FaBoxOpen color='#b7b9bb'/>,
+      },
+    ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
     
-    useEffect(() => {
-      setDrawerOptionsNestedList([
-        {
-          path: '/usuario',
-          label: 'Usuários',
-          icon: <FaUsers color='#b7b9bb'/>
-        },
-        {
-          path: '/filial',
-          label: 'Filiais',
-          icon: <FaBuilding color='#b7b9bb'/>
-        },
+  useEffect(() => {
+    setDrawerOptionsNestedList([
+      {
+        path: '/usuario',
+        label: 'Usuários',
+        icon: <FaUsers color='#b7b9bb'/>
+      },
+      {
+        path: '/filial',
+        label: 'Filiais',
+        icon: <FaBuilding color='#b7b9bb'/>
+      },
 
-        {
-          path: '/produto',
-          label: 'Produtos',
-          icon: <FaTags color='#b7b9bb'/>
-        },
-        {
-          path: '/fornecedor',
-          label: 'Fornecedores',
-          icon: <FaHandshake color='#b7b9bb'/>
-        },
-      ])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      {
+        path: '/produto',
+        label: 'Produtos',
+        icon: <FaTags color='#b7b9bb'/>
+      },
+      {
+        path: '/fornecedor',
+        label: 'Fornecedores',
+        icon: <FaHandshake color='#b7b9bb'/>
+      },
+    ])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return (
-        <Routes>
-            <Route path="/home" 
-                  element={<PrivateRoute redirectTo="/">
-                              <Dashboard/>  
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/estoque/entrada" 
-                  element={<PrivateRoute redirectTo="/">
-                              <EstoqueEntrada/>  
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/usuario" 
-                  element={<PrivateRoute redirectTo="/">
-                              <Usuarios/>
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/filial" 
-                  element={<PrivateRoute redirectTo="/">
-                              <Filiais/>
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/produto" 
-                  element={<PrivateRoute redirectTo="/">
-                              <Produtos/>
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/fornecedor" 
-                  element={<PrivateRoute redirectTo="/">
-                              <Fornecedores/>
-                           </PrivateRoute>
-                  } 
-            />
-            <Route path="/login" element={<Login/>} />
-            <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-    );
+  return (
+    <Routes>
+      <Route 
+        path="/home" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Dashboard/>  
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/estoque/entrada" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <EstoqueEntrada/>  
+          </PrivateRoute>
+        } 
+      />
+
+      <Route 
+        path="/estoque/movimentacao" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <MovimentacaoEstoque/>  
+          </PrivateRoute>
+        } 
+      />
+      
+      <Route 
+        path="/usuario" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Usuarios/>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/filial" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Filiais/>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/produto" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Produtos/>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/fornecedor" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Fornecedores/>
+          </PrivateRoute>
+        } 
+      />
+      <Route path="/login" element={<Login/>} />
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  );
 }

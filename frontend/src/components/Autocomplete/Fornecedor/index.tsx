@@ -13,8 +13,9 @@ interface IAutoCompleteFornecedorProps {
     name: string;
     isExternalLoading?: boolean;
     isEdit: boolean;
+    isMovimentoEstoque?: boolean;
 }
-export const AutoCompleteFornecedor: React.FC<IAutoCompleteFornecedorProps> = ({ name ,isExternalLoading = false, isEdit }) => {
+export const AutoCompleteFornecedor: React.FC<IAutoCompleteFornecedorProps> = ({ name , isExternalLoading = false, isMovimentoEstoque = false, isEdit }) => {
     const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
@@ -87,7 +88,7 @@ export const AutoCompleteFornecedor: React.FC<IAutoCompleteFornecedorProps> = ({
             
             options={opcoes}
             loading={isLoading}
-            disabled={isExternalLoading}
+            disabled={isExternalLoading || isMovimentoEstoque}
             value={autoCompleteSelectedOption}
             onInputChange={(_, newValue) => setBusca(newValue)}
             onChange={(_, newValue) => { setSelectedId(newValue?.idFornecedor); clearError(); }}
