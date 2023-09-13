@@ -8,3 +8,4 @@ export * from './Estoque/index';
 export * from './MovimentacaoEstoque/Movimentacao/index';
 export * from './MovimentacaoEstoque/Movimentacao/ConsultaMovimentacao/index';
 export * from './Produtos/index';
+export * from './Teste/index';

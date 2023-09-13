@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque, ConsultaEstoque } from '../pages';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque, ConsultaEstoque, Teste } from '../pages';
 import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes, FaBoxOpen } from 'react-icons/fa';
 
 // @ts-ignore
@@ -24,6 +24,12 @@ export const AppRoutes: React.FC = () => {
       {
         path: '/estoque/entrada',
         label: 'Estoque Materiais',
+        icon: <FaBoxes color='#b7b9bb'/>,
+      },
+
+      {
+        path: '/estoque/teste',
+        label: 'TESTE',
         icon: <FaBoxes color='#b7b9bb'/>,
       },
       
@@ -84,6 +90,14 @@ export const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute redirectTo="/">
             <EstoqueEntrada/>  
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/estoque/teste" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Teste/>  
           </PrivateRoute>
         } 
       />
