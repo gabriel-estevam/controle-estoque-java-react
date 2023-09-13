@@ -1,6 +1,7 @@
 package com.api.estoque.backend.model;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "solicitacao")
@@ -33,14 +36,18 @@ public class Solicitacao implements Serializable {
     @OneToMany(mappedBy = "id.solicitacao")
     private Set<ItemSolicitacao> itensSolicitados = new HashSet<>();
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
+    private Instant dataSolicitacao;
+
     public Solicitacao() {
 
     }
 
-    public Solicitacao(Long idSol, Usuario solicitante, Filial filial) {
+    public Solicitacao(Long idSol, Usuario solicitante, Filial filial, Instant dataSolicitacao) {
         this.idSol = idSol;
         this.solicitante = solicitante;
         this.filial = filial;
+        this.dataSolicitacao = dataSolicitacao;
     }
 
     public Long getIdSol() {
@@ -67,6 +74,14 @@ public class Solicitacao implements Serializable {
         this.filial = filial;
     }
 
+    public Instant getDataSolicitacao() {
+        return dataSolicitacao;
+    }
+
+    public void setDataSolicitacao(Instant dataSolicitacao) {
+        this.dataSolicitacao = dataSolicitacao;
+    }
+    
     public Set<ItemSolicitacao> getItensSolicitados() {
         return itensSolicitados;
     }
