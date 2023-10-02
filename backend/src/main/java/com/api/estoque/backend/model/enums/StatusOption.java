@@ -20,6 +20,6 @@ public enum StatusOption {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Invalid UserStatus code");
+        throw new IllegalArgumentException("Invalid Status code");
     }
 }

@@ -14,7 +14,7 @@ import com.api.estoque.backend.model.Solicitacao;
 public class ItemSolicitacaoPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne //(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProduto")
     private Produto produto;
 
@@ -22,30 +22,12 @@ public class ItemSolicitacaoPK implements Serializable {
     @JoinColumn(name = "idSol")
     private Solicitacao solicitacao;
     
-    private Double quantidade;
-    private String observacao;
-
     public Produto getProduto() {
         return produto;
     }
 
     public void setProduto(Produto produto) {
         this.produto = produto;
-    }
-    public Double getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Double quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
     }
     
     public Solicitacao getSolicitacao() {
@@ -56,5 +38,36 @@ public class ItemSolicitacaoPK implements Serializable {
         this.solicitacao = solicitacao;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((produto == null) ? 0 : produto.hashCode());
+        result = prime * result + ((solicitacao == null) ? 0 : solicitacao.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ItemSolicitacaoPK other = (ItemSolicitacaoPK) obj;
+        if (produto == null) {
+            if (other.produto != null)
+                return false;
+        } else if (!produto.equals(other.produto))
+            return false;
+        if (solicitacao == null) {
+            if (other.solicitacao != null)
+                return false;
+        } else if (!solicitacao.equals(other.solicitacao))
+            return false;
+        return true;
+    }
+    
     
 }

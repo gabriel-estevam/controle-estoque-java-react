@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.api.estoque.backend.model.enums.SolicitacaoStatusOption;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -24,7 +27,9 @@ public class Solicitacao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSol;
-    
+
+    private Long numeroSol;
+
     @OneToOne
     @JoinColumn(name = "idUsuario")
     private Usuario solicitante;
@@ -33,21 +38,32 @@ public class Solicitacao implements Serializable {
     @JoinColumn(name = "idFilial")
     private Filial filial;
 
-    @OneToMany(mappedBy = "id.solicitacao")
+    @OneToMany(mappedBy = "id.solicitacao", orphanRemoval = true)
     private Set<ItemSolicitacao> itensSolicitados = new HashSet<>();
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant dataSolicitacao;
 
+    @Column(name = "status")
+    private Integer status;
+
     public Solicitacao() {
 
     }
 
-    public Solicitacao(Long idSol, Usuario solicitante, Filial filial, Instant dataSolicitacao) {
+    public Solicitacao(
+        Long idSol, 
+        Long numeroSol, 
+        Usuario solicitante, 
+        Filial filial, 
+        Instant dataSolicitacao,
+        SolicitacaoStatusOption status) {
         this.idSol = idSol;
+        this.numeroSol = numeroSol;
         this.solicitante = solicitante;
         this.filial = filial;
         this.dataSolicitacao = dataSolicitacao;
+        setStatus(status);
     }
 
     public Long getIdSol() {
@@ -55,7 +71,15 @@ public class Solicitacao implements Serializable {
     }
 
     public void setIdSol(Long idSol) {
-        this.idSol = idSol;
+        this.idSol = getIdSol();
+    }
+
+    public Long getNumeroSol() {
+        return numeroSol;
+    }
+
+    public void setNumeroSol(Long numeroSol) {
+        this.numeroSol = numeroSol;
     }
 
     public Usuario getSolicitante() {
@@ -82,6 +106,16 @@ public class Solicitacao implements Serializable {
         this.dataSolicitacao = dataSolicitacao;
     }
     
+    public SolicitacaoStatusOption getStatus() {
+        return SolicitacaoStatusOption.valueOf(status);
+    }
+
+    public void setStatus(SolicitacaoStatusOption status) {
+        if(status != null) {
+            this.status = status.getCode();
+        }
+    }
+
     public Set<ItemSolicitacao> getItensSolicitados() {
         return itensSolicitados;
     }

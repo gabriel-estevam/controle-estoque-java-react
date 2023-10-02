@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.api.estoque.backend.model.PK.ItemSolicitacaoPK;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "item_solicitacao")
@@ -16,15 +17,23 @@ public class ItemSolicitacao implements Serializable {
     @EmbeddedId
     private ItemSolicitacaoPK id = new ItemSolicitacaoPK();
 
+    private Double quantidade;
+    private String observacao;
+
     public ItemSolicitacao() {
         
     }
 
-    public ItemSolicitacao(Produto produto, Double quantidade, String observacao) {
+    public ItemSolicitacao(
+        Solicitacao solicitacao,
+        Produto produto, 
+        Double quantidade, 
+        String observacao) {
         super();
+        id.setSolicitacao(solicitacao);
         id.setProduto(produto);
-        id.setQuantidade(quantidade);
-        id.setObservacao(observacao);
+        this.quantidade = quantidade;
+        this.observacao = observacao;
     }
 
     public ItemSolicitacaoPK getId() {
@@ -33,6 +42,15 @@ public class ItemSolicitacao implements Serializable {
 
     public void setId(ItemSolicitacaoPK id) {
         this.id = id;
+    }
+
+    @JsonIgnore
+    public Solicitacao getSolicitacao() {
+        return id.getSolicitacao();
+    }
+    
+    public void setSolicitacao(Solicitacao solicitacao) {
+        id.setSolicitacao(solicitacao);
     }
 
     public Produto getProduto() {
@@ -44,19 +62,19 @@ public class ItemSolicitacao implements Serializable {
     }
 
     public String getObservacao() {
-        return id.getObservacao();
+        return observacao;
     }
 
     public void setObservacao(String observacao) {
-        id.setObservacao(observacao);
+        this.observacao = observacao;
     }
     
     public Double getQuantidade() {
-        return id.getQuantidade();
+        return quantidade;
     }
 
     public void setQuantidade(Double quantidade) {
-        id.setQuantidade(quantidade);
+        this.quantidade = quantidade;
     }
 
     @Override
