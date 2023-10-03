@@ -43,6 +43,9 @@ public class Solicitacao implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant dataSolicitacao;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
+    private Instant updatedAt;
 
     @Column(name = "status")
     private Integer status;
@@ -57,12 +60,14 @@ public class Solicitacao implements Serializable {
         Usuario solicitante, 
         Filial filial, 
         Instant dataSolicitacao,
+        Instant updatedAt,
         SolicitacaoStatusOption status) {
         this.idSol = idSol;
         this.numeroSol = numeroSol;
         this.solicitante = solicitante;
         this.filial = filial;
         this.dataSolicitacao = dataSolicitacao;
+        this.updatedAt = updatedAt;
         setStatus(status);
     }
 
@@ -71,7 +76,7 @@ public class Solicitacao implements Serializable {
     }
 
     public void setIdSol(Long idSol) {
-        this.idSol = getIdSol();
+        this.idSol = idSol;
     }
 
     public Long getNumeroSol() {
@@ -104,6 +109,14 @@ public class Solicitacao implements Serializable {
 
     public void setDataSolicitacao(Instant dataSolicitacao) {
         this.dataSolicitacao = dataSolicitacao;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
     
     public SolicitacaoStatusOption getStatus() {

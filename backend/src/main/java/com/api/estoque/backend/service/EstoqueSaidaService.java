@@ -74,10 +74,6 @@ public class EstoqueSaidaService {
 
         if(estoqueOptional.isEmpty()) 
         {
-            /*valor = estoqueEntradaService.movimentaEstoque(entrada, estoqueSaida.getQuantidade());
-            
-            itensEntrada.iterator().next().setQuantidadeAtual(valor);
-            entrada.AddItensEstoque(itensEntrada);*/
             return repository.save(estoqueSaida);    
         }
         else 

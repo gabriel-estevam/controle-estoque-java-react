@@ -19,6 +19,9 @@ public class SolicitacaoDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant dataSolicitacao;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
+    private Instant updatedAt;
+
     private Integer status;
     private UserDTO solicitante;
 
@@ -39,6 +42,7 @@ public class SolicitacaoDTO {
         idSol = obj.getIdSol();
         numeroSol = obj.getNumeroSol();
         dataSolicitacao = obj.getDataSolicitacao();
+        updatedAt = obj.getUpdatedAt();
         
         UserDTO solicitanteDTO = new UserDTO(obj.getSolicitante());
         filialFK = obj.getFilial().getIdFilial();
@@ -107,6 +111,14 @@ public class SolicitacaoDTO {
 
     public void setDataSolicitacao(Instant dataSolicitacao) {
         this.dataSolicitacao = dataSolicitacao;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public SolicitacaoStatusOption getStatus() {

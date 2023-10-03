@@ -42,7 +42,7 @@ public class SolicitacaoService {
         itemRepository.saveAll(solicitacao.getItensSolicitados());
         return solicitacaoSave;
     }
-    
+
     public Solicitacao fromDto(SolicitacaoDTO dto) {
         Solicitacao solicitacao = new Solicitacao();
         Filial filial = filialService.findById(dto.getFilialFK());

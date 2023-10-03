@@ -66,4 +66,5 @@ public class SolicitacaoController {
         .toUri();
         return ResponseEntity.created(uri).build();
     }
+
 }
