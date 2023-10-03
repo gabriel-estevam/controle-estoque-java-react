@@ -43,6 +43,17 @@ public class SolicitacaoService {
         return solicitacaoSave;
     }
 
+    public void update(Long id, Solicitacao solicitacao) {
+        Solicitacao entity = repository.getReferenceById(id);
+        updateData(entity, solicitacao);
+        repository.save(entity);
+    }
+
+    private void updateData(Solicitacao entity, Solicitacao solicitacao) {
+        entity.setStatus(solicitacao.getStatus());
+        entity.setUpdatedAt(solicitacao.getUpdatedAt());
+    }
+
     public Solicitacao fromDto(SolicitacaoDTO dto) {
         Solicitacao solicitacao = new Solicitacao();
         Filial filial = filialService.findById(dto.getFilialFK());
@@ -53,6 +64,7 @@ public class SolicitacaoService {
         solicitacao.setSolicitante(usuario);
         solicitacao.setFilial(filial);
         solicitacao.setStatus(dto.getStatus());
+        solicitacao.setUpdatedAt(dto.getUpdatedAt());
         List<ItemSolicitacao> itens = dto.getItensSolicitacao().stream().map(x -> {
             ItemSolicitacao item = new ItemSolicitacao();
             item.setSolicitacao(solicitacao);
