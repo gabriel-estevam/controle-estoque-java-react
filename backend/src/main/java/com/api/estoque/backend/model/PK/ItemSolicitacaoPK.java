@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 import com.api.estoque.backend.model.Produto;
 import com.api.estoque.backend.model.Solicitacao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Embeddable
 public class ItemSolicitacaoPK implements Serializable {
@@ -30,6 +31,7 @@ public class ItemSolicitacaoPK implements Serializable {
         this.produto = produto;
     }
     
+    @JsonIgnore
     public Solicitacao getSolicitacao() {
         return solicitacao;
     }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.api.estoque.backend.dto.SolicitacaoDTO;
@@ -28,6 +30,14 @@ public class SolicitacaoService {
 
     @Autowired
     private UserService usuarioService;
+
+    public Page<Solicitacao> findByNumeroSol(Long numeroSol, Long filial, Pageable pageable) {
+        return repository.findByNumeroSolAndFilial_idFilial(numeroSol, filial,pageable);
+    }
+
+    public Page<Solicitacao> findByFilial(Long filial, Pageable pageable) {
+        return repository.findByFilial_idFilial(filial, pageable);
+    }
 
     public List<Solicitacao> findAll() {
         return repository.findAll();
