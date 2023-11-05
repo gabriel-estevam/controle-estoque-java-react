@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, TextField, TextFieldProps } from '@mui/material';
 import { useDebounce } from '../../../hooks/UseDebounce';
 import { useField } from '@unform/core';
 import { ProdutoService } from '../../../services/api/produtos/ProdutoService';
@@ -15,9 +15,11 @@ interface IAutoCompleteUnidadeMedidaProps {
     isExternalLoading?: boolean;
     isEdit: boolean;
     isMovimentoEstoque?: boolean;
+    idProduto?: (id: number | undefined) => any;
+    unidade?: (un: string | undefined) => any;
 }
 
-export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({ name ,isExternalLoading = false, isEdit, isMovimentoEstoque = false }) => {
+export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({ name , isExternalLoading = false, isEdit, isMovimentoEstoque = false, ...rest }) => {
     const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
@@ -101,7 +103,13 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                     disabled={isExternalLoading || isMovimentoEstoque}
                     value={autoCompleteSelectedOption}
                     onInputChange={(_, newValue) => setBusca(newValue)}
-                    onChange={(_, newValue) => { setSelectedId(newValue?.idProduto); clearError(); setUnidadeMedidaAtual(newValue?.unidadeMedida); }}
+                    onChange={(_, newValue) => { 
+                        setSelectedId(newValue?.idProduto); 
+                        clearError(); 
+                        setUnidadeMedidaAtual(newValue?.unidadeMedida); 
+                        rest.idProduto?.(newValue?.idProduto);
+                        rest.unidade?.(newValue?.unidadeMedida);
+                    }}
                     popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
                     renderInput={(params) => (
                         <TextField

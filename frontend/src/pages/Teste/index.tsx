@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-    Button, 
     LinearProgress, 
     Pagination, 
     Table, 
@@ -20,9 +19,9 @@ from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
 
-import { IVFormErrors, VForm, VTextField, useVForm } from '../../forms';
+import { IVFormErrors, VForm, useVForm } from '../../forms';
 
-import { AutoCompleteProduto, BarraFerramentas } from '../../components';
+import { BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
@@ -31,11 +30,13 @@ import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
 
 import '../../forms/TraducoesYup';
-import { AddCircleRounded, Close } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 
 
 import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
 import { EstoqueEntradaService, IListagemEstoqueEntrada } from '../../services/api/estoque/EstoqueEntrada';
+import { FormSolicitacao } from './component/ItemSolicitacao';
+import { ItemSolicitacao } from './component/ItemSolicitacao/item';
 
 interface IItemEstoque {
     fornecedorFK: number | undefined;
@@ -45,10 +46,17 @@ interface IItemEstoque {
     quantidadeMinima: number | undefined;
     quantidadeMaxima: number | undefined;
 }
+
+interface IListagemItens {
+    produtoFK: number;
+    quantidade: number;
+    observacao: string; 
+}
+
 interface IFormData {
     idEstoque: number | null | undefined;
     dataEntrada: string;
-    itensEstoque: IItemEstoque[];
+    itensEstoque: IItemEstoque[] | undefined;
     usuarioFK: number;
     filialFK: number;
 }
@@ -93,8 +101,9 @@ export const Teste: React.FC = () => {
     const { debounce } = useDebounce(3000, true);
     
     const [rows, setRows] = useState<IListagemEstoqueEntrada[]>([]);
-    const [itensAdd, setItensAdd] = useState([]);
-    
+
+    const [rowsItem, setRowsItens] = useState<IListagemItens[]>([]);
+
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
     const [totalElements, setTotalElements] = useState(0);
@@ -126,9 +135,6 @@ export const Teste: React.FC = () => {
     const handleClose = () => {
         setOpenModal(false);
     };
-    const setItensSolicitacao = () => {
-        console.log(formRef.current?.getData());
-    }
 
     const handleDelete = (id: number) => {
         const deletar = window.confirm("Deseja realmente deletar esse item?");
@@ -143,6 +149,9 @@ export const Teste: React.FC = () => {
                 }
             });
         }
+    };
+    const addItem = (valor: IListagemItens) => {
+        setRowsItens([...rowsItem, valor]);
     };
 
     useEffect(() => {
@@ -217,12 +226,12 @@ export const Teste: React.FC = () => {
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Administração de Materiais"
-            subTitulo="Gerenciamento de Materiais"
+            titulo="Requisição de Materiais"
+            subTitulo="Materiais Requisitados"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVO MATERIAL"
+                    textoBotaoNovo="NOVA SOLICITAÇÃO"
                     mostrarInputBusca
                     mostrarBotaoNovo
                     textoDaBusca={busca}
@@ -235,14 +244,14 @@ export const Teste: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Data de Entrada</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Número Solicitação</TableCell>
                             <TableCell>Produto</TableCell>
                             <TableCell>Unidade de Medida</TableCell>
-                            <TableCell>Quantidade Atual</TableCell>
-                            <TableCell>Quantidade Ideal</TableCell>
-                            <TableCell>Quantidade Minima</TableCell>
-                            <TableCell>Quantidade Máxima</TableCell>
-                            <TableCell>Ações</TableCell>
+                            <TableCell>Quantidade</TableCell>
+                            <TableCell>Observação</TableCell>
+                            <TableCell>Emissão</TableCell>
+                            <TableCell>Solicitante</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -255,17 +264,7 @@ export const Teste: React.FC = () => {
                                 <TableCell>{row.itemEstoque.map(item => item.quantidadeIdeal)}</TableCell>
                                 <TableCell>{row.itemEstoque.map(item => item.quantidadeMinima)}</TableCell>
                                 <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
-                            
-                                <TableCell width={200}>
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        disableElevation
-                                        onClick={() => { handleDelete(row.idEstoque) }}
-                                    >
-                                        Deletar
-                                    </Button>
-                                </TableCell>
+                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -318,89 +317,28 @@ export const Teste: React.FC = () => {
                 <Box margin={1} display="flex" flexDirection="column">
                     <Grid container direction="column" padding={2} spacing={2}>
                         <Grid container item direction="row" spacing={1}>
-                            <Grid item md={6}>
-                                <AutoCompleteProduto name="itensEstoque[0].produtoFK" isExternalLoading={isLoading} isEdit={false} />
-                            </Grid>
-
-                            <Grid item md={2}>
-                                <VTextField 
-                                    name="quantidade"
-                                    label="Qtde.Atual" 
-                                    variant="outlined"
-                                    type="number"
-                                />
-                            </Grid>
-                            <Grid item md={3}>
-                                <VTextField
-                                    name="name"
-                                    label="Nome Completo" 
-                                    variant="outlined"
-                                    type="text"
-                                    sx={{
-                                        "& input": {border: 'none', 
-                                                    margin: 2, 
-                                                    padding: 1, 
-                                                    paddingY:0,
-                                                    paddingRight: 0
-                                        },
-                                    }}
-                                    fullWidth
-                                />
-                            </Grid>
-                            <Grid item md={1}>
-                                <IconButton onClick={() => {setItensSolicitacao()}}>
-                                    <AddCircleRounded
-                                        //color='primary'
-                                        fontSize='large'
-                                      
-                                    />
-                                </IconButton>
-
-                            </Grid>
+                            <FormSolicitacao addItem={addItem}/>
                             <TableContainer>
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Data de Entrada</TableCell>
                                             <TableCell>Produto</TableCell>
                                             <TableCell>Unidade de Medida</TableCell>
-                                            <TableCell>Quantidade Atual</TableCell>
-                                            <TableCell>Quantidade Atual</TableCell>
+                                            <TableCell>Quantidade</TableCell>
+                                            <TableCell>Observação</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        <TableRow>
-                                            <TableCell>TESTE</TableCell>
-                                            <TableCell>Produto</TableCell>
-                                            <TableCell>Unidade de Medida</TableCell>
-                                            <TableCell>Quantidade Atual</TableCell>
-                                            <TableCell size='small'>
-                                                <Button
-                                                variant="contained"
-                                                color="warning"
-                                                disableElevation
-                                                size='small'
-                                                >
-                                                Editar
-                                                </Button>
-                                                <Button
-                                                variant="contained"
-                                                color="error"
-                                                disableElevation
-                                                size='small'
-                                                >
-                                                Deletar
-                                                </Button>
-
-                                            </TableCell>
-                                            
-                                        </TableRow>
+                                        {rowsItem.map(row => (
+                                            <TableRow key={row.produtoFK}>
+                                                <ItemSolicitacao item={row}/>                                         
+                                            </TableRow>
+                                        ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
                         </Grid>
                     </Grid>
-
                 </Box>
                 </VForm>
             </ModalCadastro>
