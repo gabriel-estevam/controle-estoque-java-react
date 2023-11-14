@@ -19,9 +19,8 @@ import {
 }
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
-import * as yup from 'yup';
 
-import { IVFormErrors, VForm, useVForm } from '../../forms';
+import { VForm, useVForm } from '../../forms';
 
 import { BarraFerramentas } from '../../components';
 
@@ -48,43 +47,11 @@ interface IListagemItens {
     observacao: string;
 }
 
-interface IFormItemSolicitacao {
-    produtoFK: number;
-    quantidade: number;
-    observacao: string; 
-}
-
-interface IFormData {
-    idSol: number | null | undefined;
-    dataSolicitacao: string;
-    updatedAt: string;
-    status: number;
-    itensSolicitacao: IFormItemSolicitacao[];
-    solicitanteFK: number;
-    filialFK: number;
-}
-
 interface IDialogHandle {
     action: "I" | "D";
     type: "ERRO" | "SUCESSO";
     message: string;
 }
-
-const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idSol: yup.number().nullable(),
-    dataSolicitacao: yup.string().required(),
-    updatedAt: yup.string().required(),
-    filialFK: yup.number().required(),
-    solicitanteFK: yup.number().required(),
-    status: yup.number().required(),
-    itensSolicitacao: yup.array(
-        yup.object({
-        produtoFK: yup.number().required(),
-        quantidade: yup.number().min(1).required(),
-        observacao: yup.string().required(),
-    })),
-
-});
 
 export const Solicitacao: React.FC = () => {
 
@@ -92,7 +59,7 @@ export const Solicitacao: React.FC = () => {
     
     //@ts-ignore
     const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario;
-
+    
     //@ts-ignore
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
 
@@ -290,10 +257,6 @@ export const Solicitacao: React.FC = () => {
                         <TableRow>
                             <TableCell>Status</TableCell>
                             <TableCell>Número Solicitação</TableCell>
-                            <TableCell>Produto</TableCell>
-                            <TableCell>Unidade de Medida</TableCell>
-                            <TableCell>Quantidade</TableCell>
-                            <TableCell>Observação</TableCell>
                             <TableCell>Emissão</TableCell>
                             <TableCell>Solicitante</TableCell>
                             <TableCell>Detalhes</TableCell>
@@ -332,10 +295,6 @@ export const Solicitacao: React.FC = () => {
                                     }
                                 </TableCell>
                                 <TableCell>{row.numeroSol}</TableCell>
-                                <TableCell>{row.itensSolicitados.map(item => item.produto.nome)}</TableCell>
-                                <TableCell>{row.itensSolicitados.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
-                                <TableCell>{row.itensSolicitados.map(item => item.quantidade)}</TableCell>
-                                <TableCell>{row.itensSolicitados.map(item => item.observacao)}</TableCell>
                                 <TableCell>{new Date(row.dataSolicitacao).toLocaleString().replace(/,/,'')}</TableCell>
                                 <TableCell>{row.solicitante.name}</TableCell>
                                 <TableCell>
