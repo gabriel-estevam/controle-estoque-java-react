@@ -91,4 +91,5 @@ public class ProdutoService {
         Optional<Produto> produto = repository.findByNome(nome);
         return produto.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado!"));
     }
+    
 }

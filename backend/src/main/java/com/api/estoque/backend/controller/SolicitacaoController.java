@@ -50,12 +50,21 @@ public class SolicitacaoController {
     ) 
     {
         Page<Solicitacao> page;
+        
         if(numeroSol == null) {
             page = service.findByFilial(filial, pageable);
         }
-        
-        page = service.findByNumeroSol(numeroSol, filial, pageable);
+        else {
+            page = service.findByNumeroSol(numeroSol, filial, pageable);
+        }
+
         return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Solicitacao> findById(@PathVariable Long id) {
+        Solicitacao solicitacao = service.findById(id);
+        return ResponseEntity.ok().body(solicitacao);
     }
 
     @GetMapping("/all")

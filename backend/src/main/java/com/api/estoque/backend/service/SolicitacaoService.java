@@ -1,6 +1,7 @@
 package com.api.estoque.backend.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.api.estoque.backend.model.Solicitacao;
 import com.api.estoque.backend.model.Usuario;
 import com.api.estoque.backend.repository.ItemSolicitacaoRepository;
 import com.api.estoque.backend.repository.SolicitacaoRepository;
+import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
 
 @Service
 public class SolicitacaoService {
@@ -43,6 +45,10 @@ public class SolicitacaoService {
         return repository.findAll();
     }
 
+    public Solicitacao findById(Long id) {
+        Optional<Solicitacao> solicitacao = repository.findById(id);
+        return solicitacao.orElseThrow(() -> new ResourceNotFoundException(id));
+    }
     public Solicitacao insert(Solicitacao solicitacao) {
         Solicitacao solicitacaoSave = solicitacao;
         solicitacaoSave = repository.save(solicitacao);

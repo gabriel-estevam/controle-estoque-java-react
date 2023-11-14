@@ -1,5 +1,5 @@
 import { TableCell } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { ProdutoService } from '../../../../../services/api/produtos/ProdutoService';
 
 interface IListagemItens {
@@ -11,9 +11,13 @@ interface IListagemItens {
 }
 type Props = {
     item: IListagemItens;
+    buttonRm: any
 }
 
-export const ItemSolicitacao: React.FC<Props> = ({ item }) => {       
+export const ItemSolicitacao: React.FC<Props> = ({ item, buttonRm }) => {
+    const [produto, setProduto] = useState('');
+    const [unidadeMedida, setUnidadeMedida] = useState<string | undefined>('');
+
     //@ts-ignore
     ProdutoService.getById(item.produtoFK)
     .then((result) => {
@@ -21,16 +25,20 @@ export const ItemSolicitacao: React.FC<Props> = ({ item }) => {
             alert(result.message);
         }
         else {
-            item.produto = result.nome;
+            setProduto(result.nome);
+            setUnidadeMedida(result.unidadeMedida?.sigla);
         }
     });
 
     return(
         <>
-            <TableCell>{item.produto}</TableCell>
-            <TableCell>{item.unidadeMedida}</TableCell>
+            <TableCell>{produto}</TableCell>
+            <TableCell>{unidadeMedida}</TableCell>
             <TableCell>{item.quantidade}</TableCell>
             <TableCell>{item.observacao}</TableCell>
+            <TableCell>
+                { buttonRm }
+            </TableCell>
         </>
     );
 }

@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque, ConsultaEstoque, Teste } from '../pages';
-import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes, FaBoxOpen } from 'react-icons/fa';
+import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque, ConsultaEstoque, Solicitacao } from '../pages';
+import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes, FaBoxOpen, FaCartPlus } from 'react-icons/fa';
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -26,23 +26,21 @@ export const AppRoutes: React.FC = () => {
         label: 'Estoque Materiais',
         icon: <FaBoxes color='#b7b9bb'/>,
       },
-
-      {
-        path: '/estoque/teste',
-        label: 'TESTE',
-        icon: <FaBoxes color='#b7b9bb'/>,
-      },
-      
       {
         path: '/estoque/consultaMovimentacao',
         label: 'Consultar Movimentação de Estoque',
         icon: <FaBoxOpen color='#b7b9bb'/>,
       },
-
+      
       {
         path: '/estoque/movimentacao',
         label: 'Movimentação de Estoque',
         icon: <FaBoxOpen color='#b7b9bb'/>,
+      },
+      {
+        path: '/estoque/solicitacao',
+        label: 'Requisição de Materiais',
+        icon: <FaCartPlus color='#b7b9bb'/>,
       },
     ]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,10 +92,10 @@ export const AppRoutes: React.FC = () => {
         } 
       />
       <Route 
-        path="/estoque/teste" 
+        path="/estoque/solicitacao" 
         element={
           <PrivateRoute redirectTo="/">
-            <Teste/>  
+            <Solicitacao/>  
           </PrivateRoute>
         } 
       />

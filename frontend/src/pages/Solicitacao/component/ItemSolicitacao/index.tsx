@@ -6,67 +6,36 @@ import { VTextField } from '../../../../forms';
 
 type Props = {
     addItem: any;
-}
+};
+
 interface IListagemItens {
     produtoFK: number;
-    produto: string ;
-    unidadeMedida: string;
     quantidade: number;
     observacao: string; 
-}
+};
 
 export const FormSolicitacao: React.FC<Props> = ({ addItem }) => {
-    const [value, setValue] = useState<IListagemItens | any>();
+    const [value, setValue] = useState(0);
+    const [quantidade, setQuantidade] = useState(0);
+    const [obs, setObs] = useState('');
 
-    const handleOnChange = (targetValue: any, input: number) => {
-        switch (input) 
-        {
-            case 1:
-                var unidade;
-                var id;
-                if(typeof targetValue === "string") {
-                    unidade = targetValue;
-                } else if(typeof targetValue === "number"){
-                    id = targetValue;
-                } else { return; }
-                setValue({
-                    produtoFK: id,
-                    unidadeMedida: unidade,
-                    quantidade: value?.quantidade,
-                    observacao: value?.observacao,
-                });
-                console.log(id)
-            break;
-
-            case 2:
-                setValue({
-                    quantidade: Number(targetValue), 
-                    observacao: value?.observacao,
-                    produtoFK: value?.produtoFK,
-                    unidadeMedida: value?.unidadeMedida,
-                });
-            break;
-
-            case 3:
-                setValue({
-                    observacao: targetValue,
-                    quantidade: value?.quantidade,
-                    produtoFK: value?.produtoFK,
-                    unidadeMedida: value?.unidadeMedida,
-                });
-            break;
-            
-            default:
-                console.error('Invalid code!');
-            break;
-        }
-
-    }
+    const handleOnChangeProduto = (targetValue: any) => {
+        setValue(targetValue);
+    };
+    
+    const handleOnChangeQtde = (targetValue: any) => {
+        setQuantidade(targetValue);
+    };
+    
+    const handleOnChangeObs = (targetValue: any) => {
+        setObs(targetValue);
+    };
+    
     const createItem = (objeto: IListagemItens) => {
         const objItem = objeto;
         addItem(objItem);
-        
     }
+
     return (
         <>
             <Grid item md={6}>
@@ -74,8 +43,7 @@ export const FormSolicitacao: React.FC<Props> = ({ addItem }) => {
                     name="itensSolicitacao[0].produtoFK" 
                     //isExternalLoading={isLoading} 
                     isEdit={false} 
-                    idProduto={ (e) => handleOnChange(e, 1) }
-                    unidade={   (e) => handleOnChange(e, 1) }
+                    idProduto={ (e) => handleOnChangeProduto(e) }
                 />
             </Grid>
 
@@ -85,7 +53,7 @@ export const FormSolicitacao: React.FC<Props> = ({ addItem }) => {
                     label="Qtde" 
                     variant="outlined"
                     type="number"
-                    onChange={(e) => handleOnChange(e.target.value, 2)}
+                    onChange={(e) => handleOnChangeQtde(e.target.value)}
                 />
             </Grid>
             <Grid item md={3}>
@@ -103,13 +71,16 @@ export const FormSolicitacao: React.FC<Props> = ({ addItem }) => {
                         },
                     }}
                     fullWidth
-                    onChange={(e) => handleOnChange(e.target.value, 3)}
+                    onChange={(e) => handleOnChangeObs(e.target.value)}
                 />
             </Grid>
             <Grid item md={1}>
-                <IconButton onClick={() => createItem(value)}>
+                <IconButton onClick={() => createItem({
+                    produtoFK: value,
+                    quantidade: quantidade,
+                    observacao: obs,
+                })}>
                     <AddCircleRounded
-                        //color='primary'
                         fontSize='large'
                     />
                 </IconButton>

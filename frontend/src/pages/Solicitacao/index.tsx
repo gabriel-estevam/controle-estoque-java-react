@@ -14,7 +14,9 @@ import {
     Alert,
     AlertTitle,
     Collapse,
-    IconButton}
+    IconButton,
+    Button
+}
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import * as yup from 'yup';
@@ -34,30 +36,31 @@ import { Close } from '@mui/icons-material';
 
 
 import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
-import { EstoqueEntradaService, IListagemEstoqueEntrada } from '../../services/api/estoque/EstoqueEntrada';
 import { FormSolicitacao } from './component/ItemSolicitacao';
 import { ItemSolicitacao } from './component/ItemSolicitacao/item';
+import { IlistagemSolicitacao, SolicitacaoMateriais } from '../../services/api/solicitacao/SolicitacaoMateriais';
+import { ModalSolicitacao } from './component/modal';
 
-interface IItemEstoque {
-    fornecedorFK: number | undefined;
-    produtoFK: number | undefined;
-    quantidadeAtual: number | undefined;
-    quantidadeIdeal: number | undefined;
-    quantidadeMinima: number | undefined;
-    quantidadeMaxima: number | undefined;
-}
 
 interface IListagemItens {
+    produtoFK: number;
+    quantidade: number;
+    observacao: string;
+}
+
+interface IFormItemSolicitacao {
     produtoFK: number;
     quantidade: number;
     observacao: string; 
 }
 
 interface IFormData {
-    idEstoque: number | null | undefined;
-    dataEntrada: string;
-    itensEstoque: IItemEstoque[] | undefined;
-    usuarioFK: number;
+    idSol: number | null | undefined;
+    dataSolicitacao: string;
+    updatedAt: string;
+    status: number;
+    itensSolicitacao: IFormItemSolicitacao[];
+    solicitanteFK: number;
     filialFK: number;
 }
 
@@ -68,23 +71,22 @@ interface IDialogHandle {
 }
 
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    idEstoque: yup.number().nullable(),
-    dataEntrada: yup.string().required(),
+    idSol: yup.number().nullable(),
+    dataSolicitacao: yup.string().required(),
+    updatedAt: yup.string().required(),
     filialFK: yup.number().required(),
-    usuarioFK: yup.number().required(),
-    itensEstoque: yup.array(
+    solicitanteFK: yup.number().required(),
+    status: yup.number().required(),
+    itensSolicitacao: yup.array(
         yup.object({
-        quantidadeAtual: yup.number(),
-        quantidadeIdeal: yup.number(),
-        quantidadeMinima: yup.number(),
-        quantidadeMaxima: yup.number(),
-        fornecedorFK: yup.number(),
-        produtoFK: yup.number(),
+        produtoFK: yup.number().required(),
+        quantidade: yup.number().min(1).required(),
+        observacao: yup.string().required(),
     })),
 
 });
 
-export const Teste: React.FC = () => {
+export const Solicitacao: React.FC = () => {
 
     const { formRef, save } = useVForm();
     
@@ -95,14 +97,17 @@ export const Teste: React.FC = () => {
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
 
     const [openModal, setOpenModal] = useState(false);
+    const [openModalEdit, setOpenModalEdit] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
     
     const { debounce } = useDebounce(3000, true);
     
-    const [rows, setRows] = useState<IListagemEstoqueEntrada[]>([]);
-
+    const [rows, setRows] = useState<IlistagemSolicitacao[]>([]);
+    
     const [rowsItem, setRowsItens] = useState<IListagemItens[]>([]);
+    
+    const[solicitacao, setSolicitacao] = useState<IlistagemSolicitacao>();
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
     
@@ -131,34 +136,70 @@ export const Teste: React.FC = () => {
         setOpenModal(true);
     };
 
+    const handleOpenEdit = () => {
+        setOpenModalEdit(true);
+    };
+
 
     const handleClose = () => {
         setOpenModal(false);
     };
 
-    const handleDelete = (id: number) => {
-        const deletar = window.confirm("Deseja realmente deletar esse item?");
-        if(deletar) {
-            EstoqueEntradaService.deleteById(id)
-            .then((result) => {
-                if(result instanceof Error) {
-                    handleDialog({ action: 'D', type: 'ERRO', message: result.message })
-                }
-                else {
-                    handleDialog({ action: 'D', type: 'SUCESSO', message: 'Material deletado com sucesso!' });
-                }
-            });
-        }
-    };
-    const addItem = (valor: IListagemItens) => {
-        setRowsItens([...rowsItem, valor]);
+    const handleCloseEdit = () => {
+        setOpenModalEdit(false);
     };
 
+    const getSolicitacaoById = (id: number) => {
+        SolicitacaoMateriais.getById(id)
+        .then((result) => {
+            if(result instanceof Error) {
+                alert(result.message);
+            }
+            else {
+                setSolicitacao(result);
+            }
+        });
+    };
+    
+    const addItem = (valor: IListagemItens) => {
+        var index = false;
+
+        rowsItem.find((item) => {
+            if(item.produtoFK === valor.produtoFK) {
+                index = true;
+            } 
+        });
+
+        if(index) {
+            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Produto já adicionado no pedido!");
+            
+            formRef.current?.setFieldValue('itensSolicitacao[0].quantidade', '');
+            formRef.current?.setFieldValue('itensSolicitacao[0].observacao', '');  
+        }
+        else if(valor.produtoFK === 0) {
+            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Adiciona um produto!");
+        }
+        else if (valor.quantidade <= 0) {
+            formRef.current?.setFieldError("itensSolicitacao[0].quantidade", "Quantidade inválida!");
+        }
+        else {
+            setRowsItens([...rowsItem, valor]);
+        }
+    };
+
+    const removeItem = (id: number) => {
+        const newItens = [...rowsItem];
+        const filteredItem = newItens.filter((item) =>
+            item.produtoFK !== id ? item : null
+        );
+        setRowsItens(filteredItem);
+    };
+    
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
 
-            EstoqueEntradaService.getAllContaing(paginaAPI, busca, filialToken)
+            SolicitacaoMateriais.getAllContaing(paginaAPI, busca, filialToken)
             .then((result) => {
                 setIsLoading(false);
     
@@ -187,40 +228,43 @@ export const Teste: React.FC = () => {
         }
     }
 
-    const handleSave = (dados: IFormData) => {
-        dados.usuarioFK = usuarioToken.idUsuario;
+    const handleSave = () => {
+        //var dados: any;
+        const dataHora = new Date().toISOString();
+        const itensSolicitacao = [...rowsItem];
+        const state = {
+            solicitanteFK: usuarioToken.idUsuario,
+            filialFK: filialToken,
+            status: 0,
+            dataSolicitacao: '',
+            updatedAt: '',
+            itensSolicitacao: itensSolicitacao,
+        }
+        const dados = state;
+        dados.dataSolicitacao = dataHora.slice(0,19)+"Z";
+        dados.updatedAt = dataHora.slice(0,19)+"Z";
+        dados.solicitanteFK = usuarioToken.idUsuario;
         dados.filialFK = filialToken;
+        dados.status = 0;
+        dados.itensSolicitacao = itensSolicitacao;
 
-        const dataHora = new Date(dados.dataEntrada).toISOString();
-        dados.dataEntrada = dataHora.slice(0,19)+"Z";
-        
-       formValidationSchema
-        .validate(dados, {abortEarly: false})
-        .then((dadosValidados) => {
+        if(itensSolicitacao.length === 0) {
+            return;
+        } else {
             setIsLoading(true);
+            
             //@ts-ignore
-            EstoqueEntradaService.create(dadosValidados)
+            SolicitacaoMateriais.create(dados)
             .then((result) => {
                 setIsLoading(false);
-
                 if(result instanceof Error) {
                     handleDialog({ action: 'I', type: 'ERRO', message: result.message });
                 }
                 else {
-                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Material inserido com sucesso!' });
+                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Requisção realizada com sucesso!' });
                 }
             });
-           
-        })
-        .catch((errors: yup.ValidationError) => {
-            const validationErrors: IVFormErrors = {};
-            errors.inner.forEach(error => {
-                if(!error.path) return; //se path undefined não executa que esta abaixo
-                validationErrors[error.path] = error.message;
-            });
-
-            formRef.current?.setErrors(validationErrors);
-        });
+        }
     };
 
     return (
@@ -252,19 +296,58 @@ export const Teste: React.FC = () => {
                             <TableCell>Observação</TableCell>
                             <TableCell>Emissão</TableCell>
                             <TableCell>Solicitante</TableCell>
+                            <TableCell>Detalhes</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.idEstoque}>
-                               <TableCell>{new Date(row.dataEntrada).toLocaleString().replace(/,/,'')}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.produto.nome)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeAtual)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeIdeal)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMinima)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
-                                <TableCell>{row.itemEstoque.map(item => item.quantidadeMaxima)}</TableCell>
+                            <TableRow key={row.idSol}>
+                                <TableCell>
+                                    {
+                                        row.status === "APROVADA" &&(
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            disableElevation
+                                        >{row.status}</Button>
+                                        )
+                                    }
+                                    {
+                                        row.status === "ABERTA" &&(
+                                            <Button
+                                                variant="contained"
+                                                color="warning"
+                                                disableElevation
+                                            >{row.status}</Button>
+                                        )
+                                    }
+                                    {
+                                        row.status === "REPROVADA" &&(
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                disableElevation
+                                            >{row.status}</Button>
+                                        )
+                                    }
+                                </TableCell>
+                                <TableCell>{row.numeroSol}</TableCell>
+                                <TableCell>{row.itensSolicitados.map(item => item.produto.nome)}</TableCell>
+                                <TableCell>{row.itensSolicitados.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
+                                <TableCell>{row.itensSolicitados.map(item => item.quantidade)}</TableCell>
+                                <TableCell>{row.itensSolicitados.map(item => item.observacao)}</TableCell>
+                                <TableCell>{new Date(row.dataSolicitacao).toLocaleString().replace(/,/,'')}</TableCell>
+                                <TableCell>{row.solicitante.name}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="text"
+                                        color="secondary"
+                                        disableElevation                             
+                                        onClick={() => { handleOpenEdit(); getSolicitacaoById(row.idSol); }}
+                                    >
+                                        ...
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -326,15 +409,31 @@ export const Teste: React.FC = () => {
                                             <TableCell>Unidade de Medida</TableCell>
                                             <TableCell>Quantidade</TableCell>
                                             <TableCell>Observação</TableCell>
+                                            <TableCell>Ação</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {rowsItem.map(row => (
                                             <TableRow key={row.produtoFK}>
-                                                <ItemSolicitacao item={row}/>                                         
+                                                <ItemSolicitacao 
+                                                    item={row} 
+                                                    buttonRm={
+                                                        <Button
+                                                            variant="contained"
+                                                            color="error"
+                                                            disableElevation
+                                                            onClick={() => removeItem(row.produtoFK)}
+                                                        >
+                                                            Remover
+                                                        </Button>
+                                                    }
+                                                />                                         
                                             </TableRow>
                                         ))}
                                     </TableBody>
+                                    {rowsItem.length === 0 &&(
+                                        <caption>Lista Vazia</caption>
+                                    )}
                                 </Table>
                             </TableContainer>
                         </Grid>
@@ -342,6 +441,12 @@ export const Teste: React.FC = () => {
                 </Box>
                 </VForm>
             </ModalCadastro>
+            <ModalSolicitacao 
+                open={openModalEdit} 
+                handleClose={handleCloseEdit}
+                heightDialog="300px"
+                solicitacao={solicitacao}
+            />
 
             <Box sx={{
                 width: '20%',
