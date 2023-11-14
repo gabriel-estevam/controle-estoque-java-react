@@ -2,8 +2,31 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login } from '../pages/Login';
 import { useDrawerContext } from '../contexts';
-import { Dashboard, Filiais, Fornecedores, Home, Produtos, Usuarios,EstoqueEntrada, MovimentacaoEstoque, ConsultaEstoque, Solicitacao } from '../pages';
-import { FaHome, FaUsers, FaBuilding, FaTags, FaHandshake, FaBoxes, FaBoxOpen, FaCartPlus } from 'react-icons/fa';
+
+import { 
+  Dashboard, 
+  Filiais, 
+  Fornecedores, 
+  Home, 
+  Produtos, 
+  Usuarios,
+  EstoqueEntrada, 
+  MovimentacaoEstoque, 
+  ConsultaEstoque, 
+  Solicitacao, 
+  Compras 
+} from '../pages';
+
+import { 
+  FaHome, 
+  FaUsers, 
+  FaBuilding, 
+  FaTags, 
+  FaHandshake, 
+  FaBoxes, 
+  FaBoxOpen, 
+  FaCartPlus 
+} from 'react-icons/fa';
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
@@ -40,6 +63,12 @@ export const AppRoutes: React.FC = () => {
       {
         path: '/estoque/solicitacao',
         label: 'Requisição de Materiais',
+        icon: <FaCartPlus color='#b7b9bb'/>,
+      },
+
+      {
+        path: '/estoque/compras',
+        label: 'Compras',
         icon: <FaCartPlus color='#b7b9bb'/>,
       },
     ]);
@@ -96,6 +125,15 @@ export const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute redirectTo="/">
             <Solicitacao/>  
+          </PrivateRoute>
+        } 
+      />
+
+      <Route 
+        path="/estoque/compras" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Compras/>  
           </PrivateRoute>
         } 
       />

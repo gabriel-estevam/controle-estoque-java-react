@@ -39,14 +39,6 @@ import { DecodeTokenJWT } from '../../../services/api/auth/decode/DecodeTokenJWT
 import { EstoqueEntradaService, IDetalheEstoqueEntrada, IListagemEstoqueEntrada } from '../../../services/api/estoque/EstoqueEntrada';
 import { EstoqueSaidaService } from '../../../services/api/estoque/EstoqueSaida';
 
-interface IItemEstoque {
-    fornecedorFK: number | undefined;
-    produtoFK: number | undefined;
-    quantidadeAtual: number | undefined;
-    quantidadeIdeal: number | undefined;
-    quantidadeMinima: number | undefined;
-    quantidadeMaxima: number | undefined;
-}
 interface IFormData {
     estoqueFK: number;
     usuarioFK: number;
