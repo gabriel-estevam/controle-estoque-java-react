@@ -14,9 +14,11 @@ interface IAutoCompleteUnidadeMedidaProps {
     name: string;
     isExternalLoading?: boolean;
     isEdit: boolean;
+    isMovimentoEstoque?: boolean;
+    idProduto?: (id: number | undefined) => any;
 }
 
-export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({ name ,isExternalLoading = false, isEdit }) => {
+export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({ name , isExternalLoading = false, isEdit, isMovimentoEstoque = false, ...rest }) => {
     const { fieldName, registerField, error, clearError, defaultValue } = useField(name);
 
     const { debounce } = useDebounce();
@@ -25,7 +27,7 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
 
     const [opcoes, setOpcoes] = useState<TAutoCompleteOption[]>([]);
     
-    const[unidadeMedidaAtual, setUnidadeMedidaAtual] = useState<undefined | string>();
+    const[unidadeMedidaAtual, setUnidadeMedidaAtual] = useState<string>();
 
     const [isLoading, setIsLoading] = useState(false);
     const [busca, setBusca] = useState('');
@@ -73,7 +75,10 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
         if (!selectedId) return null; 
 
         const selectedOption = opcoes.find(opcao => opcao.idProduto === selectedId);
-        if(isEdit)setUnidadeMedidaAtual(selectedOption?.unidadeMedida);
+
+        if(isEdit) {
+            setUnidadeMedidaAtual(selectedOption?.unidadeMedida);
+        }
 
         if (!selectedOption) return null;
 
@@ -94,10 +99,15 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                     disablePortal
                     options={opcoes}
                     loading={isLoading}
-                    disabled={isExternalLoading}
+                    disabled={isExternalLoading || isMovimentoEstoque}
                     value={autoCompleteSelectedOption}
                     onInputChange={(_, newValue) => setBusca(newValue)}
-                    onChange={(_, newValue) => { setSelectedId(newValue?.idProduto); clearError(); setUnidadeMedidaAtual(newValue?.unidadeMedida);}}
+                    onChange={(_, newValue) => { 
+                        setSelectedId(newValue?.idProduto); 
+                        clearError(); 
+                        setUnidadeMedidaAtual(newValue?.unidadeMedida); 
+                        rest.idProduto?.(newValue?.idProduto);
+                    }}
                     popupIcon={(isExternalLoading || isLoading) ? <CircularProgress size={28} /> : undefined}
                     renderInput={(params) => (
                         <TextField
@@ -114,6 +124,8 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                                     paddingY: 0,
                                     paddingRight: 0,
                                 },
+                                width: '260px',
+                                marginLeft: 1,
                             }}
                         />
                     )}
@@ -137,7 +149,7 @@ export const AutoCompleteProduto: React.FC<IAutoCompleteUnidadeMedidaProps> = ({
                                     paddingY:0,
                                     paddingRight: 0
                         },
-                       // width: '120px',
+                        width: '150px'
                     }}
                     fullWidth
                 />

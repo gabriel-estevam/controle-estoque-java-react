@@ -20,6 +20,10 @@ public enum StatusOption {
                 return value;
             }
         }
+<<<<<<< HEAD
         throw new IllegalArgumentException("Invalid StatusOption code");
+=======
+        throw new IllegalArgumentException("Invalid Status code");
+>>>>>>> 21363a4406dc42fb045afc9d30029e61e5bcd470
     }
 }

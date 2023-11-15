@@ -33,7 +33,7 @@ export const ModalCadastro: React.FC<IProps> =
    heightDialog
 }) => {
     return (
-        <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "800px", maxHeight: "500px"}}}>
+        <Dialog open={open} /*onClose={handleClose}*/ PaperProps={{style: { maxWidth: "950px", maxHeight: "500px"}}}>
             <DialogTitle>
                 {titulo} 
                 <IconButton sx={{float: "right"}} onClick={handleClose}>
@@ -44,7 +44,7 @@ export const ModalCadastro: React.FC<IProps> =
                 dividers 
                 sx={{ 
                     height: heightDialog != null  ? heightDialog : '500px' , 
-                    width: '700px',
+                    width: '950px',
                     paddingY: 0,
                     paddingX: 0,
                 }}>

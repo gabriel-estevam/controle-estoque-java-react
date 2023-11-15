@@ -53,6 +53,12 @@ interface IFormData {
     Endereco: IEndereco;
 }
 
+interface IDialogHandle {
+    action: "I" | "D";
+    type: "ERRO" | "SUCESSO";
+    message: string;
+}
+
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
     idFornecedor: yup.number().nullable(),
     name: yup.string().required(),
@@ -205,6 +211,18 @@ export const Fornecedores: React.FC = () => {
         });
     };
 
+    const handleDialog = (values: IDialogHandle): void => {
+        setOpen(true);
+        if(values.action === "I") {
+            setAlertTipo(values.type === 'ERRO' ? true : false);
+            setAlertMsg(values.message);
+            handleClose();
+        }
+        else {
+            setAlertTipo(values.type === 'ERRO' ? true : false);
+            setAlertMsg(values.message);
+        }
+    }
     const handleSave = (dados: IFormData) => {
        formValidationSchema
         .validate(dados, {abortEarly: false})
@@ -215,16 +233,10 @@ export const Fornecedores: React.FC = () => {
                 setIsLoading(false);
 
                 if(result instanceof Error) {
-                   setOpen(true);
-                    setAlertTipo(true);
-                    setAlertMsg(result.message);
+                    handleDialog({ action: 'I', type: 'ERRO', message: result.message });
                 }
                 else {
-                    setAlertTipo(false);
-                    setOpen(true);
-                    setAlertMsg('Fornecedor inserido com Sucesso!');
-                    handleClose();
-                   window.location.reload();
+                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Material inserido com sucesso!' });
                 }
             });
            
