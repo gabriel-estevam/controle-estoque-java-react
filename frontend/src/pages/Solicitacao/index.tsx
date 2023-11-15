@@ -144,7 +144,7 @@ export const Solicitacao: React.FC = () => {
             formRef.current?.setFieldValue('itensSolicitacao[0].observacao', '');  
         }
         else if(valor.produtoFK === 0) {
-            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Adiciona um produto!");
+            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Adicione um produto!");
         }
         else if (valor.quantidade <= 0) {
             formRef.current?.setFieldError("itensSolicitacao[0].quantidade", "Quantidade inválida!");

@@ -1,6 +1,6 @@
 import { Environment } from "../../../environment";
 import { Api } from "../axios-config";
-import { IProduto, IUsuario } from "../public-interfaces/interfaces";
+import { IFilial, IProduto, IUsuario } from "../public-interfaces/interfaces";
 
 type TItemSolicitacao = {
     produto: IProduto;
@@ -16,6 +16,7 @@ export interface IlistagemSolicitacao {
     updatedAt: Date;
     status: string;
     itensSolicitados: TItemSolicitacao[];
+    filial: IFilial
 }
 
 type TSolicitacaoMaterial =  {
@@ -42,6 +43,7 @@ const getAllContaing = async (page = 0, filter?: string, filial?: number ): Prom
         return new Error((error as { message: string}).message || 'Erro ao listar os registros');
       }  
 };
+
 const getById = async(id: number): Promise<IlistagemSolicitacao | Error> => {
     try 
     {

@@ -15,14 +15,13 @@ import {
     AlertTitle,
     Collapse,
     IconButton,
-    Button
-}
+    Button}
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { VForm, useVForm } from '../../forms';
+import { IVFormErrors, VForm, useVForm } from '../../forms';
 
-import { BarraFerramentas } from '../../components';
+import { AutoCompleteStatus, BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
 import { Environment } from '../../environment/index';
@@ -35,23 +34,32 @@ import { Close } from '@mui/icons-material';
 
 
 import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
-import { FormSolicitacao } from './component/ItemSolicitacao';
-import { ItemSolicitacao } from './component/ItemSolicitacao/item';
 import { IlistagemSolicitacao, SolicitacaoMateriais } from '../../services/api/solicitacao/SolicitacaoMateriais';
-import { ModalSolicitacao } from './component/modal';
+import { VTextField } from '../../forms/VTextField';
 
-
-interface IListagemItens {
-    produtoFK: number;
-    quantidade: number;
-    observacao: string;
-}
+import * as yup from 'yup';
+import { ComprasService } from '../../services/api/solicitacao/Compras';
 
 interface IDialogHandle {
     action: "I" | "D";
     type: "ERRO" | "SUCESSO";
     message: string;
-}
+};
+
+interface IFormData {
+    numeroSol: number;
+    dataSolicitacao: string;
+    solicitante: string;
+    status: number;
+};
+
+
+const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
+    numeroSol: yup.number().required(),
+    dataSolicitacao: yup.string().required(),
+    solicitante: yup.string().required(),
+    status: yup.number().required(),
+});
 
 export const Compras: React.FC = () => {
 
@@ -63,7 +71,6 @@ export const Compras: React.FC = () => {
     //@ts-ignore
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
 
-    const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -71,9 +78,7 @@ export const Compras: React.FC = () => {
     const { debounce } = useDebounce(3000, true);
     
     const [rows, setRows] = useState<IlistagemSolicitacao[]>([]);
-    
-    const [rowsItem, setRowsItens] = useState<IListagemItens[]>([]);
-    
+        
     const[solicitacao, setSolicitacao] = useState<IlistagemSolicitacao>();
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
@@ -98,18 +103,8 @@ export const Compras: React.FC = () => {
         return Number(searchParams.get('paginaAPI') || '0');
     },[searchParams]);
 
-
-    const handleOpen = () => {
-        setOpenModal(true);
-    };
-
     const handleOpenEdit = () => {
         setOpenModalEdit(true);
-    };
-
-
-    const handleClose = () => {
-        setOpenModal(false);
     };
 
     const handleCloseEdit = () => {
@@ -124,44 +119,33 @@ export const Compras: React.FC = () => {
             }
             else {
                 setSolicitacao(result);
+                let data = result.dataSolicitacao;
+                let status = result.status;
+                
+                let statusSol: number;
+
+                if(status === 'ABERTA') {
+                    statusSol = 3;
+                } else if(status === 'APROVADA') {
+                    statusSol = 1;
+                } else {
+                    statusSol = 2;
+                }
+
+                const dataEmissao = new Date(data).toLocaleString().replace(/,/,'').split(' ')[0];
+                formRef.current?.setData({
+                    idSol: result.idSol,
+                    numeroSol: result.numeroSol,
+                    dataSolicitacao: dataEmissao,
+                    solicitante: result.solicitante.name,
+                    solicitanteFK: result.solicitante.idUsuario,
+                    status: statusSol,
+                    filial: result.filial.idFilial,
+                });
             }
         });
     };
-    
-    const addItem = (valor: IListagemItens) => {
-        var index = false;
 
-        rowsItem.find((item) => {
-            if(item.produtoFK === valor.produtoFK) {
-                index = true;
-            } 
-        });
-
-        if(index) {
-            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Produto já adicionado no pedido!");
-            
-            formRef.current?.setFieldValue('itensSolicitacao[0].quantidade', '');
-            formRef.current?.setFieldValue('itensSolicitacao[0].observacao', '');  
-        }
-        else if(valor.produtoFK === 0) {
-            formRef.current?.setFieldError("itensSolicitacao[0].produtoFK", "Adiciona um produto!");
-        }
-        else if (valor.quantidade <= 0) {
-            formRef.current?.setFieldError("itensSolicitacao[0].quantidade", "Quantidade inválida!");
-        }
-        else {
-            setRowsItens([...rowsItem, valor]);
-        }
-    };
-
-    const removeItem = (id: number) => {
-        const newItens = [...rowsItem];
-        const filteredItem = newItens.filter((item) =>
-            item.produtoFK !== id ? item : null
-        );
-        setRowsItens(filteredItem);
-    };
-    
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
@@ -187,7 +171,7 @@ export const Compras: React.FC = () => {
         if(values.action === "I") {
             setAlertTipo(values.type === 'ERRO' ? true : false);
             setAlertMsg(values.message);
-            handleClose();
+            handleCloseEdit();
         }
         else {
             setAlertTipo(values.type === 'ERRO' ? true : false);
@@ -195,32 +179,32 @@ export const Compras: React.FC = () => {
         }
     }
 
-    const handleSave = () => {
-        /*const dataHora = new Date().toISOString();
-        const itensSolicitacao = [...rowsItem];
-        const state = {
-            solicitanteFK: usuarioToken.idUsuario,
-            filialFK: filialToken,
-            status: 0,
-            dataSolicitacao: '',
-            updatedAt: '',
-            itensSolicitacao: itensSolicitacao,
-        }
-        const dados = state;
-        dados.dataSolicitacao = dataHora.slice(0,19)+"Z";
-        dados.updatedAt = dataHora.slice(0,19)+"Z";
-        dados.solicitanteFK = usuarioToken.idUsuario;
-        dados.filialFK = filialToken;
-        dados.status = 0;
-        dados.itensSolicitacao = itensSolicitacao;
+    const parseJsonSolicitacao = (dados: IlistagemSolicitacao) => {
+        const jsonSolicitacao = dados;
 
-        if(itensSolicitacao.length === 0) {
-            return;
-        } else {
+        return {
+            updatedAt: jsonSolicitacao.updatedAt.toString(),
+            status: 0,
+            filialFK: jsonSolicitacao.filial.idFilial,
+            solicitanteFK: jsonSolicitacao.solicitante.idUsuario,
+        }
+    }
+    const handleSave = (dados: IFormData) => {
+        
+        formValidationSchema
+        .validate(dados, {abortEarly: false})
+        .then((dadosValidados) => {
             setIsLoading(true);
+            const dataHora = new Date().toISOString();
             
             //@ts-ignore
-            SolicitacaoMateriais.create(dados)
+            const dadosSolicitacao = parseJsonSolicitacao(solicitacao);
+            dadosSolicitacao.updatedAt = dataHora.slice(0,19)+"Z"
+            dadosSolicitacao.status = dadosValidados.status
+            console.log(dadosSolicitacao.status)
+
+            //@ts-ignore
+            ComprasService.updateSolicitacao(solicitacao?.idSol, dadosSolicitacao)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
@@ -230,22 +214,29 @@ export const Compras: React.FC = () => {
                     handleDialog({ action: 'I', type: 'SUCESSO', message: 'Requisção realizada com sucesso!' });
                 }
             });
-        }*/
+        })
+        .catch((errors: yup.ValidationError) => {
+            const validationErrors: IVFormErrors = {};
+            errors.inner.forEach(error => {
+                if(!error.path) return; //se path undefined não executa que esta abaixo
+                validationErrors[error.path] = error.message;
+            });
+
+            formRef.current?.setErrors(validationErrors);
+        });
     };
 
     return (
         <LayoutBasePagina
             renderTabela
             titulo="Requisição de Materiais"
-            subTitulo="Materiais Requisitados"
+            subTitulo="Materiais Solicitados"
             totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
-                    textoBotaoNovo="NOVA SOLICITAÇÃO"
+                    mostrarBotaoNovo={false}
                     mostrarInputBusca
-                    mostrarBotaoNovo
                     textoDaBusca={busca}
-                    aoClicarEmNovo={handleOpen}
                     aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1', paginaAPI: '0' }, { replace: true })}
                 />
             }
@@ -256,7 +247,8 @@ export const Compras: React.FC = () => {
                         <TableRow>
                             <TableCell>Status</TableCell>
                             <TableCell>Número Solicitação</TableCell>
-                            <TableCell>Emissão</TableCell>
+                            <TableCell>Data de Emissão</TableCell>
+                            <TableCell>Data de Atualização</TableCell>
                             <TableCell>Solicitante</TableCell>
                             <TableCell>Detalhes</TableCell>
                         </TableRow>
@@ -295,6 +287,7 @@ export const Compras: React.FC = () => {
                                 </TableCell>
                                 <TableCell>{row.numeroSol}</TableCell>
                                 <TableCell>{new Date(row.dataSolicitacao).toLocaleString().replace(/,/,'')}</TableCell>
+                                <TableCell>{new Date(row.updatedAt).toLocaleString().replace(/,/,'')}</TableCell>
                                 <TableCell>{row.solicitante.name}</TableCell>
                                 <TableCell>
                                     <Button
@@ -345,67 +338,114 @@ export const Compras: React.FC = () => {
                 </Table>
             </TableContainer>
 
-            <ModalCadastro 
-                open={openModal}
-                handleClose={handleClose}
+            <ModalCadastro
+                open={openModalEdit}
+                handleClose={handleCloseEdit}
                 formSubmit={save}
-                titulo="Adicionar novo Material ao Estoque"
-                tituloButtonAdd="Adicionar Material"
-                heightDialog="300px"
+                titulo="Solicitação de Materiais"
+                tituloButtonEdit="Confirmar"
+                edit={openModalEdit}
             >
-
                 <VForm ref={formRef} onSubmit={handleSave}>
-                <Box margin={1} display="flex" flexDirection="column">
-                    <Grid container direction="column" padding={2} spacing={2}>
-                        <Grid container item direction="row" spacing={1}>
-                            <FormSolicitacao addItem={addItem}/>
-                            <TableContainer>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Produto</TableCell>
-                                            <TableCell>Unidade de Medida</TableCell>
-                                            <TableCell>Quantidade</TableCell>
-                                            <TableCell>Observação</TableCell>
-                                            <TableCell>Ação</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {rowsItem.map(row => (
-                                            <TableRow key={row.produtoFK}>
-                                                <ItemSolicitacao 
-                                                    item={row} 
-                                                    buttonRm={
-                                                        <Button
-                                                            variant="contained"
-                                                            color="error"
-                                                            disableElevation
-                                                            onClick={() => removeItem(row.produtoFK)}
-                                                        >
-                                                            Remover
-                                                        </Button>
-                                                    }
-                                                />                                         
+                    <Box margin={1} display="flex" flexDirection="column">
+
+                        <Grid container direction="column" padding={2} spacing={2}>
+
+                            <Grid container item direction="row" spacing={1}>
+
+                                <Grid item md={3}>
+                                    <VTextField
+                                        name="numeroSol"
+                                        label="Nº Solicitação" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        disabled
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={3}>
+                                    <VTextField
+                                        name="dataSolicitacao"
+                                        label="Dt.Emissão" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        disabled
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={3}>
+                                    <VTextField
+                                        name="solicitante"
+                                        label="Solicitante" 
+                                        variant="outlined"
+                                        type="text"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        disabled
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid item md={3}>
+                                    <AutoCompleteStatus name="status" />
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid container item direction="row" spacing={1}>
+
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Produto</TableCell>
+                                                <TableCell>Unidade de Medida</TableCell>
+                                                <TableCell>Quantidade</TableCell>
+                                                <TableCell>Observação</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                    {rowsItem.length === 0 &&(
-                                        <caption>Lista Vazia</caption>
-                                    )}
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {solicitacao?.itensSolicitados.map(row => (
+                                                    <TableRow key={row.produto.idProduto}>
+                                                        <TableCell>{row.produto.nome}</TableCell>
+                                                        <TableCell>{row.produto.unidadeMedida.sigla}</TableCell>
+                                                        <TableCell>{row.quantidade}</TableCell>
+                                                        <TableCell>{row.observacao}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Box>
+                    </Box>
                 </VForm>
             </ModalCadastro>
-            <ModalSolicitacao 
-                open={openModalEdit} 
-                handleClose={handleCloseEdit}
-                heightDialog="300px"
-                solicitacao={solicitacao}
-                formSubmit={save}
-            />
 
             <Box sx={{
                 width: '20%',
