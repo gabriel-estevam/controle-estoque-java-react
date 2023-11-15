@@ -66,9 +66,6 @@ export const Compras: React.FC = () => {
     const { formRef, save } = useVForm();
     
     //@ts-ignore
-    const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario;
-    
-    //@ts-ignore
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
 
     const [openModalEdit, setOpenModalEdit] = useState(false);
