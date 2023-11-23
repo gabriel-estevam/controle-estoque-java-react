@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface ILayoutBasePaginaProps {
     barraFerramentas?: ReactNode;
-    children: ReactNode;
+    children?: ReactNode;
     titulo: string;
     subTitulo?: string;
     renderTabela: boolean;

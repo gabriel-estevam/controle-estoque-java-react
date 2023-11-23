@@ -112,6 +112,9 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
     //@ts-ignore
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialName;
 
+    //@ts-ignore
+    const role = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.role;
+
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -184,7 +187,60 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                          component="nav"
                          aria-labelledby="nested-list-subheader"
                         >
-                           {drawerOptions.map(drawerOption => (
+                           {
+                            drawerOptions.map(function(item) {
+                                if(item.label === "Home") {
+                                    return <ListItemLink
+                                    to={item.path}
+                                    key={item.path}
+                                    icon={item.icon}
+                                    label={item.label}
+                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                    ></ListItemLink>
+                                }
+                                if((role.toString() === 'ADMIN') || ( role.toString() === 'MANAGERS')) {
+                                    if((item.label === 'Estoque Materiais') || 
+                                        (item.label === 'Consultar Movimentação de Estoque') ||
+                                        (item.label === 'Compras' && role.toString() === 'MANAGERS') ||
+                                        (item.label === 'Movimentação de Estoque' && role.toString() === 'ADMIN')
+                                    ){
+                                        {console.log("aqui", role)}
+                                        return <ListItemLink
+                                        to={item.path}
+                                        key={item.path}
+                                        icon={item.icon}
+                                        label={item.label}
+                                        onClick={smDown ? toggleDrawerOpen : undefined}
+                                        ></ListItemLink>
+                                    }
+                                    if(item.label === 'Requisição de Materiais' && role.toString() === 'ADMIN') {
+                                        return <ListItemLink
+                                        to={item.path}
+                                        key={item.path}
+                                        icon={item.icon}
+                                        label={item.label}
+                                        onClick={smDown ? toggleDrawerOpen : undefined}
+                                        ></ListItemLink>
+                                    }
+                                } 
+                                else {
+                                    if((item.label === "Consultar Movimentação de Estoque") ||
+                                        (item.label === "Movimentação de Estoque") ||
+                                        (item.label === "Requisição de Materiais")
+                                    ) {
+                                        return <ListItemLink
+                                            to={item.path}
+                                            key={item.path}
+                                            icon={item.icon}
+                                            label={item.label}
+                                            onClick={smDown ? toggleDrawerOpen : undefined}
+                                            ></ListItemLink>
+                                    }
+                                }
+                                
+                            })
+                           /*drawerOptions.map(drawerOption => (
+
                                 <ListItemLink
                                      to={drawerOption.path}
                                      key={drawerOption.path}
@@ -192,22 +248,58 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                      label={drawerOption.label}
                                      onClick={smDown ? toggleDrawerOpen : undefined}
                                 ></ListItemLink>
-                            ))}
+                            )) */
+                            }
 
                             {
-                                <NestedListHeader>
-                                    {
-                                        drawerOptionsNestedList.map(drawerOptionsNestedList => (
-                                            <NestedListSubheader 
-                                                to={drawerOptionsNestedList.path}
-                                                key={drawerOptionsNestedList.path}
-                                                icon={drawerOptionsNestedList.icon}
-                                                label={drawerOptionsNestedList.label}
-                                                onClick={smDown ? toggleDrawerOpen : undefined}
-                                            />
-                                        ))
-                                    }
-                                </NestedListHeader>
+                                ((role.toString() === "ADMIN" ) || (role.toString() === "MANAGERS")) && (
+
+                                    <NestedListHeader>
+                                        {
+                                            drawerOptionsNestedList.map(function(item) {
+                                                if(item.label === "Usuários" && role.toString() === "ADMIN") {
+                                                    return <NestedListSubheader 
+                                                    to={item.path}
+                                                    key={item.path}
+                                                    icon={item.icon}
+                                                    label={item.label}
+                                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                                    />
+                                                } 
+                                                if((item.label !== "Usuários" && item.label !=="Filiais") && (role.toString() !== "ADMIN")) {
+                                                    return <NestedListSubheader 
+                                                    to={item.path}
+                                                    key={item.path}
+                                                    icon={item.icon}
+                                                    label={item.label}
+                                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                                    />
+                                                }
+                                                if(role.toString() === "ADMIN") {
+                                                    if(item.label !== "Filiais" && item.label !== "Produtos" && item.label !== "Fornecedores") {
+                                                        return <NestedListSubheader 
+                                                        to={item.path}
+                                                        key={item.path}
+                                                        icon={item.icon}
+                                                        label={item.label}
+                                                        onClick={smDown ? toggleDrawerOpen : undefined}
+                                                        />
+                                                    }
+                                                }
+                                            })
+                                           /* drawerOptionsNestedList.map(drawerOptionsNestedList => (
+                                                <NestedListSubheader 
+                                                    to={drawerOptionsNestedList.path}
+                                                    key={drawerOptionsNestedList.path}
+                                                    icon={drawerOptionsNestedList.icon}
+                                                    label={drawerOptionsNestedList.label}
+                                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                                />
+                                            )) */
+
+                                        }
+                                    </NestedListHeader>
+                                )
                             }
                         </List>
 

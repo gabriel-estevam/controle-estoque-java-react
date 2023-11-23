@@ -30,13 +30,14 @@ import {
 
 // @ts-ignore
 const PrivateRoute = ({ children, redirectTo }) => {
-    const isAuthenticated = localStorage.getItem("token") !== null;
-    return isAuthenticated ? <Home>{children}</Home>  : <Navigate to={redirectTo} />;
-  };
+  const isAuthenticated = localStorage.getItem("token") !== null;
+  return isAuthenticated ? <Home>{children}</Home>  : <Navigate to={redirectTo} />;
+};
 
 export const AppRoutes: React.FC = () => {
     
   const { setDrawerOptions, setDrawerOptionsNestedList } = useDrawerContext();
+
   useEffect(() => {
     setDrawerOptions([
       {
@@ -80,23 +81,23 @@ export const AppRoutes: React.FC = () => {
       {
         path: '/usuario',
         label: 'Usuários',
-        icon: <FaUsers color='#b7b9bb'/>
+        icon: <FaUsers color='#b7b9bb'/>,
       },
       {
         path: '/filial',
         label: 'Filiais',
-        icon: <FaBuilding color='#b7b9bb'/>
+        icon: <FaBuilding color='#b7b9bb'/>,
       },
 
       {
         path: '/produto',
         label: 'Produtos',
-        icon: <FaTags color='#b7b9bb'/>
+        icon: <FaTags color='#b7b9bb'/>,
       },
       {
         path: '/fornecedor',
         label: 'Fornecedores',
-        icon: <FaHandshake color='#b7b9bb'/>
+        icon: <FaHandshake color='#b7b9bb'/>,
       },
     ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,6 +105,8 @@ export const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
+      <Route path="/login" element={<Login/>} />
+      <Route path="*" element={<Navigate to="/login" />} />
       <Route 
         path="/home" 
         element={
@@ -188,8 +191,7 @@ export const AppRoutes: React.FC = () => {
           </PrivateRoute>
         } 
       />
-      <Route path="/login" element={<Login/>} />
-      <Route path="*" element={<Navigate to="/login" />} />
+    
     </Routes>
   );
 }

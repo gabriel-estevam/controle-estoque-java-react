@@ -36,8 +36,19 @@ public class UsuarioServiceImpl implements UserDetailsService {
 
         Usuario usuario = repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario [ " + username + "]Não encontrado"));
-
-        String[] roles = usuario.getRole().getCode() == 1 ? new String[] { "ADMIN", "USER" } : new String[] { "USER" };
+        
+        String roles = "";
+        
+        if(usuario.getRole().getCode() == 1) {
+            roles = "ADMIN";
+        }
+        else if(usuario.getRole().getCode() == 2) {
+            roles = "MANAGERS";
+        }
+        else {
+            roles = "USER";
+        }
+        //String[] roles = usuario.getRole().getCode() == 1 ? new String[] { "ADMIN", "USER" } : new String[] { "USER" };
         boolean isLocked = usuario.getStatus().getCode() == 0 ? true : false;
         return User.builder()
                 .username(usuario.getEmail())
