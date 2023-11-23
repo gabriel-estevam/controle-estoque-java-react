@@ -219,7 +219,7 @@ export const Filiais: React.FC = () => {
                     handleDialog({ action: 'I', type: 'ERRO', message: result.message });
                 }
                 else {
-                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Material inserido com sucesso!' });
+                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Filial inserida com sucesso!' });
                 }
             });
            

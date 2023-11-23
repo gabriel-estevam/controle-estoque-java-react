@@ -12,7 +12,7 @@ type TAutoCompleteProps = {
 }
 
 export const AutoCompleteTipoUsuario: React.FC<TAutoCompleteProps> = ({ name }) => {
-    const opcoesValue = [{idUsuario: 1, name: 'Usuário'}, {idUsuario: 2, name: 'Administrador'}];
+    const opcoesValue = [{idUsuario: 1, name: 'Usuário'}, {idUsuario: 2, name: 'Administrador'}, {idUsuario: 3, name: "Gerente"}];
     
     const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
 

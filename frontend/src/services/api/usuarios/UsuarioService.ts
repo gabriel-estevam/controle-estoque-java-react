@@ -82,8 +82,16 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
     try {
        const { data } = await Api.get(`/users/${id}`);
 
-       if(data) {
-        data.role === "ADMIN" ? data.role = 1 : data.role = 0;
+       if(data) 
+       {
+        if(data.role === 1) {
+            data.role = 0;
+        } else if(data.role === 2) {
+            data.role = 1;
+        } else {
+            //@ts-ignore
+            dados.role = 2;
+        }
         data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
         return data;
        }
@@ -99,7 +107,14 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 
 const create = async (dados: Omit<IDetalheUsuario, 'idUsuario'>): Promise<number | Error> => {
     try {
-        dados.role === 1 ? dados.role = 0 : dados.role = 1;
+        if(dados?.role === 1) {
+            dados.role = 0;
+        } else if(dados?.role === 2) {
+            dados.role = 1;
+        } else {
+            //@ts-ignore
+            dados.role = 2;
+        }
         dados.email.toLowerCase();
         const { data } = await Api.post<IDetalheUsuario>('/users', dados);
         if(data) {
@@ -117,9 +132,16 @@ const create = async (dados: Omit<IDetalheUsuario, 'idUsuario'>): Promise<number
 
 const updateById = async (id?: number, dados?: Omit<IDetalheUsuarioEdit, 'password' & 'idUsuario'>): Promise<number | Error | undefined> => {
     try {
-
+        if(dados?.role === 1) {
+            dados.role = 0;
+        } else if(dados?.role === 2) {
+            dados.role = 1;
+        } else {
+            //@ts-ignore
+            dados.role = 2;
+        }
         //@ts-ignore
-        dados.role === 1 ? dados.role = 0 : dados.role = 1;
+       // dados.role === 1 ? dados.role = 0 : dados.role = 1;
         dados?.email.toLocaleLowerCase();
         const { data } = await Api.put<IDetalheUsuarioEdit>(`/users/${id}`, dados);
         

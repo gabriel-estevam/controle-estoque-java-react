@@ -276,7 +276,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                                     />
                                                 }
                                                 if(role.toString() === "ADMIN") {
-                                                    if(item.label !== "Filiais" && item.label !== "Produtos" && item.label !== "Fornecedores") {
+                                                    if(item.label !== "Produtos" && item.label !== "Fornecedores") {
                                                         return <NestedListSubheader 
                                                         to={item.path}
                                                         key={item.path}
