@@ -48,7 +48,7 @@ public class EstoqueEntradaService {
     public List<EstoqueEntrada> findAll() {
         return repository.findAll();
     }
-
+    
     public void delete(Long id) {
         try {
             repository.deleteById(id);
