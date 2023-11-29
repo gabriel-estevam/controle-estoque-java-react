@@ -13,6 +13,7 @@ interface ILayoutBasePaginaProps {
     subTitulo?: string;
     renderTabela: boolean;
     totalElements?: number;
+    relatorios?: boolean;
 };
 
 export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> = 
@@ -21,7 +22,8 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> =
     subTitulo, 
     barraFerramentas, 
     renderTabela, 
-    totalElements
+    totalElements,
+    relatorios = false
 }) => {
     const navigate = useNavigate();
     const logout = () => { localStorage.removeItem("token"); navigate("/"); };
@@ -121,7 +123,11 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> =
 
                 </Box>
             )}
-                
+            {
+                relatorios &&(
+                    barraFerramentas
+                )
+            }  
         </Box>
     );
 };

@@ -14,7 +14,8 @@ import {
   MovimentacaoEstoque, 
   ConsultaEstoque, 
   Solicitacao, 
-  Compras 
+  Compras, 
+  RelatorioProdutos
 } from '../pages';
 
 import { 
@@ -36,7 +37,7 @@ const PrivateRoute = ({ children, redirectTo }) => {
 
 export const AppRoutes: React.FC = () => {
     
-  const { setDrawerOptions, setDrawerOptionsNestedList } = useDrawerContext();
+  const { setDrawerOptions, setDrawerOptionsNestedList, setDrawerOptionsNestedListReports } = useDrawerContext();
 
   useEffect(() => {
     setDrawerOptions([
@@ -98,6 +99,17 @@ export const AppRoutes: React.FC = () => {
         path: '/fornecedor',
         label: 'Fornecedores',
         icon: <FaHandshake color='#b7b9bb'/>,
+      },
+    ])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setDrawerOptionsNestedListReports([
+      {
+        path: '/relatorio/produto',
+        label: 'Relatórios de Produtos',
+        icon: <FaTags color='#b7b9bb'/>,
       },
     ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -188,6 +200,15 @@ export const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute redirectTo="/">
             <Fornecedores/>
+          </PrivateRoute>
+        } 
+      />
+
+      <Route 
+        path="/relatorio/produto" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <RelatorioProdutos/>
           </PrivateRoute>
         } 
       />
