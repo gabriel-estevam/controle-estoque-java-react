@@ -23,12 +23,14 @@ public class RelatorioController {
     private JasperService service;
 
     @GetMapping("/pdf")
-    public void download(@RequestParam(name = "idFilial", required = false) Long idFilial,
+    public void download(
+        @RequestParam(name = "rpt", required = false) String reportName,
+        @RequestParam(name = "idFilial", required = false) int idFilial,
         HttpServletResponse response
     ) throws JRException, IOException, SQLException {
-        byte[] bytes = service.exportarPDF("Produtos");
+        byte[] bytes = service.exportarPDF(reportName,idFilial);
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
-		response.setHeader("Content-disposition", "attachment;filename=pokemons.pdf");
+		response.setHeader("Content-disposition", "attachment; filename="+reportName+".pdf");
 		response.getOutputStream().write(bytes);
     }
 }

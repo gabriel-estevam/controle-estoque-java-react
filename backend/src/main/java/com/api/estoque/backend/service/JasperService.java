@@ -31,14 +31,14 @@ public class JasperService {
   @Autowired
   private JdbcTemplate jdbcTemplate;
   
-  public byte[] exportarPDF(String filename) throws JRException, IOException, SQLException {
+  public byte[] exportarPDF(String filename, int idFilial) throws JRException, IOException, SQLException {
     byte[] bytes = null;
     Resource resource = resourceLoader.getResource(JASPER_DIRETORIO + filename + JASPER_SUFIXO);
     InputStream inputStream = resource.getInputStream();
     Map<String, Object> params = new HashMap<>();
     params.put("IMAGEM_DIRETORIO", JASPER_DIRETORIO);
     params.put("SUB_DIRETORIO", JASPER_DIRETORIO);
-    params.put("idFilial", 1);
+    params.put("idFilial", idFilial);
     Connection connection = jdbcTemplate.getDataSource().getConnection();
     JasperPrint print = JasperFillManager.fillReport(inputStream, params, connection);
     bytes = JasperExportManager.exportReportToPdf(print);

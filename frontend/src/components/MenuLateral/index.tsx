@@ -13,7 +13,7 @@ import {
     useMediaQuery
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { FaListAlt } from 'react-icons/fa';
+import { FaListAlt, FaChartPie } from 'react-icons/fa';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDrawerContext } from '../../contexts/DrawerContext';
 import { useNavigate, useResolvedPath, useMatch } from 'react-router-dom';
@@ -104,6 +104,32 @@ const NestedListHeader: React.FC<Props> = ({ children })  => {
     );
 };
 
+const ReportsNestedListHeader: React.FC<Props> = ({ children })  => {
+    const [open, setOpen] = useState(false);
+    
+    const handleClickOpenList = () => {
+        setOpen(!open);
+    };
+    return (
+        <>
+            <ListItemButton onClick={handleClickOpenList}>
+                <ListItemIcon>
+                    <Icon>
+                        <FaChartPie color="#b7b9bb" />
+                    </Icon>
+                </ListItemIcon>
+                <ListItemText primary="Relatórios" />
+                {open ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    { children }
+                </List>
+            </Collapse>
+        </>
+    );
+};
+
 export const MenuLateral: React.FC<Props> = ({ children }) => {
 //referenciado o Props nessa função para pegar os childrens de dentro desse componente
     //@ts-ignore
@@ -118,7 +144,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const { isDrawerOpen, toggleDrawerOpen, drawerOptions, drawerOptionsNestedList } = useDrawerContext();
+    const { isDrawerOpen, toggleDrawerOpen, drawerOptions, drawerOptionsNestedList, drawerOptionsNestedListReports } = useDrawerContext();
 
     return (
         <>
@@ -204,7 +230,6 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                         (item.label === 'Compras' && role.toString() === 'MANAGERS') ||
                                         (item.label === 'Movimentação de Estoque' && role.toString() === 'ADMIN')
                                     ){
-                                        {console.log("aqui", role)}
                                         return <ListItemLink
                                         to={item.path}
                                         key={item.path}
@@ -239,16 +264,7 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                 }
                                 
                             })
-                           /*drawerOptions.map(drawerOption => (
 
-                                <ListItemLink
-                                     to={drawerOption.path}
-                                     key={drawerOption.path}
-                                     icon={drawerOption.icon}
-                                     label={drawerOption.label}
-                                     onClick={smDown ? toggleDrawerOpen : undefined}
-                                ></ListItemLink>
-                            )) */
                             }
 
                             {
@@ -287,18 +303,29 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                                     }
                                                 }
                                             })
-                                           /* drawerOptionsNestedList.map(drawerOptionsNestedList => (
-                                                <NestedListSubheader 
-                                                    to={drawerOptionsNestedList.path}
-                                                    key={drawerOptionsNestedList.path}
-                                                    icon={drawerOptionsNestedList.icon}
-                                                    label={drawerOptionsNestedList.label}
-                                                    onClick={smDown ? toggleDrawerOpen : undefined}
-                                                />
-                                            )) */
 
                                         }
                                     </NestedListHeader>
+                                )
+                            }
+
+                            {
+                                //(role.toString() === "MANAGERS") && (
+                                ((role.toString() === "ADMIN" ) || (role.toString() === "MANAGERS")) && (
+
+                                    <ReportsNestedListHeader>
+                                        {
+                                            drawerOptionsNestedListReports.map(function(item) {
+                                                return <NestedListSubheader 
+                                                to={item.path}
+                                                key={item.path}
+                                                icon={item.icon}
+                                                label={item.label}
+                                                onClick={smDown ? toggleDrawerOpen : undefined}
+                                                />
+                                            })
+                                        }
+                                    </ReportsNestedListHeader>
                                 )
                             }
                         </List>
