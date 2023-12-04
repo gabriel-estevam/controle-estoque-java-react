@@ -15,7 +15,8 @@ import {
   ConsultaEstoque, 
   Solicitacao, 
   Compras, 
-  RelatorioProdutos
+  RelatorioProdutos,
+  Recebimento
 } from '../pages';
 
 import { 
@@ -26,7 +27,8 @@ import {
   FaHandshake, 
   FaBoxes, 
   FaBoxOpen, 
-  FaCartPlus 
+  FaCartPlus, 
+  FaCalendarCheck
 } from 'react-icons/fa';
 
 // @ts-ignore
@@ -72,6 +74,11 @@ export const AppRoutes: React.FC = () => {
         path: '/estoque/compras',
         label: 'Compras',
         icon: <FaCartPlus color='#b7b9bb'/>,
+      },
+      {
+        path: '/estoque/recebimento',
+        label: 'Recebimento',
+        icon: <FaCalendarCheck color='#b7b9bb'/>,
       },
     ]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,6 +156,15 @@ export const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute redirectTo="/">
             <Compras/>  
+          </PrivateRoute>
+        } 
+      />
+
+      <Route 
+        path="/estoque/recebimento" 
+        element={
+          <PrivateRoute redirectTo="/">
+            <Recebimento/>  
           </PrivateRoute>
         } 
       />

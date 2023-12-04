@@ -1,8 +1,11 @@
 package com.api.estoque.backend.service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,7 +51,15 @@ public class EstoqueEntradaService {
     public List<EstoqueEntrada> findAll() {
         return repository.findAll();
     }
-    
+
+    public EstoqueEntrada findByIdFilial(Long idFilial, Long idProduto) {
+        Optional<EstoqueEntrada> estoque = repository.findByFilial_idFilialAndItensEstoque_id_produto_idProduto(
+            idFilial, 
+            idProduto
+        );
+        return estoque.orElseThrow(() -> new ResourceNotFoundException(idFilial));
+    }
+
     public void delete(Long id) {
         try {
             repository.deleteById(id);
@@ -72,16 +83,34 @@ public class EstoqueEntradaService {
     public EstoqueEntrada fromDto(EstoqueEntradaDTO dto) {
         return EstoqueExists(dto);
     }
+    
+    public void recebimentoMaterial(EstoqueEntrada estoque, Double newQtde, Instant dataEntrada) {
+        try {
+            EstoqueEntrada entity = repository.getReferenceById(estoque.getIdEstoque());
+            List<ItemEstoqueEntrada> itens = entity.getItemEstoque().stream().collect(Collectors.toList());
+
+            Double qtdAtual = itens.get(0).getQuantidadeAtual();
+            Double qtdAdd = (qtdAtual + newQtde);
+            Long idProduto = itens.get(0).getProduto().getIdProduto();
+            
+            entity.setDataEntrada(dataEntrada);
+            repository.save(entity);
+            
+            itemEstoqueEntradaRepository.update(qtdAdd, idProduto);
+        } 
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(estoque.getIdEstoque());
+        }
+    }
 
     private EstoqueEntrada EstoqueExists(EstoqueEntradaDTO dto) {
         Optional<EstoqueEntrada> estoqueEntrada = null;
         Produto produto = findProdutoFromItem(dto);
         Fornecedor fornecedor = findFornecedorFromItem(dto);
         if(dto.getIdEstoque() == null) {
-            estoqueEntrada = repository.findByFilial_idFilialAndItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(
-                produto.getIdProduto(),
-                fornecedor.getIdFornecedor(),
-                dto.getFilialFK()
+            estoqueEntrada = repository.findByFilial_idFilialAndItensEstoque_id_produto_idProduto(
+                dto.getFilialFK(),
+                produto.getIdProduto()
             );
         }
 

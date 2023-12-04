@@ -11,5 +11,5 @@ import com.api.estoque.backend.model.EstoqueEntrada;
 @Repository
 public interface EstoqueEntradaRepository extends JpaRepository<EstoqueEntrada, Long> {
     public Page<EstoqueEntrada> findByFilial_idFilialAndItensEstoque_id_produto_nomeContaining(Long filial, String nome, Pageable pageable);
-    public Optional<EstoqueEntrada> findByFilial_idFilialAndItensEstoque_id_produto_idProdutoAndItensEstoque_fornecedor_idFornecedor(Long filial, Long produto, Long fornecedor);    
+    public Optional<EstoqueEntrada> findByFilial_idFilialAndItensEstoque_id_produto_idProduto(Long filial, Long produto);    
 }

@@ -48,6 +48,7 @@ const getAllContaing = async (page = 0, filter?: string, filial?: number): Promi
     const response = await Api.get(urlRelativa);
 
     if(response) {
+        console.log(response.data.content)
         return {
           content: response.data.content,
           totalElements: Number(response.data.totalElements),

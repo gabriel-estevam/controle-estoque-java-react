@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-    LinearProgress, 
-    Pagination, 
     Table, 
     TableBody, 
     TableCell, 
-    TableFooter, 
     TableHead, 
     TableRow,
     Box, 
@@ -19,12 +16,11 @@ import {
 from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { IVFormErrors, VForm, useVForm } from '../../forms';
+import { VDateTimeField, VForm, useVForm } from '../../forms';
 
-import { AutoCompleteStatus, BarraFerramentas } from '../../components';
+import { BarraFerramentas } from '../../components';
 
 import { LayoutBasePagina } from '../layouts';
-import { Environment } from '../../environment/index';
 
 import { useDebounce } from '../../hooks';
 import { ModalCadastro } from '../../components';
@@ -37,8 +33,7 @@ import { DecodeTokenJWT } from '../../services/api/auth/decode/DecodeTokenJWT';
 import { IlistagemSolicitacao, SolicitacaoMateriais } from '../../services/api/solicitacao/SolicitacaoMateriais';
 import { VTextField } from '../../forms/VTextField';
 
-import * as yup from 'yup';
-import { ComprasService } from '../../services/api/solicitacao/Compras';
+import { RecebimentoService } from '../../services/api/recebimento/RecebimentoService';
 
 interface IDialogHandle {
     action: "I" | "D";
@@ -46,29 +41,14 @@ interface IDialogHandle {
     message: string;
 };
 
-interface IFormData {
-    numeroSol: number;
-    dataSolicitacao: string;
-    solicitante: string;
-    status: number;
-    statusPedido: number;
-};
-
-
-const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-    numeroSol: yup.number().required(),
-    dataSolicitacao: yup.string().required(),
-    solicitante: yup.string().required(),
-    status: yup.number().required(),
-    statusPedido: yup.number().required(),
-});
-
-export const Compras: React.FC = () => {
+export const Recebimento: React.FC = () => {
 
     const { formRef, save } = useVForm();
     
     //@ts-ignore
     const filialToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.filialFK;
+    //@ts-ignore
+    const usuarioToken = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.idUsuario;
 
     const [openModalEdit, setOpenModalEdit] = useState(false);
 
@@ -81,10 +61,6 @@ export const Compras: React.FC = () => {
     const[solicitacao, setSolicitacao] = useState<IlistagemSolicitacao>();
 
     const [isLoading, setIsLoading] = useState(true); //verificar se foi carregado os dados no backend
-    
-    const [totalElements, setTotalElements] = useState(0);
-    
-    const [totalPages, setTotalPages] = useState(0);
 
     const [open, setOpen] = useState(false);
     const [AlertTipo, setAlertTipo] = useState(false);
@@ -110,46 +86,49 @@ export const Compras: React.FC = () => {
         setOpenModalEdit(false);
     };
 
-    const getSolicitacaoById = (id: number) => {
-        SolicitacaoMateriais.getById(id)
-        .then((result) => {
-            if(result instanceof Error) {
-                alert(result.message);
-            }
-            else {
-                setSolicitacao(result);
-                let data = result.dataSolicitacao;
-                let status = result.status;
-                
-                let statusSol: number;
-
-                if(status === 'ABERTA') {
-                    statusSol = 3;
-                } else if(status === 'APROVADA') {
-                    statusSol = 1;
-                } else {
-                    statusSol = 2;
+    const getSolicitacaoById = (id: number | undefined | null) => {
+        if(id !== undefined) {
+            //@ts-ignore
+            SolicitacaoMateriais.getById(id)
+            .then((result) => {
+                if(result instanceof Error) {
+                    alert(result.message);
                 }
-
-                const dataEmissao = new Date(data).toLocaleString().replace(/,/,'').split(' ')[0];
-                formRef.current?.setData({
-                    idSol: result.idSol,
-                    numeroSol: result.numeroSol,
-                    dataSolicitacao: dataEmissao,
-                    solicitante: result.solicitante.name,
-                    solicitanteFK: result.solicitante.idUsuario,
-                    status: statusSol,
-                    filial: result.filial.idFilial,
-                });
-            }
-        });
+                else {
+                    setSolicitacao(result);
+                    let data = result.dataSolicitacao;
+                    let status = result.status;
+                    
+                    let statusSol: number;
+    
+                    if(status === 'ABERTA') {
+                        statusSol = 3;
+                    } else if(status === 'APROVADA') {
+                        statusSol = 1;
+                    } else {
+                        statusSol = 2;
+                    }
+    
+                    const dataEmissao = new Date(data).toLocaleString().replace(/,/,'').split(' ')[0];
+                    formRef.current?.setData({
+                        idSol: result.idSol,
+                        numeroSol: result.numeroSol,
+                        dataSolicitacao: dataEmissao,
+                        solicitante: result.solicitante.name,
+                        solicitanteFK: result.solicitante.idUsuario,
+                        status: statusSol,
+                        filial: result.filial.idFilial,
+                    });
+                }
+            });
+        }
     };
 
     useEffect(() => {
         debounce(()=> {
             setIsLoading(true);
 
-            SolicitacaoMateriais.getAllContaing(paginaAPI, busca, filialToken)
+            SolicitacaoMateriais.getByStatusAndIdFilial(filialToken)
             .then((result) => {
                 setIsLoading(false);
     
@@ -157,8 +136,6 @@ export const Compras: React.FC = () => {
                     alert(result.message);
                 }
                 else {
-                    setTotalElements(result.totalElements);
-                    setTotalPages(result.totalPages);
                     setRows(result.content);
                 }
             });
@@ -178,75 +155,49 @@ export const Compras: React.FC = () => {
         }
     }
 
-    const parseJsonSolicitacao = (dados: IlistagemSolicitacao) => {
-        const jsonSolicitacao = dados;
-
-        return {
-            updatedAt: jsonSolicitacao.updatedAt.toString(),
-            status: 0,
-            statusPedido: 0,
-            filialFK: jsonSolicitacao.filial.idFilial,
-            solicitanteFK: jsonSolicitacao.solicitante.idUsuario,
+    const handleSave = (dado: any) => {
+        const state = {
+            notaEntrada: 0,
+            dataEntrada: '',
+            observacao: 'OK',
+            solicitacaoFK: 0,
+            usuarioFK: 0,
+            filialFK: 0,
         }
-    }
-    const handleSave = (dados: IFormData) => {
-        if(dados.status === 1) {
-            dados.statusPedido = 0;
+        const dados = state;
+        const dataHora = new Date().toISOString();
+        dados.notaEntrada = dado.notaEntrada;
+        dados.dataEntrada = dataHora.slice(0,19)+"Z";
+        dados.solicitacaoFK = dado.numeroSol;
+        dados.usuarioFK = usuarioToken;
+        dados.filialFK = filialToken;
+        if((dado.notaEntrada === "") || (dado.notaEntrada === undefined)) {
+            formRef.current?.setFieldError("notaEntrada", "Preencha o campo!")
         }
-        
-        else if(dados.status === 2) {
-            dados.statusPedido = 2;
-        }
-
-        else if(dados.status === 3) {
-            dados.statusPedido = 3;
-        }
-
-        formValidationSchema
-        .validate(dados, {abortEarly: false})
-        .then((dadosValidados) => {
-            setIsLoading(true);
-            const dataHora = new Date().toISOString();
-            
+        else {
+            console.log(dados)
             //@ts-ignore
-            const dadosSolicitacao = parseJsonSolicitacao(solicitacao);
-            dadosSolicitacao.updatedAt = dataHora.slice(0,19)+"Z"
-            dadosSolicitacao.status = dadosValidados.status
-            dadosSolicitacao.statusPedido = dadosValidados.statusPedido
-
-            //@ts-ignore
-            ComprasService.updateSolicitacao(solicitacao?.idSol, dadosSolicitacao)
+            RecebimentoService.create(dados)
             .then((result) => {
                 setIsLoading(false);
                 if(result instanceof Error) {
                     handleDialog({ action: 'I', type: 'ERRO', message: result.message });
                 }
                 else {
-                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Sucesso!' });
+                    handleDialog({ action: 'I', type: 'SUCESSO', message: 'Requisção realizada com sucesso!' });
                 }
-            });
-        })
-        .catch((errors: yup.ValidationError) => {
-            const validationErrors: IVFormErrors = {};
-            errors.inner.forEach(error => {
-                if(!error.path) return; //se path undefined não executa que esta abaixo
-                validationErrors[error.path] = error.message;
-            });
-
-            formRef.current?.setErrors(validationErrors);
-        });
+            }); 
+        }
     };
 
     return (
         <LayoutBasePagina
             renderTabela
-            titulo="Requisição de Materiais"
+            titulo="Recebimento de Materiais"
             subTitulo="Materiais Solicitados"
-            totalElements={(totalElements >=0 && totalElements < 3 ? 32 : 62) || (totalElements > 5 ? 65 : 65)}
             barraFerramentas={
                 <BarraFerramentas
                     mostrarBotaoNovo={false}
-                    mostrarInputBusca
                     textoDaBusca={busca}
                     aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1', paginaAPI: '0' }, { replace: true })}
                 />
@@ -259,9 +210,6 @@ export const Compras: React.FC = () => {
                             <TableCell>Status</TableCell>
                             <TableCell>Número Solicitação</TableCell>
                             <TableCell>Data de Emissão</TableCell>
-                            <TableCell>Solicitante</TableCell>
-                            <TableCell>Status.Pedido</TableCell>
-                            <TableCell>Data de Atualização</TableCell>
                             <TableCell>Detalhes</TableCell>
                         </TableRow>
                     </TableHead>
@@ -299,9 +247,6 @@ export const Compras: React.FC = () => {
                                 </TableCell>
                                 <TableCell>{row.numeroSol}</TableCell>
                                 <TableCell>{new Date(row.dataSolicitacao).toLocaleString().replace(/,/,'')}</TableCell>
-                                <TableCell>{row.solicitante.name}</TableCell>
-                                <TableCell>{row.statusPedido}</TableCell>
-                                <TableCell>{new Date(row.updatedAt).toLocaleString().replace(/,/,'')}</TableCell>
                                 <TableCell>
                                     <Button
                                         variant="text"
@@ -309,45 +254,15 @@ export const Compras: React.FC = () => {
                                         disableElevation                             
                                         onClick={() => { handleOpenEdit(); getSolicitacaoById(row.idSol); }}
                                     >
-                                        ...
+                                    ...
                                     </Button>
+                                    
                                 </TableCell>
+                                
                             </TableRow>
                         ))}
                     </TableBody>
 
-                    {totalElements === 0 && !isLoading && (
-                        <caption>{Environment.LISTAGEM_VAZIA}</caption>
-                    )}
-
-                    <TableFooter>
-                        {isLoading && (
-                            <TableRow>
-                                <TableCell colSpan={6}>
-                                    <LinearProgress variant='indeterminate' />
-                                </TableCell>
-                            </TableRow>
-                        )}
-
-                        {totalPages > 0 && totalElements > 5 && (
-                            <TableRow>
-                                <TableCell colSpan={6}>
-                                    <Pagination
-                                        page={pagina}
-                                        count={totalPages}
-                                        onChange={
-                                            (_, newPage) => 
-                                            setSearchParams({ 
-                                                busca, pagina: (newPage).toString(), 
-                                                paginaAPI: (newPage = newPage - 1).toString()}, 
-                                            { replace: true }
-                                            )
-                                        }
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableFooter>
                 </Table>
             </TableContainer>
 
@@ -355,8 +270,8 @@ export const Compras: React.FC = () => {
                 open={openModalEdit}
                 handleClose={handleCloseEdit}
                 formSubmit={save}
-                titulo="Solicitação de Materiais"
-                tituloButtonEdit="Confirmar"
+                titulo="Recebimento de Materiais"
+                tituloButtonEdit="Confirmar Recebimento"
                 edit={openModalEdit}
             >
                 <VForm ref={formRef} onSubmit={handleSave}>
@@ -366,10 +281,10 @@ export const Compras: React.FC = () => {
 
                             <Grid container item direction="row" spacing={1}>
 
-                                <Grid item md={3}>
+                                <Grid item md={2}>
                                     <VTextField
                                         name="numeroSol"
-                                        label="Nº Solicitação" 
+                                        label="Solicitação" 
                                         variant="outlined"
                                         type="text"
                                         sx={{
@@ -384,8 +299,7 @@ export const Compras: React.FC = () => {
                                         fullWidth
                                     />
                                 </Grid>
-
-                                <Grid item md={3}>
+                                <Grid item md={2}>
                                     <VTextField
                                         name="dataSolicitacao"
                                         label="Dt.Emissão" 
@@ -423,8 +337,32 @@ export const Compras: React.FC = () => {
                                     />
                                 </Grid>
 
+                                <Grid item md={2}>
+                                    <VTextField
+                                        name="notaEntrada"
+                                        label="Nota.Entrada" 
+                                        variant="outlined"
+                                        type="number"
+                                        
+                                        fullWidth
+                                    />
+                                </Grid>
+
                                 <Grid item md={3}>
-                                    <AutoCompleteStatus name="status" />
+                                    <VDateTimeField
+                                        name="dataEntrada"
+                                        variant="outlined"
+                                        sx={{
+                                            "& input": {border: 'none', 
+                                                        margin: 2, 
+                                                        padding: 1, 
+                                                        paddingY:0,
+                                                        paddingRight: 0
+                                            },
+                                        }}
+                                        disabled
+                                        fullWidth
+                                    />
                                 </Grid>
 
                             </Grid>

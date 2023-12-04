@@ -224,6 +224,16 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
                                     onClick={smDown ? toggleDrawerOpen : undefined}
                                     ></ListItemLink>
                                 }
+
+                                if(item.label === "Recebimento") {
+                                    return <ListItemLink
+                                    to={item.path}
+                                    key={item.path}
+                                    icon={item.icon}
+                                    label={item.label}
+                                    onClick={smDown ? toggleDrawerOpen : undefined}
+                                    ></ListItemLink>
+                                }
                                 if((role.toString() === 'ADMIN') || ( role.toString() === 'MANAGERS')) {
                                     if((item.label === 'Estoque Materiais') || 
                                         (item.label === 'Consultar Movimentação de Estoque') ||

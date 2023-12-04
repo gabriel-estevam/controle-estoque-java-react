@@ -203,10 +203,12 @@ export const Solicitacao: React.FC = () => {
             solicitanteFK: usuarioToken.idUsuario,
             filialFK: filialToken,
             status: 0,
+            statusPedido: 0,
             dataSolicitacao: '',
             updatedAt: '',
             itensSolicitacao: itensSolicitacao,
         }
+        
         const dados = state;
         dados.dataSolicitacao = dataHora.slice(0,19)+"Z";
         dados.updatedAt = dataHora.slice(0,19)+"Z";
@@ -214,6 +216,7 @@ export const Solicitacao: React.FC = () => {
         dados.filialFK = filialToken;
         dados.status = 0;
         dados.itensSolicitacao = itensSolicitacao;
+        dados.statusPedido = 3;
 
         if(itensSolicitacao.length === 0) {
             return;

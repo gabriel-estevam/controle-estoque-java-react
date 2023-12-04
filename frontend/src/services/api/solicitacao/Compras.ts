@@ -3,8 +3,9 @@ import { Api } from "../axios-config";
 interface IDados {
     updatedAt: string;
     status: number;
+    statusPedido: number;
     filialFK: number;
-    solicitanteFK: number
+    solicitanteFK: number;
 }
 
 const updateSolicitacao = async(id: number, dados: IDados): Promise< void | Error> => {
@@ -15,7 +16,7 @@ const updateSolicitacao = async(id: number, dados: IDados): Promise< void | Erro
         if(status === 3) {
             dados.status = 0;
         }
-
+        
         await Api.put<IDados>(`/solicitacao/${id}`, dados);
     }
 

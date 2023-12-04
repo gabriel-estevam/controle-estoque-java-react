@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.api.estoque.backend.model.Solicitacao;
+import com.api.estoque.backend.model.enums.PedidoStatusOption;
 import com.api.estoque.backend.model.enums.SolicitacaoStatusOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +24,10 @@ public class SolicitacaoDTO {
     private Instant updatedAt;
 
     private Integer status;
+
+    @JsonProperty("statusPedido")
+    private Integer statusPedido;
+
     private UserDTO solicitante;
 
     @JsonProperty("solicitanteFK")
@@ -46,9 +51,11 @@ public class SolicitacaoDTO {
         
         UserDTO solicitanteDTO = new UserDTO(obj.getSolicitante());
         filialFK = obj.getFilial().getIdFilial();
+        
         setSolicitante(solicitanteDTO);
+        
         setStatus(obj.getStatus());
-
+        setStatusPedido(obj.getStatusPedido());
         itensSolicitacao = obj.getItensSolicitados()
             .stream()
             .map(x -> new ItemSolicitacaoDTO(x))
@@ -128,6 +135,16 @@ public class SolicitacaoDTO {
     public void setStatus(SolicitacaoStatusOption status) {
         if(status != null) {
             this.status = status.getCode();
+        }
+    }
+
+     public PedidoStatusOption getStatusPedido() {
+        return PedidoStatusOption.valueOf(statusPedido);
+    }
+
+    public void setStatusPedido(PedidoStatusOption statusPedido) {
+        if(statusPedido != null) {
+            this.statusPedido = statusPedido.getCode();
         }
     }
 }

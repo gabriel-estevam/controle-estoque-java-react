@@ -83,17 +83,26 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
        const { data } = await Api.get(`/users/${id}`);
 
        if(data) 
-       {
-        if(data.role === 1) {
-            data.role = 0;
-        } else if(data.role === 2) {
-            data.role = 1;
-        } else {
-            //@ts-ignore
-            dados.role = 2;
-        }
-        data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
-        return data;
+       {    
+           switch (data.role) {
+            case "ADMIN":
+                data.role = 2;    
+            break;
+
+            case "USER":
+                data.role = 1;
+            break;
+
+            case "MANAGERS":
+                data.role = 3;
+            break;
+            
+            default:
+                data.role = undefined;
+            break;
+           }
+            data.status === "ACTIVE" ? data.status = 1 : data.status = 0;
+            return data;
        }
 
        return new Error('Erro ao consultar usuário.');
@@ -106,16 +115,28 @@ const getById = async (id: number): Promise<IDetalheUsuario | Error> => {
 };
 
 const create = async (dados: Omit<IDetalheUsuario, 'idUsuario'>): Promise<number | Error> => {
-    try {
-        if(dados?.role === 1) {
-            dados.role = 0;
-        } else if(dados?.role === 2) {
-            dados.role = 1;
-        } else {
-            //@ts-ignore
-            dados.role = 2;
+    try 
+    {
+        switch (dados.role) {
+            case 2:
+                dados.role = 1;    
+            break;
+            
+            case 1:
+                dados.role = 0;
+            break;
+            
+            case 3: 
+                dados.role = 2;
+            break;
+
+            default:
+                dados.role = 0;
+            break;
         }
+
         dados.email.toLowerCase();
+        
         const { data } = await Api.post<IDetalheUsuario>('/users', dados);
         if(data) {
             return data.idUsuario;

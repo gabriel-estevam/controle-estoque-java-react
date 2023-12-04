@@ -74,6 +74,13 @@ public class SolicitacaoController {
         return ResponseEntity.ok().body(listDto);
     }
 
+   @GetMapping("/status")
+    public ResponseEntity<List<Solicitacao>> findByStatusAndIdFilial(
+        @RequestParam(name = "idFilial", required = false) Long filial
+    ) {
+        List<Solicitacao> list = service.findByStatusAndIdFilial(filial);
+        return ResponseEntity.ok().body(list);
+    }
    @PostMapping
     public ResponseEntity<Void> insert(@RequestBody SolicitacaoDTO dto) {
         UserDTO usuarioDTO = new UserDTO(usuarioService.findById(dto.getSolicitanteFK()));        

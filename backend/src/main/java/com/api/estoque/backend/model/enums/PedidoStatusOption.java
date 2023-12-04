@@ -3,8 +3,9 @@ package com.api.estoque.backend.model.enums;
 public enum PedidoStatusOption {
     REALIZADO(0),
     RECEBIDO(1),
-    CANCELADO(2);
-
+    CANCELADO(2),
+    ABERTO(3);
+    
     private int code;
 
     private PedidoStatusOption(int code) {

@@ -1,5 +1,6 @@
 package com.api.estoque.backend.service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import com.api.estoque.backend.model.Filial;
 import com.api.estoque.backend.model.ItemSolicitacao;
 import com.api.estoque.backend.model.Solicitacao;
 import com.api.estoque.backend.model.Usuario;
+import com.api.estoque.backend.model.enums.PedidoStatusOption;
 import com.api.estoque.backend.repository.ItemSolicitacaoRepository;
 import com.api.estoque.backend.repository.SolicitacaoRepository;
 import com.api.estoque.backend.service.exceptions.ResourceNotFoundException;
@@ -45,9 +47,14 @@ public class SolicitacaoService {
         return repository.findAll();
     }
 
+    
     public Solicitacao findById(Long id) {
         Optional<Solicitacao> solicitacao = repository.findById(id);
         return solicitacao.orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    public List<Solicitacao> findByStatusAndIdFilial(Long idFilial) {
+        return repository.findByStatusEqualsAndStatusPedidoEqualsAndFilial_idFilial(1, 0, idFilial);
     }
     public Solicitacao insert(Solicitacao solicitacao) {
         Solicitacao solicitacaoSave = solicitacao;
@@ -64,10 +71,21 @@ public class SolicitacaoService {
         updateData(entity, solicitacao);
         repository.save(entity);
     }
-
+    
+    public void recebimentoUpdateStatus(Long id, Solicitacao solicitacao, Instant data) {
+        Solicitacao entity = repository.getReferenceById(id);
+        updateDataStatus(entity, solicitacao, data);
+        repository.save(entity);
+    }
+    
+    private void updateDataStatus(Solicitacao entity, Solicitacao solicitacao, Instant data) {
+        entity.setUpdatedAt(data);
+        entity.setStatusPedido(PedidoStatusOption.RECEBIDO);
+    }
     private void updateData(Solicitacao entity, Solicitacao solicitacao) {
         entity.setStatus(solicitacao.getStatus());
         entity.setUpdatedAt(solicitacao.getUpdatedAt());
+        entity.setStatusPedido(solicitacao.getStatusPedido());
     }
 
     public Solicitacao fromDto(SolicitacaoDTO dto) {
@@ -80,6 +98,7 @@ public class SolicitacaoService {
         solicitacao.setSolicitante(usuario);
         solicitacao.setFilial(filial);
         solicitacao.setStatus(dto.getStatus());
+        solicitacao.setStatusPedido(dto.getStatusPedido());
         solicitacao.setUpdatedAt(dto.getUpdatedAt());
         List<ItemSolicitacao> itens = dto.getItensSolicitacao().stream().map(x -> {
             ItemSolicitacao item = new ItemSolicitacao();

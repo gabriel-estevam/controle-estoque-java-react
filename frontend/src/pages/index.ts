@@ -10,4 +10,5 @@ export * from './MovimentacaoEstoque/Movimentacao/ConsultaMovimentacao/index';
 export * from './Produtos/index';
 export * from './Solicitacao/index';
 export * from './Compras/index';
+export * from './Recebimento/index';
 export * from './Relatorios/Produtos/index'

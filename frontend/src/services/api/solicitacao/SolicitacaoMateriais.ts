@@ -15,6 +15,7 @@ export interface IlistagemSolicitacao {
     dataSolicitacao: Date;
     updatedAt: Date;
     status: string;
+    statusPedido: string;
     itensSolicitados: TItemSolicitacao[];
     filial: IFilial
 }
@@ -34,6 +35,25 @@ const getAllContaing = async (page = 0, filter?: string, filial?: number ): Prom
                 content: response.data.content,
                 totalElements: Number(response.data.totalElements),
                 totalPages: Number(response.data.totalPages),
+            }
+        }
+        return new Error('Erro ao listar os registros.');
+    }
+    catch (error) {
+        console.error(error);
+        return new Error((error as { message: string}).message || 'Erro ao listar os registros');
+      }  
+};
+
+const getByStatusAndIdFilial = async (filial?: number ): Promise<TSolicitacaoMaterial | Error> => {
+    try {
+        const urlRelativa = `/solicitacao/status?idFilial=${filial}`;
+        const response = await Api.get(urlRelativa);
+        if(response) {
+            return {
+                content: response.data,
+                totalElements: Number(1),
+                totalPages: Number(1),
             }
         }
         return new Error('Erro ao listar os registros.');
@@ -65,7 +85,7 @@ const create = async (dados: IlistagemSolicitacao): Promise<void | Error> => {
     } 
     catch (error) {
         console.error(error);
-        return new Error((error as { message: string }).message || 'Erro ao deletar o registro.');
+        return new Error((error as { message: string }).message || 'Erro ao inserir o registro.');
     }
 };
 
@@ -73,4 +93,5 @@ export const SolicitacaoMateriais = {
     getAllContaing,
     getById,
     create,
+    getByStatusAndIdFilial,
 };

@@ -1,5 +1,7 @@
 package com.api.estoque.backend.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +13,5 @@ import com.api.estoque.backend.model.Solicitacao;
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
     public Page<Solicitacao> findByNumeroSolAndFilial_idFilial(Long numeroSol, Long filial,Pageable pageable);
     public Page<Solicitacao> findByFilial_idFilial(Long filial, Pageable pageable);
+    public List<Solicitacao> findByStatusEqualsAndStatusPedidoEqualsAndFilial_idFilial(int status, int statusPedido, Long idFilial);
 }

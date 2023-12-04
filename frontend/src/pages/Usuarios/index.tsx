@@ -103,17 +103,17 @@ export const Usuarios: React.FC = () => {
     },[searchParams]);
     
    const getUsuarioById = (pId : number) => {
-        UsuarioService.getById(pId)
-        .then((result) => {
-            if(result instanceof Error) {
-                alert(result.message);
+       UsuarioService.getById(pId)
+       .then((result) => {
+           if(result instanceof Error) {
+               alert(result.message);
             }
             else {
                 setdadoUsuario(result);
                 formRef.current?.setData({
                     name: result.name,
                     email: result.email,
-                    role: result.role === 0 ? 1 : 2,
+                    role: result.role,
                     status: result.status,
                     filialFK: result.filialFK,
                     password: 'VALUES',

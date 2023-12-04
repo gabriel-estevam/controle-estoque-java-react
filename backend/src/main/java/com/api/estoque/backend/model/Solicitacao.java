@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.api.estoque.backend.model.enums.PedidoStatusOption;
 import com.api.estoque.backend.model.enums.SolicitacaoStatusOption;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -50,6 +51,8 @@ public class Solicitacao implements Serializable {
     @Column(name = "status")
     private Integer status;
 
+    private Integer statusPedido;
+
     public Solicitacao() {
 
     }
@@ -61,7 +64,9 @@ public class Solicitacao implements Serializable {
         Filial filial, 
         Instant dataSolicitacao,
         Instant updatedAt,
-        SolicitacaoStatusOption status) {
+        SolicitacaoStatusOption status,
+        PedidoStatusOption statusPedido
+    ) {
         this.idSol = idSol;
         this.numeroSol = numeroSol;
         this.solicitante = solicitante;
@@ -69,6 +74,7 @@ public class Solicitacao implements Serializable {
         this.dataSolicitacao = dataSolicitacao;
         this.updatedAt = updatedAt;
         setStatus(status);
+        setStatusPedido(statusPedido);
     }
 
     public Long getIdSol() {
@@ -126,6 +132,16 @@ public class Solicitacao implements Serializable {
     public void setStatus(SolicitacaoStatusOption status) {
         if(status != null) {
             this.status = status.getCode();
+        }
+    }
+
+    public PedidoStatusOption getStatusPedido() {
+        return PedidoStatusOption.valueOf(statusPedido);
+    }
+
+    public void setStatusPedido(PedidoStatusOption statusPedido) {
+        if(statusPedido != null) {
+            this.statusPedido = statusPedido.getCode();
         }
     }
 

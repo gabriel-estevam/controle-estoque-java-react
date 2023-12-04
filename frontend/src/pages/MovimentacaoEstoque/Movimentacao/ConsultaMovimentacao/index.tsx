@@ -67,7 +67,6 @@ export const ConsultaEstoque: React.FC = () => {
                     setTotalElements(result.totalElements);
                     setTotalPages(result.totalPages);
                     setRows(result.content);
-                    console.log(result.content)
                 }
             });
         });
@@ -108,7 +107,7 @@ export const ConsultaEstoque: React.FC = () => {
                                 <TableCell>{row.estoque.itemEstoque.map(item => item.produto.unidadeMedida.unidadeMedida)}</TableCell>
                                 <TableCell>{row.estoque.itemEstoque.map(item => item.fornecedor.name)}</TableCell>
                                 <TableCell>{row.estoque.itemEstoque.map(item => item.quantidadeAtual)}</TableCell>
-                                <TableCell>{row.estoque.usuario.name}</TableCell>
+                                <TableCell>{row.usuario.name}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
