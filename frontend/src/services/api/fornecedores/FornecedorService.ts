@@ -97,7 +97,7 @@ const create = async (dados: IDetalheFornecedor): Promise<number | Error | undef
   try 
   {
     //@ts-ignore
-    if (!dados.Endereco.complemento) {
+    if (!dados.Endereco.complemento || undefined) {
       //@ts-ignore
       dados.endereco.complemento = "N/A";
     }
