@@ -29,6 +29,7 @@ export const SigninForm: React.FC = () => {
                 }
                 else  {
                     localStorage.setItem("token", result);
+                    localStorage.setItem("logged", '1');
                     navigate("/home");
                 }
             });

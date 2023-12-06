@@ -140,10 +140,13 @@ export const MenuLateral: React.FC<Props> = ({ children }) => {
 
     //@ts-ignore
     const role = DecodeTokenJWT.decodeTokenJWT(localStorage.getItem("token")).usuario.role;
-
+    const logged = Number(localStorage.getItem("logged"));
+    if(logged === 1) {
+        window.location.reload();
+        localStorage.removeItem("logged");
+    }
     const theme = useTheme();
     const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-
     const { isDrawerOpen, toggleDrawerOpen, drawerOptions, drawerOptionsNestedList, drawerOptionsNestedListReports } = useDrawerContext();
 
     return (
