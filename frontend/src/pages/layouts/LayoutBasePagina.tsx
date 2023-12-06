@@ -6,6 +6,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useDrawerContext } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
 
+import './index.css';
+
 interface ILayoutBasePaginaProps {
     barraFerramentas?: ReactNode;
     children?: ReactNode;
@@ -39,7 +41,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> =
             height="100%"
             display="flex"
             flexDirection="column"
-            gap={1}
+            className={titulo === 'Home' ? 'box-img' : ''}
         >
             <Box 
                 display="flex" 
@@ -63,7 +65,7 @@ export const LayoutBasePagina: React.FC<ILayoutBasePaginaProps> =
                     variant='h4'
                     marginLeft="25px"
                 >
-                    {titulo}
+                    {titulo !== 'Home'}
                 </Typography>
                 <Box flex={1} display="flex" justifyContent="end">
                     <IconButton  
