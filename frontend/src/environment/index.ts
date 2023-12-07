@@ -17,7 +17,7 @@ export const Environment = {
     /**
      * url base de consulta ao backend
     */
-    URL_BASE: 'https://deploy-backend-07rc.onrender.com/api',
+    URL_BASE: 'http://localhost:8080/api',
 
     /**
      * Token de sessão do usuário
