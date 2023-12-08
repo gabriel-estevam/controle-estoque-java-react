@@ -79,7 +79,7 @@ If you want to run this application, first of all you need to set up the backend
 
 ## Frontend Config
 For use the interfaces your have two option, but before, you need to clone this repositoy
-1.  Deploy for free On <a href="https://vercel.com/">Vercel.com</a>
+1.  Deploy for free on <a href="https://vercel.com/">Vercel</a>
 2. Run local:
 ```
 npm run build;
