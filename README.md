@@ -30,6 +30,8 @@ EasyEstoque is a Software that help you manage your stock, providing a easly int
 
 ### Architecture
 - MVC
+- Domain Model
+![domain model](./imgs-doc/diagrama.png)
 
 ## Security - Roles
 For this project I divided the users roles into three roles.
